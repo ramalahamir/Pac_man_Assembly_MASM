@@ -13,15 +13,17 @@ cols = 50
     newline byte 0
 
     ; variables to store pacman's position
+    rand_pos dword 0
     pacmanX dword 1
     pacmanY dword 1
 
 .code
 main proc
-    ; clearing the screen
-    call clrscr
+    call clrscr        ; clearing the screen
+    call randomize     ; Re-seeds the random number generator
+
     call buildmaze
-  ;  call placeplayer
+    call place_pacman
    ; call placeblocks
     call drawmaze
 
@@ -101,27 +103,47 @@ buildmaze proc
     ret
 buildmaze endp
 
-placeplayer proc
-    mov eax, 1
-    mov pacmanY, eax
-    mov pacmanX, eax
-    mov al, 'p'
-    call setmazechar
-    ret
-placeplayer endp
 
-setmazechar proc
-    ; input: pacmanX, pacmanY, char in al
+place_pacman proc
+    ; preserving the old value
     push edi
-    mov edi, offset maze
-    mov eax, pacmanY
-    imul eax, cols + 1
-    add eax, pacmanX
-    add edi, eax
-    mov byte ptr [edi], al
-    pop edi
+
+    find_random_indexes:
+        ; making the starting position random for pacman
+        mov eax, rows - 2     ; getting random from 0 - 19
+        call RandomRange      ; gives 0 - 18
+        inc eax               ; gives 0 - 19
+        mov pacmanY, eax      ; setting the row value for pacman
+
+        mov eax, cols - 2     ; getting random from 0 - 48
+        call RandomRange      ; gives 0 - 47
+        inc eax               ; gives 0 - 48
+        mov pacmanX, eax      ; setting the column value for pacman
+    
+    ; checking if the new position is empty or not to prevent overwriting
+
+    ; calculating the 1d equivalent index in the maze
+    mov  edi, offset maze 
+    mov  eax, pacmanY
+    imul eax, cols + 1     
+    add  eax, pacmanX     
+    add  edi, eax       
+
+    mov al, byte ptr [edi]   ; loading whatever’s already in that position
+    cmp al, ' '              ; checking if its empty or not
+    jne  try_again           ; if not find new position for pac man
+
+    mov byte ptr [edi], 'P'  ; if its empty, place Pacman here
+    jmp done_placing
+
+    try_again:
+        ; jump back up to pick new random indexes
+        jmp find_random_indexes
+
+    done_placing:
+        pop edi
     ret
-setmazechar endp
+place_pacman endp
 
 placeblocks proc
     mov ecx, 10
@@ -131,7 +153,7 @@ nextblock:
     call randomrangex
     mov pacmanX, eax
     mov al, '*'
-    call setmazechar
+   ; call setmazechar
     loop nextblock
     ret
 placeblocks endp

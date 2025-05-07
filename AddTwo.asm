@@ -3,8 +3,8 @@
 include irvine32.inc
 
 ; keeping the maze size constant for all levels
-rows = 20
-cols = 20
+rows = 21
+cols = 50
 
 .data
     ; reserving memory for maze in the memory
@@ -83,14 +83,14 @@ buildmaze proc
             add edi, eax
 
             ; first check if it isn't the top or bottom wall
-            cmp esi, 1
+            cmp esi, 0
             je skiprow
-            cmp esi, rows
+            cmp esi, rows - 1
             je skiprow
 
             ; print boundary at first col and last col
             mov byte ptr [edi], '#'
-            mov byte ptr [edi + cols], '#'
+            mov byte ptr [edi + cols - 1], '#'
 
             ; jump to next row
             jmp skiprow          
@@ -153,22 +153,32 @@ randomrangey proc
 randomrangey endp
 
 drawmaze proc
-    
+    ; storing the values of ecx and edx in stack
     push ecx
     push edx
-    mov ecx, 0
+    mov ecx, 0      ; starting row 
+
     nextrow:
-        mov edx, offset maze
+        ; calculating index using ebx because edx will be used by gotoxy
+        mov ebx, offset maze
         mov eax, ecx
         imul eax, cols + 1
-        add edx, eax
-        mov dh, cl
-        mov dl, 0
+        add ebx, eax
+
+        ; storing the x and y positions for positioning cursor using gotoxy
+        mov dh, cl     ; storing row
+        mov dl, 0      ; storing col
         call gotoxy
-        call writestring
-        inc ecx
-        cmp ecx, rows
-        jl nextrow
+
+        mov edx, ebx
+        call writestring    ; writing whole string (single row) till null terminator
+
+        
+        inc ecx               ; increment row 
+        cmp ecx, rows         ; see if all rows are completed or not
+        jl nextrow            ; if not loop again till all rows are completed
+    
+    ; restore the original values
     pop edx
     pop ecx
     ret

@@ -1,9 +1,10 @@
-Microsoft (R) Macro Assembler Version 14.43.34808.0	    05/07/25 01:43:32
+Microsoft (R) Macro Assembler Version 14.43.34808.0	    05/07/25 08:15:37
 AddTwo.asm						     Page 1 - 1
 
 
-				; Dynamic Pac-Man Maze (MASM, Irvine32.inc)
-				INCLUDE Irvine32.inc
+				; Ramalah Amir (23i-2644) DS-4C
+
+				include irvine32.inc
 			      C ; Include file for Irvine32.lib             (Irvine32.inc)
 			      C 
 			      C ;OPTION CASEMAP:NONE		; optional: make identifiers case-sensitive
@@ -22,159 +23,187 @@ AddTwo.asm						     Page 1 - 1
 			      C .LIST
 			      C 
 
- = 00000014			ROWS = 20
- = 00000028			COLS = 40
+				; keeping the maze size constant for all levels
+ = 00000014			rows = 20
+ = 00000014			cols = 20
 
- 00000000			.DATA
- 00000000  00000334 [		maze BYTE ROWS * (COLS + 1) DUP(' ')
+ 00000000			.data
+				    ; reserving memory for maze in the memory
+				    ; +1 is for the null terminator at the end of each row for writeString
+ 00000000  000001A4 [		    maze byte rows * (cols + 1) dup(' ')   
 	    20
 	   ]
- 00000334 00			newline BYTE 0
- 00000335 00000001		playerX DWORD 1
- 00000339 00000001		playerY DWORD 1
+ 000001A4 00			    newline byte 0
 
- 00000000			.CODE
- 00000000			main PROC
- 00000000  E8 00000000 E	    call Clrscr
- 00000005  E8 00000029		    call BuildMaze
- 0000000A  E8 00000079		    call PlacePlayer
- 0000000F  E8 000000A5		    call PlaceBlocks
- 00000014  E8 000000DB		    call DrawMaze
- 00000019			GameLoop:
- 00000019  E8 00000000 E	    call ReadKey
- 0000001E  3C 00		    cmp al, 0
- 00000020  75 F7		    jne GameLoop
- 00000022  E8 000000F7		    call HandleInput
- 00000027  E8 00000000 E	    call Clrscr
- 0000002C  E8 000000C3		    call DrawMaze
- 00000031  EB E6		    jmp GameLoop
- 00000033			main ENDP
+				    ; variables to store pacman's position
+ 000001A5 00000001		    pacmanX dword 1
+ 000001A9 00000001		    pacmanY dword 1
 
-				; Build outer walls
- 00000033			BuildMaze PROC
- 00000033  B9 00000014		    mov ecx, ROWS
- 00000038  33 F6		    xor esi, esi
- 0000003A			nextRow:
- 0000003A  BF 00000000 R	    mov edi, offset maze
- 0000003F  8B C6		    mov eax, esi
- 00000041  6B C0 29		    imul eax, COLS + 1
- 00000044  03 F8		    add edi, eax
+ 00000000			.code
+ 00000000			main proc
+				    ; clearing the screen
+ 00000000  E8 00000000 E	    call clrscr
+ 00000005  E8 00000000		    call buildmaze
+				  ;  call placeplayer
+				   ; call placeblocks
+				    ;call drawmaze
 
- 00000046  BB 00000028		    mov ebx, COLS
- 0000004B  B0 20		    mov al, ' '
- 0000004D			fillRow:
- 0000004D  88 07		    mov BYTE PTR [edi], al
- 0000004F  47			    inc edi
- 00000050  4B			    dec ebx
- 00000051  75 FA		    jnz fillRow
+				  ;  gameloop:
+				   ;     call readkey
+				    ;    cmp al, 0
+				     ;   jne gameloop
+				 ;       call handleinput
+				  ;      call clrscr
+				   ;     call drawmaze
+				    ;    jmp gameloop
+ 0000000A			main endp
 
- 00000053  C6 07 00		    mov BYTE PTR [edi], 0
+				; translating the 2D coordinates into a single 1D index with
+				; formula: current_row * total_columns + current_column
 
- 00000056  BF 00000000 R	    mov edi, offset maze
- 0000005B  8B C6		    mov eax, esi
- 0000005D  6B C0 29		    imul eax, COLS + 1
- 00000060  03 F8		    add edi, eax
+				; setting the boundaries
+ 0000000A			buildmaze proc
+ 0000000A  B9 00000014		    mov ecx, rows   ; keeping track of how many rows to fill
+ 0000000F  BE 00000000		    mov esi, 0      ; current row number
 
- 00000062  83 FE 00		    cmp esi, 0
- 00000065  74 0E		    je topOrBottom
- 00000067  83 FE 13		    cmp esi, ROWS - 1
- 0000006A  74 09		    je topOrBottom
- 0000006C  C6 07 23		    mov BYTE PTR [edi], '#'
- 0000006F  C6 47 27 23		    mov BYTE PTR [edi + COLS - 1], '#'
- 00000073  EB 0F		    jmp skipRow
- 00000075			topOrBottom:
- 00000075  BB 00000000		    mov ebx, 0
- 0000007A			makeWall:
- 0000007A  C6 04 1F 23		    mov BYTE PTR [edi + ebx], '#'
- 0000007E  43			    inc ebx
- 0000007F  83 FB 28		    cmp ebx, COLS
- 00000082  7C F6		    jl makeWall
- 00000084			skipRow:
- 00000084  46			    inc esi
- 00000085  E2 B3		    loop nextRow
- 00000087  C3			    ret
- 00000088			BuildMaze ENDP
+ 00000014			    nextrow:
+ 00000014  BF 00000000 R	        mov edi, offset maze         ; edi will be storing the current column = 0 in the beginning
+ 00000019  8B C6		        mov eax, esi                 ; esi stores the row index
+ 0000001B  6B C0 15		        imul eax, cols + 1           ; doing current_row * total_columns
+ 0000001E  03 F8		        add edi, eax                 ; doing + current_column and getting the 2d index at edi 
 
- 00000088			PlacePlayer PROC
- 00000088  B8 00000001		    mov eax, 1
- 0000008D  A3 00000339 R	    mov playerY, eax
- 00000092  A3 00000335 R	    mov playerX, eax
- 00000097  B0 50		    mov al, 'P'
- 00000099  E8 00000001		    call SetMazeChar
- 0000009E  C3			    ret
- 0000009F			PlacePlayer ENDP
+				        ; total columns
+ 00000020  BB 00000014		        mov ebx, cols
 
- 0000009F			SetMazeChar PROC
-				    ; input: playerX, playerY, char in AL
- 0000009F  57			    push edi
- 000000A0  BF 00000000 R	    mov edi, offset maze
- 000000A5  A1 00000339 R	    mov eax, playerY
- 000000AA  6B C0 29		    imul eax, COLS + 1
- 000000AD  03 05 00000335 R	    add eax, playerX
- 000000B3  03 F8		    add edi, eax
- 000000B5  88 07		    mov BYTE PTR [edi], al
- 000000B7  5F			    pop edi
- 000000B8  C3			    ret
- 000000B9			SetMazeChar ENDP
+				        ; comparing row number whether to draw boundary or space
+ 00000025  83 F9 14		        cmp ecx, rows   ; first row
+ 00000028  74 09		        je boundary
 
- 000000B9			PlaceBlocks PROC
- 000000B9  B9 0000000A		    mov ecx, 10
- 000000BE			nextBlock:
- 000000BE  E8 00000025		    call RandomRangeY
- 000000C3  A3 00000339 R	    mov playerY, eax
- 000000C8  E8 0000000F		    call RandomRangeX
- 000000CD  A3 00000335 R	    mov playerX, eax
- 000000D2  B0 2A		    mov al, '*'
- 000000D4  E8 FFFFFFC6		    call SetMazeChar
- 000000D9  E2 E3		    loop nextBlock
- 000000DB  C3			    ret
- 000000DC			PlaceBlocks ENDP
+ 0000002A			        second_compare:
+ 0000002A  83 F9 01		            cmp ecx, 1   ; last row
+ 0000002D  74 04		            je boundary
 
- 000000DC			RandomRangeX PROC
-				    ; returns 1 to COLS - 2
- 000000DC  B8 00000026		    mov eax, COLS - 2
- 000000E1  E8 00000000 E	    call RandomRange
- 000000E6  40			    inc eax
- 000000E7  C3			    ret
- 000000E8			RandomRangeX ENDP
+ 0000002F  B0 20		        mov al, ' '   ; filling the maze with space
+ 00000031  EB 02		        jmp fillrow
 
- 000000E8			RandomRangeY PROC
-				    ; returns 1 to ROWS - 2
- 000000E8  B8 00000012		    mov eax, ROWS - 2
- 000000ED  E8 00000000 E	    call RandomRange
- 000000F2  40			    inc eax
- 000000F3  C3			    ret
- 000000F4			RandomRangeY ENDP
+ 00000033			        boundary:
+ 00000033  B0 23		            mov al, '#'  ; print boundary
 
- 000000F4			DrawMaze PROC
- 000000F4  51			    push ecx
- 000000F5  52			    push edx
- 000000F6  B9 00000000		    mov ecx, 0
- 000000FB			nextRow:
- 000000FB  BA 00000000 R	    mov edx, offset maze
- 00000100  8B C1		    mov eax, ecx
- 00000102  6B C0 29		    imul eax, COLS + 1
- 00000105  03 D0		    add edx, eax
- 00000107  8A F1		    mov dh, cl
- 00000109  B2 00		    mov dl, 0
- 0000010B  E8 00000000 E	    call Gotoxy
- 00000110  E8 00000000 E	    call WriteString
- 00000115  41			    inc ecx
- 00000116  83 F9 14		    cmp ecx, ROWS
- 00000119  7C E0		    jl nextRow
- 0000011B  5A			    pop edx
- 0000011C  59			    pop ecx
- 0000011D  C3			    ret
- 0000011E			DrawMaze ENDP
+				        ; loop to fill the current row
+ 00000035			        fillrow:
+ 00000035  88 07		            mov byte ptr [edi], al    ; print at the calculated 2d index converted to 1d index
+ 00000037  47			            inc edi
+ 00000038  4B			            dec ebx                   ; keep track of columns
+ 00000039  75 FA		            jnz fillrow               ; keep filling the row until the columns are completed
 
-				; Movement and collision logic to be added
- 0000011E			HandleInput PROC
+ 0000003B  C6 07 00		            mov byte ptr [edi], 0     ; adding the null terminater at the end of the row
+
+				            ; same thing calculate the index again for the same row
+				            ; for Adding side walls for middle rows
+ 0000003E  BF 00000000 R	            mov edi, offset maze
+ 00000043  8B C6		            mov eax, esi               ; same row since esi didn't change
+ 00000045  6B C0 15		            imul eax, cols + 1
+ 00000048  03 F8		            add edi, eax
+
+				            ; first check if it isn't the top or bottom wall
+ 0000004A  83 FE 01		            cmp esi, 1
+ 0000004D  74 0E		            je skiprow
+ 0000004F  83 FE 14		            cmp esi, rows
+ 00000052  74 09		            je skiprow
+
+				            ; print boundary at first col and last col
+ 00000054  C6 07 23		            mov byte ptr [edi], '#'
+ 00000057  C6 47 14 23		            mov byte ptr [edi + cols], '#'
+
+				            ; jump to next row
+ 0000005B  EB 00		            jmp skiprow          
+
+ 0000005D			            skiprow:
+ 0000005D  46			                inc esi
+ 0000005E  E2 B4		    loop nextrow
+ 00000060  C3			    ret
+ 00000061			buildmaze endp
+
+ 00000061			placeplayer proc
+ 00000061  B8 00000001		    mov eax, 1
+ 00000066  A3 000001A9 R	    mov pacmanY, eax
+ 0000006B  A3 000001A5 R	    mov pacmanX, eax
+ 00000070  B0 70		    mov al, 'p'
+ 00000072  E8 00000001		    call setmazechar
+ 00000077  C3			    ret
+ 00000078			placeplayer endp
+
+ 00000078			setmazechar proc
+				    ; input: pacmanX, pacmanY, char in al
+ 00000078  57			    push edi
+ 00000079  BF 00000000 R	    mov edi, offset maze
+ 0000007E  A1 000001A9 R	    mov eax, pacmanY
+ 00000083  6B C0 15		    imul eax, cols + 1
+ 00000086  03 05 000001A5 R	    add eax, pacmanX
+ 0000008C  03 F8		    add edi, eax
+ 0000008E  88 07		    mov byte ptr [edi], al
+ 00000090  5F			    pop edi
+ 00000091  C3			    ret
+ 00000092			setmazechar endp
+
+ 00000092			placeblocks proc
+ 00000092  B9 0000000A		    mov ecx, 10
+ 00000097			nextblock:
+ 00000097  E8 00000025		    call randomrangey
+ 0000009C  A3 000001A9 R	    mov pacmanY, eax
+ 000000A1  E8 0000000F		    call randomrangex
+ 000000A6  A3 000001A5 R	    mov pacmanX, eax
+ 000000AB  B0 2A		    mov al, '*'
+ 000000AD  E8 FFFFFFC6		    call setmazechar
+ 000000B2  E2 E3		    loop nextblock
+ 000000B4  C3			    ret
+ 000000B5			placeblocks endp
+
+ 000000B5			randomrangex proc
+				    ; returns 1 to cols - 2
+ 000000B5  B8 00000012		    mov eax, cols - 2
+ 000000BA  E8 00000000 E	    call randomrange
+ 000000BF  40			    inc eax
+ 000000C0  C3			    ret
+ 000000C1			randomrangex endp
+
+ 000000C1			randomrangey proc
+				    ; returns 1 to rows - 2
+ 000000C1  B8 00000012		    mov eax, rows - 2
+ 000000C6  E8 00000000 E	    call randomrange
+ 000000CB  40			    inc eax
+ 000000CC  C3			    ret
+ 000000CD			randomrangey endp
+
+ 000000CD			drawmaze proc
+ 000000CD  51			    push ecx
+ 000000CE  52			    push edx
+ 000000CF  B9 00000000		    mov ecx, 0
+ 000000D4			nextrow:
+ 000000D4  BA 00000000 R	    mov edx, offset maze
+ 000000D9  8B C1		    mov eax, ecx
+ 000000DB  6B C0 15		    imul eax, cols + 1
+ 000000DE  03 D0		    add edx, eax
+ 000000E0  8A F1		    mov dh, cl
+ 000000E2  B2 00		    mov dl, 0
+ 000000E4  E8 00000000 E	    call gotoxy
+ 000000E9  E8 00000000 E	    call writestring
+ 000000EE  41			    inc ecx
+ 000000EF  83 F9 14		    cmp ecx, rows
+ 000000F2  7C E0		    jl nextrow
+ 000000F4  5A			    pop edx
+ 000000F5  59			    pop ecx
+ 000000F6  C3			    ret
+ 000000F7			drawmaze endp
+
+				; movement and collision logic to be added
+ 000000F7			handleinput proc
 				    ; placeholder for movement logic
- 0000011E  C3			    ret
- 0000011F			HandleInput ENDP
+ 000000F7  C3			    ret
+ 000000F8			handleinput endp
 
-				END main
-Microsoft (R) Macro Assembler Version 14.43.34808.0	    05/07/25 01:43:32
+				end main
+Microsoft (R) Macro Assembler Version 14.43.34808.0	    05/07/25 08:15:37
 AddTwo.asm						     Symbols 2 - 1
 
 
@@ -268,20 +297,14 @@ Segments and Groups:
 
 FLAT . . . . . . . . . . . . . .	GROUP
 STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
-_DATA  . . . . . . . . . . . . .	32 Bit	 0000033D Para	  Public  'DATA'	
-_TEXT  . . . . . . . . . . . . .	32 Bit	 0000011F Para	  Public  'CODE'	
+_DATA  . . . . . . . . . . . . .	32 Bit	 000001AD Para	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 000000F8 Para	  Public  'CODE'	
 
 
 Procedures, parameters, and locals:
 
                 N a m e                 Type     Value    Attr
 
-BuildMaze  . . . . . . . . . . .	P Near	 00000033 _TEXT	Length= 00000055 Public STDCALL
-  nextRow  . . . . . . . . . . .	L Near	 0000003A _TEXT	
-  fillRow  . . . . . . . . . . .	L Near	 0000004D _TEXT	
-  topOrBottom  . . . . . . . . .	L Near	 00000075 _TEXT	
-  makeWall . . . . . . . . . . .	L Near	 0000007A _TEXT	
-  skipRow  . . . . . . . . . . .	L Near	 00000084 _TEXT	
 CloseFile  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 CloseHandle  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 Clrscr . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
@@ -289,8 +312,6 @@ CreateFileA  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External
 CreateOutputFile . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 Crlf . . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 Delay  . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-DrawMaze . . . . . . . . . . . .	P Near	 000000F4 _TEXT	Length= 0000002A Public STDCALL
-  nextRow  . . . . . . . . . . .	L Near	 000000FB _TEXT	
 DumpMem  . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 DumpRegs . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 ExitProcess  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
@@ -318,7 +339,6 @@ GetSystemTime  . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External
 GetTextColor . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 GetTickCount . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 Gotoxy . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-HandleInput  . . . . . . . . . .	P Near	 0000011E _TEXT	Length= 00000001 Public STDCALL
 HeapAlloc  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 HeapCreate . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 HeapDestroy  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
@@ -333,12 +353,7 @@ OpenInputFile  . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External
 ParseDecimal32 . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 ParseInteger32 . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 PeekConsoleInputA  . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-PlaceBlocks  . . . . . . . . . .	P Near	 000000B9 _TEXT	Length= 00000023 Public STDCALL
-  nextBlock  . . . . . . . . . .	L Near	 000000BE _TEXT	
-PlacePlayer  . . . . . . . . . .	P Near	 00000088 _TEXT	Length= 00000017 Public STDCALL
 Random32 . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-RandomRangeX . . . . . . . . . .	P Near	 000000DC _TEXT	Length= 0000000C Public STDCALL
-RandomRangeY . . . . . . . . . .	P Near	 000000E8 _TEXT	Length= 0000000C Public STDCALL
 RandomRange  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 Randomize  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 ReadChar . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
@@ -362,7 +377,6 @@ SetConsoleTitleA . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External
 SetConsoleWindowInfo . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 SetFilePointer . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 SetLocalTime . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-SetMazeChar  . . . . . . . . . .	P Near	 0000009F _TEXT	Length= 0000001A Public STDCALL
 SetTextColor . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 ShowFPUStack . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 Sleep  . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
@@ -391,10 +405,24 @@ WriteStackFrame  . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External
 WriteString  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 WriteToFile  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 WriteWindowsMsg  . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-main . . . . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 00000033 Public STDCALL
-  GameLoop . . . . . . . . . . .	L Near	 00000019 _TEXT	
+buildmaze  . . . . . . . . . . .	P Near	 0000000A _TEXT	Length= 00000057 Public STDCALL
+  nextrow  . . . . . . . . . . .	L Near	 00000014 _TEXT	
+  second_compare . . . . . . . .	L Near	 0000002A _TEXT	
+  boundary . . . . . . . . . . .	L Near	 00000033 _TEXT	
+  fillrow  . . . . . . . . . . .	L Near	 00000035 _TEXT	
+  skiprow  . . . . . . . . . . .	L Near	 0000005D _TEXT	
+drawmaze . . . . . . . . . . . .	P Near	 000000CD _TEXT	Length= 0000002A Public STDCALL
+  nextrow  . . . . . . . . . . .	L Near	 000000D4 _TEXT	
+handleinput  . . . . . . . . . .	P Near	 000000F7 _TEXT	Length= 00000001 Public STDCALL
+main . . . . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 0000000A Public STDCALL
+placeblocks  . . . . . . . . . .	P Near	 00000092 _TEXT	Length= 00000023 Public STDCALL
+  nextblock  . . . . . . . . . .	L Near	 00000097 _TEXT	
+placeplayer  . . . . . . . . . .	P Near	 00000061 _TEXT	Length= 00000017 Public STDCALL
 printf . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
+randomrangex . . . . . . . . . .	P Near	 000000B5 _TEXT	Length= 0000000C Public STDCALL
+randomrangey . . . . . . . . . .	P Near	 000000C1 _TEXT	Length= 0000000C Public STDCALL
 scanf  . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
+setmazechar  . . . . . . . . . .	P Near	 00000078 _TEXT	Length= 0000001A Public STDCALL
 wsprintfA  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
 
 
@@ -413,7 +441,6 @@ Symbols:
 @stack . . . . . . . . . . . . .	Text   	 FLAT
 ALT_MASK . . . . . . . . . . . .	Number	 00000003h   
 CAPSLOCK_ON  . . . . . . . . . .	Number	 00000080h   
-COLS . . . . . . . . . . . . . .	Number	 00000028h   
 CREATE_ALWAYS  . . . . . . . . .	Number	 00000002h   
 CREATE_NEW . . . . . . . . . . .	Number	 00000001h   
 CTRL_MASK  . . . . . . . . . . .	Number	 0000000Ch   
@@ -519,7 +546,6 @@ OPEN_EXISTING  . . . . . . . . .	Number	 00000003h
 PeekConsoleInput . . . . . . . .	Text   	 PeekConsoleInputA
 RIGHT_ALT_PRESSED  . . . . . . .	Number	 00000001h   
 RIGHT_CTRL_PRESSED . . . . . . .	Number	 00000004h   
-ROWS . . . . . . . . . . . . . .	Number	 00000014h   
 ReadConsoleInput . . . . . . . .	Text   	 ReadConsoleInputA
 ReadConsole  . . . . . . . . . .	Text   	 ReadConsoleA
 SCROLLLOCK_ON  . . . . . . . . .	Number	 00000040h   
@@ -616,6 +642,7 @@ WriteConsole . . . . . . . . . .	Text   	 WriteConsoleA
 black  . . . . . . . . . . . . .	Number	 00000000h   
 blue . . . . . . . . . . . . . .	Number	 00000001h   
 brown  . . . . . . . . . . . . .	Number	 00000006h   
+cols . . . . . . . . . . . . . .	Number	 00000014h   
 cyan . . . . . . . . . . . . . .	Number	 00000003h   
 exit . . . . . . . . . . . . . .	Text   	 INVOKE ExitProcess,0
 gray . . . . . . . . . . . . . .	Number	 00000008h   
@@ -628,10 +655,11 @@ lightMagenta . . . . . . . . . .	Number	 0000000Dh
 lightRed . . . . . . . . . . . .	Number	 0000000Ch   
 magenta  . . . . . . . . . . . .	Number	 00000005h   
 maze . . . . . . . . . . . . . .	Byte	 00000000 _DATA	
-newline  . . . . . . . . . . . .	Byte	 00000334 _DATA	
-playerX  . . . . . . . . . . . .	DWord	 00000335 _DATA	
-playerY  . . . . . . . . . . . .	DWord	 00000339 _DATA	
+newline  . . . . . . . . . . . .	Byte	 000001A4 _DATA	
+pacmanX  . . . . . . . . . . . .	DWord	 000001A5 _DATA	
+pacmanY  . . . . . . . . . . . .	DWord	 000001A9 _DATA	
 red  . . . . . . . . . . . . . .	Number	 00000004h   
+rows . . . . . . . . . . . . . .	Number	 00000014h   
 white  . . . . . . . . . . . . .	Number	 0000000Fh   
 wsprintf . . . . . . . . . . . .	Text   	 wsprintfA
 yellow . . . . . . . . . . . . .	Number	 0000000Eh   

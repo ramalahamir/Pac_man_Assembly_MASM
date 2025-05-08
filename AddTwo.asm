@@ -36,12 +36,12 @@ block_char  = '*'
     bottomBorder byte "+======================================+",0
 
     ; game menue screen
-    menuTitle    byte "   GAME MENU   ",0
-    opt1         byte "1. Start Game",0
-    opt2         byte "2. Highest Score",0
-    opt3         byte "3. Instructions",0
-    opt4         byte "4. Exit",0
-    select_optionMsg    byte "Select option (1-4): ",0
+    menuTitle    byte "   GAME MENU   ", 0
+    opt1         byte "1. Start Game", 0
+    opt2         byte "2. Highest Score", 0
+    opt3         byte "3. Instructions", 0
+    opt4         byte "4. Exit", 0
+    select_optionMsg    byte "Select option (1-4): ", 0
 
     ; for main game screen
     score_txt byte "SCORE: ", 0
@@ -53,6 +53,14 @@ block_char  = '*'
     exitGameBool byte 0
     exittingMsg byte "Exiting Game...... :)", 0
     invalidMsg byte "Invalid Option entered, Try Again..... :(", 0
+
+    ; instruction screen
+    instrTitle byte "   INSTRUCTIONS   ", 0
+    instrLine1 byte "Use arrow keys to move Pac-Man", 0
+    instrLine2 byte "Collect all dots (.) to win", 0
+    instrLine3 byte "Avoid ghosts (@ % & $)", 0
+    instrLine4 byte "Press Q anytime to quit", 0
+    instrPrompt byte 0Dh,0Ah, "Press 'r' to return...",0
 
 .code
 main proc
@@ -176,6 +184,125 @@ welcomeScreen endp
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 gameMenuScreen proc
+    returnToMenu::
+        call clrscr
+
+        ; top border 
+        mov  eax, green+(black*16)
+        call SetTextColor
+
+        ; positioning the start point
+        mov  dh, 2       ; row
+        mov  dl, 10      ; col
+        call gotoxy
+        mov  edx, offset topBorder
+        call WriteString
+
+        ; side borders drawn on 6 rows starting from row 3 to row 5
+        mov  ecx, 3
+        drawSides:
+            mov  dh, cl   ; row
+            mov  dl, 10   ; col
+            call gotoxy
+            mov  edx, offset sideBorder
+            call WriteString
+            inc  cl
+            cmp  cl, 6    
+            jl   drawSides
+
+        ; bottom border at row 6
+        mov  dh, 6    ; row
+        mov  dl, 10   ; col
+        call gotoxy
+        mov  edx, offset bottomBorder
+        call WriteString
+
+        ; printing the menu title
+        mov  eax, yellow +(black*16)
+        call SetTextColor
+        mov  dh, 4       ; row
+        mov  dl, 22      ; col
+        call gotoxy
+        mov  edx, offset menuTitle
+        call WriteString
+
+        ; printing options
+        mov  eax, yellow+(green*16)
+        call SetTextColor
+
+        mov  dh, 8
+        mov  dl, 22
+        call gotoxy
+        mov  edx, offset opt1
+        call WriteString
+
+        mov  dh, 9
+        mov  dl, 22
+        call gotoxy
+        mov  edx, offset opt2
+        call WriteString
+
+        mov  dh, 10
+        mov  dl, 22
+        call gotoxy
+        mov  edx, offset opt3
+        call WriteString
+
+        mov  dh, 11
+        mov  dl, 22
+        call gotoxy
+        mov  edx, offset opt4
+        call WriteString
+
+        ; select option msg
+        mov  eax, yellow+(black*16)
+        call SetTextColor
+        mov  dh, 13
+        mov  dl, 20
+        call gotoxy
+        mov  edx, offset select_optionMsg
+        call WriteString
+
+        ; read a single key  
+        call ReadChar        ; stored in eax
+
+        cmp al, '1'
+        je return_to_main
+        cmp al, '2'
+        ;je highScore
+        cmp al, '3'
+        ;je instructions
+        cmp al, '4'
+        je exit_game
+
+        instructions:
+            call InstructionScreen
+
+        incorrectOption:
+            call clrscr
+            mov edx, offset invalidMsg
+            mov  eax, yellow+(red*16)
+            call SetTextColor
+            call writeString
+
+            mov  eax, white+(black*16)
+            call SetTextColor
+            call crlf
+            call WaitMsg       ; wait till the user presses some key
+            call clrscr
+            call gameMenuScreen
+
+        return_to_main:
+            ; reset colors
+            mov  eax, white+(black*16)
+            call SetTextColor
+
+            ret
+gameMenuScreen endp
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+InstructionScreen PROC
     call clrscr
 
     ; top border 
@@ -208,85 +335,77 @@ gameMenuScreen proc
     mov  edx, offset bottomBorder
     call WriteString
 
-    ; printing the menu title
-    mov  eax, yellow +(black*16)
+    ; instruction title
+    mov  eax, yellow+(black*16)
     call SetTextColor
-    mov  dh, 4       ; row
-    mov  dl, 22      ; col
+    mov  dh, 4
+    mov  dl, 20
     call gotoxy
-    mov  edx, offset menuTitle
+    mov  edx, offset instrTitle
     call WriteString
 
-    ; printing options
+    ; instruction lines 
     mov  eax, yellow+(green*16)
     call SetTextColor
 
     mov  dh, 8
-    mov  dl, 22
+    mov  dl, 10
     call gotoxy
-    mov  edx, offset opt1
+    mov  edx, offset instrLine1
     call WriteString
 
     mov  dh, 9
-    mov  dl, 22
-    call gotoxy
-    mov  edx, offset opt2
+    mov  dl, 10
+    call GotoXY
+    mov  edx, offset instrLine2
     call WriteString
 
     mov  dh, 10
-    mov  dl, 22
+    mov  dl, 10
     call gotoxy
-    mov  edx, offset opt3
+    mov  edx, offset instrLine3
     call WriteString
 
     mov  dh, 11
-    mov  dl, 22
+    mov  dl, 10
     call gotoxy
-    mov  edx, offset opt4
+    mov  edx, offset instrLine4
     call WriteString
 
-    ; select option msg
     mov  eax, yellow+(black*16)
     call SetTextColor
     mov  dh, 13
-    mov  dl, 20
+    mov  dl, 10
     call gotoxy
-    mov  edx, offset select_optionMsg
+    mov  edx, offset instrPrompt
     call WriteString
 
-    ; read a single key  
-    call ReadChar        ; stored in eax
+    ; wait for 'r' key
+    call ReadChar
 
-    cmp al, '1'
-    je return_to_main
-    cmp al, '2'
-    ;je highScore
-    cmp al, '3'
-    ;je instructions
-    cmp al, '4'
-    je exit_game
+    cmp al, 'r'
+    je returnToMenu
 
     incorrectOption:
-        call clrscr
-        mov edx, offset invalidMsg
-        mov  eax, yellow+(red*16)
-        call SetTextColor
-        call writeString
+            call clrscr
+            mov edx, offset invalidMsg
+            mov  eax, yellow+(red*16)
+            call SetTextColor
+            call writeString
 
-        mov  eax, white+(black*16)
-        call SetTextColor
-        call crlf
-        call WaitMsg       ; wait till the user presses some key
-        call clrscr
-        call gameMenuScreen
+            mov  eax, white+(black*16)
+            call SetTextColor
+            call crlf
+            call WaitMsg       ; wait till the user presses some key
+            call clrscr
+            call InstructionScreen
 
-    return_to_main:
-        ; reset colors
-        mov  eax, white+(black*16)
-        call SetTextColor
+    ; reset to default colors
+    mov  eax, white+(black*16)
+    call SetTextColor
 
-        ret
-gameMenuScreen endp
+    ret
+InstructionScreen endp
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

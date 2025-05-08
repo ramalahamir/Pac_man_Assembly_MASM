@@ -26,10 +26,23 @@ block_char  = '*'
     block_height dword 0
     block_width dword 0
 
+    ; welcome screen setup
+    welcomeMsg   byte "WELCOME TO PAC-MAN GAME!", 0Dh,0Ah, 0
+    inputMsg    byte "Please enter your name: ", 0
+    helloMsg     byte "Hello, ", 0
+    userName   byte 50 dup(0)       
+    topBorder    BYTE "+======================================+",0
+    sideBorder   BYTE "|                                      |",0
+    botBorder    BYTE "+======================================+",0
+
 .code
 main proc
     call clrscr        ; clearing the screen
     call randomize     ; Re-seeds the random number generator
+
+    call welcomeScreen
+    call WaitMsg       ; wait till the user presses some key
+    call clrscr        ; clearing the screen
 
     call buildmaze
     call place_pacman
@@ -45,7 +58,81 @@ main proc
   ;      call clrscr
    ;     call drawmaze
     ;    jmp gameloop
+exit
 main endp
+
+welcomeScreen proc
+
+    ; top border 
+    mov  eax, green+(black*16)
+    call SetTextColor
+
+    ; positioning the start point
+    mov  dh, 2       ; row
+    mov  dl, 10      ; col
+    call GotoXY
+    mov  edx, offset topBorder
+    call WriteString
+
+    ; side borders drawn on 3 rows starting from row 3 to row 5
+    mov  ecx, 3
+    drawSides:
+        mov  dh, cl   ; row
+        mov  dl, 10   ; col
+        call GotoXY
+        mov  edx, offset sideBorder
+        call WriteString
+        inc  cl
+        cmp  cl, 6    
+        jl   drawSides
+
+    ; bottom border at row 6
+    mov  dh, 6    ; row
+    mov  dl, 10   ; col
+    call GotoXY
+    mov  edx, offset botBorder
+    call WriteString
+
+    ; welcome Msg
+    mov  eax, yellow+(black*16)
+    call SetTextColor
+    mov  dh, 4      ; row
+    mov  dl, 18     ; col
+    call GotoXY
+    mov  edx, offset welcomeMsg
+    call WriteString
+
+    ; inputMsg
+    mov  eax, yellow+(green*16)
+    call SetTextColor
+    mov  dh, 8    ; row
+    mov  dl, 10   ; col
+    call GotoXY
+    mov  edx, offset inputMsg
+    call WriteString
+
+    ; read name
+    mov edx, offset userName
+    mov  ecx, lengthof userName
+    call ReadString
+
+    ; greet the user
+    call CrLf
+    mov  dh, 9   ; row
+    mov  dl, 10   ; col
+    call GotoXY
+    mov  edx, offset helloMsg
+    call WriteString
+    mov  edx, offset userName
+    call WriteString
+    call CrLf
+
+    ; reset colors
+    mov  eax, white+(black*16)
+    call SetTextColor
+
+    ret
+welcomeScreen endp
 
 ; translating the 2D coordinates into a single 1D index with
 ; formula: current_row * total_columns + current_column
@@ -72,7 +159,7 @@ buildmaze proc
             cmp ecx, 1   ; last row
             je boundary
 
-        mov al, ' '   ; filling the maze with space
+        mov al, '.'   ; filling the maze with food
         jmp fillrow
 
         boundary:
@@ -139,7 +226,7 @@ place_pacman proc
     add  edi, eax       
 
     mov al, byte ptr [edi]   ; loading whatever’s already in that position
-    cmp al, ' '              ; checking if its empty or not
+    cmp al, '.'              ; checking if its food or not
     jne  try_again           ; if not find new position for pac man
 
     mov byte ptr [edi], 'P'  ; if its empty, place Pacman here

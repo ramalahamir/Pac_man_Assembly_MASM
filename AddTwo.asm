@@ -5,6 +5,7 @@ include irvine32.inc
 ; keeping the maze size constant for all levels
 rows = 21
 cols = 50
+block_char  = '*'
 
 .data
     ; reserving memory for maze in the memory
@@ -17,6 +18,14 @@ cols = 50
     pacmanX dword 1
     pacmanY dword 1
 
+    ; position of blocks inside the maze
+    startX dword 0         
+    startY dword 0
+
+    ; variables to store the height and width of the block
+    block_height dword 0
+    block_width dword 0
+
 .code
 main proc
     call clrscr        ; clearing the screen
@@ -25,6 +34,7 @@ main proc
     call buildmaze
     call place_pacman
    ; call placeblocks
+   call setBlocksSize
     call drawmaze
 
   ;  gameloop:
@@ -103,7 +113,6 @@ buildmaze proc
     ret
 buildmaze endp
 
-
 place_pacman proc
     ; preserving the old value
     push edi
@@ -145,34 +154,73 @@ place_pacman proc
     ret
 place_pacman endp
 
-placeblocks proc
-    mov ecx, 10
-nextblock:
-    call randomrangey
-    mov pacmanY, eax
-    call randomrangex
-    mov pacmanX, eax
-    mov al, '*'
-   ; call setmazechar
-    loop nextblock
-    ret
-placeblocks endp
+draw_box proc
+    ; preserving values
+    push eax
+    push ebx
+    push ecx
+    push edx
+    push edi
 
-randomrangex proc
-    ; returns 1 to cols - 2
-    mov eax, cols - 2
-    call randomrange
-    inc eax
-    ret
-randomrangex endp
+    mov ecx, 0          ; for first row
 
-randomrangey proc
-    ; returns 1 to rows - 2
-    mov eax, rows - 2
-    call randomrange
-    inc eax
+draw_box_rows: 
+    mov eax, startY     ; first row
+    add eax, ecx        ; eax will be storing the current row
+    mov edx, eax        ; save row in edx
+
+    mov eax, startX     ; starting column
+    mov esi, eax        ; starting column will be same for each row
+
+    mov ebx, block_width  ; total column
+
+    draw_box_cols:
+        ; calculate 1D index for the maze
+        mov edi, offset maze
+        mov eax, edx                ; getting the row
+        imul eax, cols + 1          
+        add eax, esi                ; getting the column
+        add edi, eax                ; 1D index
+
+        ; draw character at this position
+        mov al, block_char
+        mov byte ptr [edi], al
+
+        inc esi
+        dec ebx              ; stopping the loop as soon as the columns are completed
+        jnz draw_box_cols
+
+    inc ecx                  ; getting the next row
+    cmp ecx, block_height    ; total block height
+    jne draw_box_rows
+
+    ; getting the original values
+    pop edi
+    pop edx
+    pop ecx
+    pop ebx
+    pop eax
     ret
-randomrangey endp
+draw_box endp
+
+setBlocksSize proc
+    ; pick random height (max height of block will be 3)
+    mov   eax, 3    
+    call  RandomRange    
+    inc   eax            
+    mov   block_height, eax
+
+    ; pick random width (max width of block will be 10)
+    mov   eax, 10
+    call  RandomRange
+    inc   eax
+    mov   block_width, eax
+
+    mov startX, 7
+    mov startY, 7
+    call draw_box
+
+setBlocksSize endp
 
 drawmaze proc
     ; storing the values of ecx and edx in stack

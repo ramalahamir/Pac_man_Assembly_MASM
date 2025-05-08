@@ -4,7 +4,7 @@ include irvine32.inc
 
 ; keeping the maze size constant for all levels
 rows = 21
-cols = 50
+cols = 55
 block_char  = '*'
 
 .data
@@ -27,13 +27,13 @@ block_char  = '*'
     block_width dword 0
 
     ; welcome screen setup
-    welcomeMsg   byte "WELCOME TO PAC-MAN GAME!", 0Dh,0Ah, 0
+    welcomeMsg  byte "WELCOME TO PAC-MAN GAME!", 0Dh,0Ah, 0
     inputMsg    byte "Please enter your name: ", 0
-    helloMsg     byte "Hello, ", 0
-    userName   byte 50 dup(0)       
-    topBorder    BYTE "+======================================+",0
-    sideBorder   BYTE "|                                      |",0
-    botBorder    BYTE "+======================================+",0
+    helloMsg    byte "Hello, ", 0
+    userName    byte 50 dup(0)       
+    topBorder   byte "+======================================+",0
+    sideBorder  byte "|                                      |",0
+    botBorder   byte "+======================================+",0
 
 .code
 main proc
@@ -61,8 +61,9 @@ main proc
 exit
 main endp
 
-welcomeScreen proc
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+welcomeScreen proc
     ; top border 
     mov  eax, green+(black*16)
     call SetTextColor
@@ -134,10 +135,12 @@ welcomeScreen proc
     ret
 welcomeScreen endp
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 ; translating the 2D coordinates into a single 1D index with
 ; formula: current_row * total_columns + current_column
 
-; setting the boundaries
+; setting the maze
 buildmaze proc
     mov ecx, rows   ; keeping track of how many rows to fill
     mov esi, 0      ; current row number
@@ -158,7 +161,7 @@ buildmaze proc
         second_compare:
             cmp ecx, 1   ; last row
             je boundary
-
+        
         mov al, '.'   ; filling the maze with food
         jmp fillrow
 
@@ -200,6 +203,8 @@ buildmaze proc
     ret
 buildmaze endp
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 place_pacman proc
     ; preserving the old value
     push edi
@@ -240,6 +245,8 @@ place_pacman proc
         pop edi
     ret
 place_pacman endp
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 draw_box proc
     ; preserving values
@@ -290,18 +297,20 @@ draw_box_rows:
     ret
 draw_box endp
 
-setBlocksSize proc
-    ; pick random height (max height of block will be 3)
-    mov   eax, 3    
-    call  RandomRange    
-    inc   eax            
-    mov   block_height, eax
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-    ; pick random width (max width of block will be 10)
-    mov   eax, 10
-    call  RandomRange
-    inc   eax
-    mov   block_width, eax
+setBlocksSize proc
+    ; pick random height (min height of block will be 2)
+    mov eax, 3    
+    call RandomRange    ; 0 - 3
+    add eax, 2          ; 2 - 5 
+    mov block_height, eax
+
+    ; pick random width (min width of block will be 5)
+    mov eax, 6
+    call RandomRange    ; 0 - 6
+    add eax, 5          ; 5 - 11
+    mov block_width, eax
 
     mov startX, 7
     mov startY, 7
@@ -309,37 +318,120 @@ setBlocksSize proc
 
 setBlocksSize endp
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 drawmaze proc
-    ; storing the values of ecx and edx in stack
+    ; storing the values in stack
     push ecx
     push edx
+    push ebx
+    push esi
+    push edi
+
     mov ecx, 0      ; starting row 
 
     nextrow:
-        ; calculating index using ebx because edx will be used by gotoxy
-        mov ebx, offset maze
+        ; calculating index using esi because edx will be used by gotoxy
+        mov esi, offset maze
         mov eax, ecx
-        imul eax, cols + 1
-        add ebx, eax
+        imul eax, cols+1
+        add esi, eax       
 
         ; storing the x and y positions for positioning cursor using gotoxy
-        mov dh, cl     ; storing row
-        mov dl, 0      ; storing col
+        mov dh, cl         ; current row
+        add dh, 10         ; storing row start point  
+        mov dl, 20         ; storing col start point
         call gotoxy
 
-        mov edx, ebx
-        call writestring    ; writing whole string (single row) till null terminator
-
+        ;mov edi, ebx
+       ; call writestring    ; writing whole string (single row) till null terminator
         
+        mov ebx, cols + 1    ; get total columns
+        colLoop:
+            mov al, [esi]    ; get the character at the index  
+
+            ; color based on character
+            cmp al, '#'
+            je wall
+            cmp al, '*'
+            je block
+            cmp al, '.'
+            je food
+            cmp al, 'P'
+            je pacman
+            cmp al, '@'   ; red ghost level 1
+            je redGhost
+            cmp al, '%'   ; pinky level 2
+            je pinkGhost
+            cmp al, '$'   ; clyde level 3
+            je cyanGhost
+            cmp al, '&'   ; inky level 3
+            je blueGhost
+
+            ; else case
+            mov eax, white+(black*16)
+            jmp colorDone
+
+            wall:
+            ; making the wall solid
+            mov eax, green+(green*16)
+            jmp colorDone
+
+            block:
+            ; making the block solid
+            mov eax, green+(green*16)
+            jmp colorDone
+
+            food:
+            mov eax, green+(black*16)
+            jmp colorDone
+
+            pacman:
+            mov eax, yellow+(black*16)
+            jmp colorDone
+
+            redGhost:
+            mov eax, red+(black*16)
+            jmp colorDone
+
+            pinkGhost:
+            mov eax, magenta+(black*16)
+            jmp colorDone
+
+            cyanGhost:
+            mov eax, cyan+(black*16)
+            jmp colorDone
+
+            blueGhost:
+            mov eax, blue+(black*16)
+            jmp colorDone
+
+            colorDone:
+            call SetTextColor
+
+            ; print that single char
+            mov al, [esi]
+            call WriteChar
+
+            inc esi   ; next character
+            inc dl    ; next position in the col
+            dec ebx   ; decrement total col left
+            jnz colLoop
+
         inc ecx               ; increment row 
         cmp ecx, rows         ; see if all rows are completed or not
         jl nextrow            ; if not loop again till all rows are completed
     
     ; restore the original values
+    pop edi
+    pop esi
+    pop ebx
     pop edx
     pop ecx
     ret
 drawmaze endp
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ; movement and collision logic to be added
 handleinput proc
@@ -347,4 +439,5 @@ handleinput proc
     ret
 handleinput endp
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 end main

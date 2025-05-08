@@ -27,27 +27,48 @@ block_char  = '*'
     block_width dword 0
 
     ; welcome screen setup
-    welcomeMsg  byte "WELCOME TO PAC-MAN GAME!", 0Dh,0Ah, 0
+    welcomeMsg  byte "WELCOME TO PAC-MAN GAME!", 0
     inputMsg    byte "Please enter your name: ", 0
     helloMsg    byte "Hello, ", 0
     userName    byte 50 dup(0)       
     topBorder   byte "+======================================+",0
     sideBorder  byte "|                                      |",0
-    botBorder   byte "+======================================+",0
+    bottomBorder byte "+======================================+",0
+
+    ; game menue screen
+    menuTitle    byte "   GAME MENU   ",0
+    opt1         byte "1. Start Game",0
+    opt2         byte "2. Highest Score",0
+    opt3         byte "3. Instructions",0
+    opt4         byte "4. Exit",0
+    select_optionMsg    byte "Select option (1-4): ",0
+
+    ; for main game screen
+    score_txt byte "SCORE: ", 0
+    lives_txt byte "LIVES: ", 0
+    score byte 0
+    lives byte 3
+
+    ; msgs
+    exitGameBool byte 0
+    exittingMsg byte "Exiting Game...... :)", 0
+    invalidMsg byte "Invalid Option entered, Try Again..... :(", 0
 
 .code
 main proc
-    call clrscr        ; clearing the screen
     call randomize     ; Re-seeds the random number generator
 
+    ; calling screens
     call welcomeScreen
-    call WaitMsg       ; wait till the user presses some key
-    call clrscr        ; clearing the screen
+    call gameMenuScreen
 
+    call clrscr
+
+    ; building the game main screen
     call buildmaze
     call place_pacman
    ; call placeblocks
-   call setBlocksSize
+    call setBlocksSize
     call drawmaze
 
   ;  gameloop:
@@ -58,12 +79,29 @@ main proc
   ;      call clrscr
    ;     call drawmaze
     ;    jmp gameloop
-exit
+
+    ; global label
+    cmp exitGameBool, 1    ; if exit is triggered only then displey the exitMsg
+    jne finish
+
+    exit_game:: 
+        call clrscr
+        mov  edx, offset exittingMsg
+        mov  eax, green+(yellow*16)
+        call SetTextColor
+        call writeString
+
+        mov  eax, white+(black*16)
+        call SetTextColor
+
+    finish:
+        exit
 main endp
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 welcomeScreen proc
+    call clrscr        ; clearing the screen
     ; top border 
     mov  eax, green+(black*16)
     call SetTextColor
@@ -71,7 +109,7 @@ welcomeScreen proc
     ; positioning the start point
     mov  dh, 2       ; row
     mov  dl, 10      ; col
-    call GotoXY
+    call gotoxy
     mov  edx, offset topBorder
     call WriteString
 
@@ -80,7 +118,7 @@ welcomeScreen proc
     drawSides:
         mov  dh, cl   ; row
         mov  dl, 10   ; col
-        call GotoXY
+        call gotoxy
         mov  edx, offset sideBorder
         call WriteString
         inc  cl
@@ -90,8 +128,8 @@ welcomeScreen proc
     ; bottom border at row 6
     mov  dh, 6    ; row
     mov  dl, 10   ; col
-    call GotoXY
-    mov  edx, offset botBorder
+    call gotoxy
+    mov  edx, offset bottomBorder
     call WriteString
 
     ; welcome Msg
@@ -99,7 +137,7 @@ welcomeScreen proc
     call SetTextColor
     mov  dh, 4      ; row
     mov  dl, 18     ; col
-    call GotoXY
+    call gotoxy
     mov  edx, offset welcomeMsg
     call WriteString
 
@@ -108,7 +146,7 @@ welcomeScreen proc
     call SetTextColor
     mov  dh, 8    ; row
     mov  dl, 10   ; col
-    call GotoXY
+    call gotoxy
     mov  edx, offset inputMsg
     call WriteString
 
@@ -121,7 +159,7 @@ welcomeScreen proc
     call CrLf
     mov  dh, 9   ; row
     mov  dl, 10   ; col
-    call GotoXY
+    call gotoxy
     mov  edx, offset helloMsg
     call WriteString
     mov  edx, offset userName
@@ -131,9 +169,124 @@ welcomeScreen proc
     ; reset colors
     mov  eax, white+(black*16)
     call SetTextColor
-
+    call WaitMsg       ; wait till the user presses some key
     ret
 welcomeScreen endp
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+gameMenuScreen proc
+    call clrscr
+
+    ; top border 
+    mov  eax, green+(black*16)
+    call SetTextColor
+
+    ; positioning the start point
+    mov  dh, 2       ; row
+    mov  dl, 10      ; col
+    call gotoxy
+    mov  edx, offset topBorder
+    call WriteString
+
+    ; side borders drawn on 6 rows starting from row 3 to row 5
+    mov  ecx, 3
+    drawSides:
+        mov  dh, cl   ; row
+        mov  dl, 10   ; col
+        call gotoxy
+        mov  edx, offset sideBorder
+        call WriteString
+        inc  cl
+        cmp  cl, 6    
+        jl   drawSides
+
+    ; bottom border at row 6
+    mov  dh, 6    ; row
+    mov  dl, 10   ; col
+    call gotoxy
+    mov  edx, offset bottomBorder
+    call WriteString
+
+    ; printing the menu title
+    mov  eax, yellow +(black*16)
+    call SetTextColor
+    mov  dh, 4       ; row
+    mov  dl, 22      ; col
+    call gotoxy
+    mov  edx, offset menuTitle
+    call WriteString
+
+    ; printing options
+    mov  eax, yellow+(green*16)
+    call SetTextColor
+
+    mov  dh, 8
+    mov  dl, 22
+    call gotoxy
+    mov  edx, offset opt1
+    call WriteString
+
+    mov  dh, 9
+    mov  dl, 22
+    call gotoxy
+    mov  edx, offset opt2
+    call WriteString
+
+    mov  dh, 10
+    mov  dl, 22
+    call gotoxy
+    mov  edx, offset opt3
+    call WriteString
+
+    mov  dh, 11
+    mov  dl, 22
+    call gotoxy
+    mov  edx, offset opt4
+    call WriteString
+
+    ; select option msg
+    mov  eax, yellow+(black*16)
+    call SetTextColor
+    mov  dh, 13
+    mov  dl, 20
+    call gotoxy
+    mov  edx, offset select_optionMsg
+    call WriteString
+
+    ; read a single key  
+    call ReadChar        ; stored in eax
+
+    cmp al, '1'
+    je return_to_main
+    cmp al, '2'
+    ;je highScore
+    cmp al, '3'
+    ;je instructions
+    cmp al, '4'
+    je exit_game
+
+    incorrectOption:
+        call clrscr
+        mov edx, offset invalidMsg
+        mov  eax, yellow+(red*16)
+        call SetTextColor
+        call writeString
+
+        mov  eax, white+(black*16)
+        call SetTextColor
+        call crlf
+        call WaitMsg       ; wait till the user presses some key
+        call clrscr
+        call gameMenuScreen
+
+    return_to_main:
+        ; reset colors
+        mov  eax, white+(black*16)
+        call SetTextColor
+
+        ret
+gameMenuScreen endp
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -328,8 +481,43 @@ drawmaze proc
     push esi
     push edi
 
-    mov ecx, 0      ; starting row 
+    ; print the score and lives on top
+    mov eax, yellow+(black*16)
+    call setTextColor
 
+    mov edx, offset score_txt
+    mov ebx, edx
+    mov dh, 4   ; row
+    mov dl, 20   ; col
+    call gotoxy
+    mov edx, ebx
+    call writeString
+
+    mov dh, 4   ; row
+    mov dl, 27   ; col
+    call gotoxy
+    mov al, score
+    call writeDec
+
+    mov edx, offset lives_txt
+    mov ebx, edx
+    mov dh, 4   ; row
+    mov dl, 64   ; col
+    call gotoxy
+    mov edx, ebx
+    call writeString
+
+    mov dh, 4   ; row
+    mov dl, 72   ; col
+    call gotoxy
+    mov al, lives
+    call writeDec
+
+    ; resetting
+    mov eax, white+(black*16)
+    call setTextColor
+
+    mov ecx, 0      ; starting row 
     nextrow:
         ; calculating index using esi because edx will be used by gotoxy
         mov esi, offset maze
@@ -339,7 +527,7 @@ drawmaze proc
 
         ; storing the x and y positions for positioning cursor using gotoxy
         mov dh, cl         ; current row
-        add dh, 10         ; storing row start point  
+        add dh, 6         ; storing row start point  
         mov dl, 20         ; storing col start point
         call gotoxy
 

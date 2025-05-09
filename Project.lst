@@ -1,4 +1,4 @@
-Microsoft (R) Macro Assembler Version 14.43.34808.0	    05/09/25 03:47:32
+Microsoft (R) Macro Assembler Version 14.43.34808.0	    05/09/25 20:45:12
 AddTwo.asm						     Page 1 - 1
 
 
@@ -191,7 +191,7 @@ AddTwo.asm						     Page 1 - 1
  00000019  E8 000003DB		    call place_pacman
 				   ; call placeblocks
  0000001E  E8 00000460		    call setBlocksSize
- 00000023  E8 00000498		    call drawmaze
+ 00000023  E8 000007EE		    call drawmaze
 
 				  ;  gameloop:
 				   ;     call readkey
@@ -484,8 +484,8 @@ AddTwo.asm						     Page 1 - 1
  0000031E  E8 00000000 E	    call WriteString
 
  00000323  B6 0B		    mov  dh, 11
- 00000325  B2 12		    mov  dl, 18
- 00000327  E8 00000000 E	    call GotoXY
+ 00000325  B2 0A		    mov  dl, 10
+ 00000327  E8 00000000 E	    call gotoxy
  0000032C  BA 000006B1 R	    mov  edx, offset instrLine4
  00000331  E8 00000000 E	    call WriteString
 
@@ -689,6 +689,9 @@ AddTwo.asm						     Page 1 - 1
 				;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
  00000483			setBlocksSize proc
+
+				    ; 2 block in one row
+
 				    ; pick random height (min height of block will be 2)
  00000483  B8 00000003		    mov eax, 3    
  00000488  E8 00000000 E	    call RandomRange    ; 0 - 3
@@ -703,171 +706,429 @@ AddTwo.asm						     Page 1 - 1
 
  000004A7  C7 05 000004A5 R	    mov startX, 7
 	   00000007
- 000004B1  C7 05 000004A9 R	    mov startY, 7
-	   00000007
+ 000004B1  C7 05 000004A9 R	    mov startY, 3
+	   00000003
  000004BB  E8 FFFFFF7E		    call draw_box
 
- 000004C0			setBlocksSize endp
+				      ; pick random height (min height of block will be 2)
+ 000004C0  B8 00000003		    mov eax, 3    
+ 000004C5  E8 00000000 E	    call RandomRange    ; 0 - 3
+ 000004CA  83 C0 02		    add eax, 2          ; 2 - 5 
+ 000004CD  A3 000004AD R	    mov block_height, eax
+
+				    ; pick random width (min width of block will be 5)
+ 000004D2  B8 00000006		    mov eax, 6
+ 000004D7  E8 00000000 E	    call RandomRange    ; 0 - 6
+ 000004DC  83 C0 05		    add eax, 5          ; 5 - 11
+ 000004DF  A3 000004B1 R	    mov block_width, eax
+
+ 000004E4  C7 05 000004A5 R	    mov startX, 35
+	   00000023
+ 000004EE  C7 05 000004A9 R	    mov startY, 3
+	   00000003
+ 000004F8  E8 FFFFFF41		    call draw_box
+
+				    ; 5 block in one row
+
+				    ; pick random height (min height of block will be 2)
+ 000004FD  B8 00000002		    mov eax, 2    
+ 00000502  E8 00000000 E	    call RandomRange    ; 0 - 2
+ 00000507  83 C0 02		    add eax, 2          ; 2 - 4 
+ 0000050A  A3 000004AD R	    mov block_height, eax
+
+				    ; pick random width (min width of block will be 3)
+ 0000050F  B8 00000003		    mov eax, 3
+ 00000514  E8 00000000 E	    call RandomRange    ; 0 - 3
+ 00000519  83 C0 03		    add eax, 3          ; 3 - 6
+ 0000051C  A3 000004B1 R	    mov block_width, eax
+
+ 00000521  C7 05 000004A5 R	    mov startX, 4
+	   00000004
+ 0000052B  C7 05 000004A9 R	    mov startY, 8
+	   00000008
+ 00000535  E8 FFFFFF04		    call draw_box
+
+				      ; pick random height (min height of block will be 2)
+ 0000053A  B8 00000003		    mov eax, 3    
+ 0000053F  E8 00000000 E	    call RandomRange    ; 0 - 3
+ 00000544  83 C0 02		    add eax, 2          ; 2 - 5 
+ 00000547  A3 000004AD R	    mov block_height, eax
+
+				    ; pick random width (min width of block will be 5)
+ 0000054C  B8 00000006		    mov eax, 6
+ 00000551  E8 00000000 E	    call RandomRange    ; 0 - 6
+ 00000556  83 C0 05		    add eax, 5          ; 5 - 11
+ 00000559  A3 000004B1 R	    mov block_width, eax
+
+ 0000055E  C7 05 000004A5 R	    mov startX, 13
+	   0000000D
+ 00000568  C7 05 000004A9 R	    mov startY, 8
+	   00000008
+ 00000572  E8 FFFFFEC7		    call draw_box
+
+				      ; pick random height (min height of block will be 2)
+ 00000577  B8 00000002		    mov eax, 2    
+ 0000057C  E8 00000000 E	    call RandomRange    ; 0 - 2
+ 00000581  83 C0 02		    add eax, 2          ; 2 - 4 
+ 00000584  A3 000004AD R	    mov block_height, eax
+
+				    ; pick random width (min width of block will be 3)
+ 00000589  B8 00000003		    mov eax, 3
+ 0000058E  E8 00000000 E	    call RandomRange    ; 0 - 3
+ 00000593  83 C0 03		    add eax, 3          ; 3 - 6
+ 00000596  A3 000004B1 R	    mov block_width, eax
+
+ 0000059B  C7 05 000004A5 R	    mov startX, 22
+	   00000016
+ 000005A5  C7 05 000004A9 R	    mov startY, 8
+	   00000008
+ 000005AF  E8 FFFFFE8A		    call draw_box
+
+				      ; pick random height (min height of block will be 2)
+ 000005B4  B8 00000003		    mov eax, 3    
+ 000005B9  E8 00000000 E	    call RandomRange    ; 0 - 3
+ 000005BE  83 C0 02		    add eax, 2          ; 2 - 5 
+ 000005C1  A3 000004AD R	    mov block_height, eax
+
+				    ; pick random width (min width of block will be 5)
+ 000005C6  B8 00000006		    mov eax, 6
+ 000005CB  E8 00000000 E	    call RandomRange    ; 0 - 6
+ 000005D0  83 C0 05		    add eax, 5          ; 5 - 11
+ 000005D3  A3 000004B1 R	    mov block_width, eax
+
+ 000005D8  C7 05 000004A5 R	    mov startX, 32
+	   00000020
+ 000005E2  C7 05 000004A9 R	    mov startY, 8
+	   00000008
+ 000005EC  E8 FFFFFE4D		    call draw_box
+				    
+				      ; pick random height (min height of block will be 2)
+ 000005F1  B8 00000003		    mov eax, 3    
+ 000005F6  E8 00000000 E	    call RandomRange    ; 0 - 3
+ 000005FB  83 C0 02		    add eax, 2          ; 2 - 5 
+ 000005FE  A3 000004AD R	    mov block_height, eax
+
+				    ; pick random width (min width of block will be 5)
+ 00000603  B8 00000004		    mov eax, 4
+ 00000608  E8 00000000 E	    call RandomRange    ; 0 - 4
+ 0000060D  83 C0 03		    add eax, 3          ; 3 - 7
+ 00000610  A3 000004B1 R	    mov block_width, eax
+
+ 00000615  C7 05 000004A5 R	    mov startX, 42
+	   0000002A
+ 0000061F  C7 05 000004A9 R	    mov startY, 8
+	   00000008
+ 00000629  E8 FFFFFE10		    call draw_box
+
+				    ; 4 block in one row
+
+				    ; pick random height (min height of block will be 2)
+ 0000062E  B8 00000002		    mov eax, 2    
+ 00000633  E8 00000000 E	    call RandomRange    ; 0 - 2
+ 00000638  83 C0 02		    add eax, 2          ; 2 - 4 
+ 0000063B  A3 000004AD R	    mov block_height, eax
+
+				    ; pick random width (min width of block will be 3)
+ 00000640  B8 00000003		    mov eax, 3
+ 00000645  E8 00000000 E	    call RandomRange    ; 0 - 3
+ 0000064A  83 C0 03		    add eax, 3          ; 3 - 6
+ 0000064D  A3 000004B1 R	    mov block_width, eax
+
+ 00000652  C7 05 000004A5 R	    mov startX, 5
+	   00000005
+ 0000065C  C7 05 000004A9 R	    mov startY, 13
+	   0000000D
+ 00000666  E8 FFFFFDD3		    call draw_box
+
+				      ; pick random height (min height of block will be 2)
+ 0000066B  B8 00000003		    mov eax, 3    
+ 00000670  E8 00000000 E	    call RandomRange    ; 0 - 3
+ 00000675  83 C0 02		    add eax, 2          ; 2 - 5 
+ 00000678  A3 000004AD R	    mov block_height, eax
+
+				    ; pick random width (min width of block will be 5)
+ 0000067D  B8 00000006		    mov eax, 6
+ 00000682  E8 00000000 E	    call RandomRange    ; 0 - 6
+ 00000687  83 C0 05		    add eax, 5          ; 5 - 11
+ 0000068A  A3 000004B1 R	    mov block_width, eax
+
+ 0000068F  C7 05 000004A5 R	    mov startX, 15
+	   0000000F
+ 00000699  C7 05 000004A9 R	    mov startY, 13
+	   0000000D
+ 000006A3  E8 FFFFFD96		    call draw_box
+
+				      ; pick random height (min height of block will be 2)
+ 000006A8  B8 00000002		    mov eax, 2    
+ 000006AD  E8 00000000 E	    call RandomRange    ; 0 - 2
+ 000006B2  83 C0 02		    add eax, 2          ; 2 - 4 
+ 000006B5  A3 000004AD R	    mov block_height, eax
+
+				    ; pick random width (min width of block will be 3)
+ 000006BA  B8 00000003		    mov eax, 3
+ 000006BF  E8 00000000 E	    call RandomRange    ; 0 - 3
+ 000006C4  83 C0 03		    add eax, 3          ; 3 - 6
+ 000006C7  A3 000004B1 R	    mov block_width, eax
+
+ 000006CC  C7 05 000004A5 R	    mov startX, 28
+	   0000001C
+ 000006D6  C7 05 000004A9 R	    mov startY, 13
+	   0000000D
+ 000006E0  E8 FFFFFD59		    call draw_box
+
+				      ; pick random height (min height of block will be 2)
+ 000006E5  B8 00000003		    mov eax, 3    
+ 000006EA  E8 00000000 E	    call RandomRange    ; 0 - 3
+ 000006EF  83 C0 02		    add eax, 2          ; 2 - 5 
+ 000006F2  A3 000004AD R	    mov block_height, eax
+
+				    ; pick random width (min width of block will be 5)
+ 000006F7  B8 00000006		    mov eax, 6
+ 000006FC  E8 00000000 E	    call RandomRange    ; 0 - 6
+ 00000701  83 C0 05		    add eax, 5          ; 5 - 11
+ 00000704  A3 000004B1 R	    mov block_width, eax
+
+ 00000709  C7 05 000004A5 R	    mov startX, 40
+	   00000028
+ 00000713  C7 05 000004A9 R	    mov startY, 13
+	   0000000D
+ 0000071D  E8 FFFFFD1C		    call draw_box
+
+				    ; 4 block in one row
+
+				    ; pick random height (min height of block will be 2)
+ 00000722  B8 00000002		    mov eax, 2    
+ 00000727  E8 00000000 E	    call RandomRange    ; 0 - 2
+ 0000072C  83 C0 02		    add eax, 2          ; 2 - 4 
+ 0000072F  A3 000004AD R	    mov block_height, eax
+
+				    ; pick random width (min width of block will be 3)
+ 00000734  B8 00000003		    mov eax, 3
+ 00000739  E8 00000000 E	    call RandomRange    ; 0 - 3
+ 0000073E  83 C0 03		    add eax, 3          ; 3 - 6
+ 00000741  A3 000004B1 R	    mov block_width, eax
+
+ 00000746  C7 05 000004A5 R	    mov startX, 3
+	   00000003
+ 00000750  C7 05 000004A9 R	    mov startY, 17
+	   00000011
+ 0000075A  E8 FFFFFCDF		    call draw_box
+
+				      ; pick random height (min height of block will be 2)
+ 0000075F  B8 00000003		    mov eax, 3    
+ 00000764  E8 00000000 E	    call RandomRange    ; 0 - 3
+ 00000769  83 C0 02		    add eax, 2          ; 2 - 5 
+ 0000076C  A3 000004AD R	    mov block_height, eax
+
+				    ; pick random width (min width of block will be 5)
+ 00000771  B8 00000006		    mov eax, 6
+ 00000776  E8 00000000 E	    call RandomRange    ; 0 - 6
+ 0000077B  83 C0 05		    add eax, 5          ; 5 - 11
+ 0000077E  A3 000004B1 R	    mov block_width, eax
+
+ 00000783  C7 05 000004A5 R	    mov startX, 12
+	   0000000C
+ 0000078D  C7 05 000004A9 R	    mov startY, 17
+	   00000011
+ 00000797  E8 FFFFFCA2		    call draw_box
+
+				      ; pick random height (min height of block will be 2)
+ 0000079C  B8 00000002		    mov eax, 2    
+ 000007A1  E8 00000000 E	    call RandomRange    ; 0 - 2
+ 000007A6  83 C0 02		    add eax, 2          ; 2 - 4 
+ 000007A9  A3 000004AD R	    mov block_height, eax
+
+				    ; pick random width (min width of block will be 3)
+ 000007AE  B8 00000003		    mov eax, 3
+ 000007B3  E8 00000000 E	    call RandomRange    ; 0 - 3
+ 000007B8  83 C0 03		    add eax, 3          ; 3 - 6
+ 000007BB  A3 000004B1 R	    mov block_width, eax
+
+ 000007C0  C7 05 000004A5 R	    mov startX, 30
+	   0000001E
+ 000007CA  C7 05 000004A9 R	    mov startY, 17
+	   00000011
+ 000007D4  E8 FFFFFC65		    call draw_box
+
+				      ; pick random height (min height of block will be 2)
+ 000007D9  B8 00000003		    mov eax, 3    
+ 000007DE  E8 00000000 E	    call RandomRange    ; 0 - 3
+ 000007E3  83 C0 02		    add eax, 2          ; 2 - 5 
+ 000007E6  A3 000004AD R	    mov block_height, eax
+
+				    ; pick random width (min width of block will be 5)
+ 000007EB  B8 00000006		    mov eax, 6
+ 000007F0  E8 00000000 E	    call RandomRange    ; 0 - 6
+ 000007F5  83 C0 05		    add eax, 5          ; 5 - 11
+ 000007F8  A3 000004B1 R	    mov block_width, eax
+
+ 000007FD  C7 05 000004A5 R	    mov startX, 40
+	   00000028
+ 00000807  C7 05 000004A9 R	    mov startY, 17
+	   00000011
+ 00000811  E8 FFFFFC28		    call draw_box
+				    
+ 00000816			setBlocksSize endp
 
 				;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
- 000004C0			drawmaze proc
+ 00000816			drawmaze proc
 				    ; storing the values in stack
- 000004C0  51			    push ecx
- 000004C1  52			    push edx
- 000004C2  53			    push ebx
- 000004C3  56			    push esi
- 000004C4  57			    push edi
+ 00000816  51			    push ecx
+ 00000817  52			    push edx
+ 00000818  53			    push ebx
+ 00000819  56			    push esi
+ 0000081A  57			    push edi
 
 				    ; print the score and lives on top
- 000004C5  B8 0000000E		    mov eax, yellow+(black*16)
- 000004CA  E8 00000000 E	    call setTextColor
+ 0000081B  B8 0000000E		    mov eax, yellow+(black*16)
+ 00000820  E8 00000000 E	    call setTextColor
 
- 000004CF  BA 000005F9 R	    mov edx, offset score_txt
- 000004D4  8B DA		    mov ebx, edx
- 000004D6  B6 04		    mov dh, 4   ; row
- 000004D8  B2 14		    mov dl, 20   ; col
- 000004DA  E8 00000000 E	    call gotoxy
- 000004DF  8B D3		    mov edx, ebx
- 000004E1  E8 00000000 E	    call writeString
+ 00000825  BA 000005F9 R	    mov edx, offset score_txt
+ 0000082A  8B DA		    mov ebx, edx
+ 0000082C  B6 04		    mov dh, 4   ; row
+ 0000082E  B2 14		    mov dl, 20   ; col
+ 00000830  E8 00000000 E	    call gotoxy
+ 00000835  8B D3		    mov edx, ebx
+ 00000837  E8 00000000 E	    call writeString
 
- 000004E6  B6 04		    mov dh, 4   ; row
- 000004E8  B2 1B		    mov dl, 27   ; col
- 000004EA  E8 00000000 E	    call gotoxy
- 000004EF  A0 00000609 R	    mov al, score
- 000004F4  E8 00000000 E	    call writeDec
+ 0000083C  B6 04		    mov dh, 4   ; row
+ 0000083E  B2 1B		    mov dl, 27   ; col
+ 00000840  E8 00000000 E	    call gotoxy
+ 00000845  A0 00000609 R	    mov al, score
+ 0000084A  E8 00000000 E	    call writeDec
 
- 000004F9  BA 00000601 R	    mov edx, offset lives_txt
- 000004FE  8B DA		    mov ebx, edx
- 00000500  B6 04		    mov dh, 4   ; row
- 00000502  B2 40		    mov dl, 64   ; col
- 00000504  E8 00000000 E	    call gotoxy
- 00000509  8B D3		    mov edx, ebx
- 0000050B  E8 00000000 E	    call writeString
+ 0000084F  BA 00000601 R	    mov edx, offset lives_txt
+ 00000854  8B DA		    mov ebx, edx
+ 00000856  B6 04		    mov dh, 4   ; row
+ 00000858  B2 40		    mov dl, 64   ; col
+ 0000085A  E8 00000000 E	    call gotoxy
+ 0000085F  8B D3		    mov edx, ebx
+ 00000861  E8 00000000 E	    call writeString
 
- 00000510  B6 04		    mov dh, 4   ; row
- 00000512  B2 48		    mov dl, 72   ; col
- 00000514  E8 00000000 E	    call gotoxy
- 00000519  A0 0000060A R	    mov al, lives
- 0000051E  E8 00000000 E	    call writeDec
+ 00000866  B6 04		    mov dh, 4   ; row
+ 00000868  B2 48		    mov dl, 72   ; col
+ 0000086A  E8 00000000 E	    call gotoxy
+ 0000086F  A0 0000060A R	    mov al, lives
+ 00000874  E8 00000000 E	    call writeDec
 
 				    ; resetting
- 00000523  B8 0000000F		    mov eax, white+(black*16)
- 00000528  E8 00000000 E	    call setTextColor
+ 00000879  B8 0000000F		    mov eax, white+(black*16)
+ 0000087E  E8 00000000 E	    call setTextColor
 
- 0000052D  B9 00000000		    mov ecx, 0      ; starting row 
- 00000532			    nextrow:
+ 00000883  B9 00000000		    mov ecx, 0      ; starting row 
+ 00000888			    nextrow:
 				        ; calculating index using esi because edx will be used by gotoxy
- 00000532  BE 00000000 R	        mov esi, offset maze
- 00000537  8B C1		        mov eax, ecx
- 00000539  6B C0 38		        imul eax, cols+1
- 0000053C  03 F0		        add esi, eax       
+ 00000888  BE 00000000 R	        mov esi, offset maze
+ 0000088D  8B C1		        mov eax, ecx
+ 0000088F  6B C0 38		        imul eax, cols+1
+ 00000892  03 F0		        add esi, eax       
 
 				        ; storing the x and y positions for positioning cursor using gotoxy
- 0000053E  8A F1		        mov dh, cl         ; current row
- 00000540  80 C6 06		        add dh, 6         ; storing row start point  
- 00000543  B2 14		        mov dl, 20         ; storing col start point
- 00000545  E8 00000000 E	        call gotoxy
+ 00000894  8A F1		        mov dh, cl         ; current row
+ 00000896  80 C6 06		        add dh, 6         ; storing row start point  
+ 00000899  B2 14		        mov dl, 20         ; storing col start point
+ 0000089B  E8 00000000 E	        call gotoxy
 
 				        ;mov edi, ebx
 				       ; call writestring    ; writing whole string (single row) till null terminator
 				        
- 0000054A  BB 00000038		        mov ebx, cols + 1    ; get total columns
- 0000054F			        colLoop:
- 0000054F  8A 06		            mov al, [esi]    ; get the character at the index  
+ 000008A0  BB 00000038		        mov ebx, cols + 1    ; get total columns
+ 000008A5			        colLoop:
+ 000008A5  8A 06		            mov al, [esi]    ; get the character at the index  
 
 				            ; color based on character
- 00000551  3C 23		            cmp al, '#'
- 00000553  74 23		            je wall
- 00000555  3C 2A		            cmp al, '*'
- 00000557  74 26		            je block
- 00000559  3C 2E		            cmp al, '.'
- 0000055B  74 29		            je food
- 0000055D  3C 50		            cmp al, 'P'
- 0000055F  74 2C		            je pacman
- 00000561  3C 40		            cmp al, '@'   ; red ghost level 1
- 00000563  74 2F		            je redGhost
- 00000565  3C 25		            cmp al, '%'   ; pinky level 2
- 00000567  74 32		            je pinkGhost
- 00000569  3C 24		            cmp al, '$'   ; clyde level 3
- 0000056B  74 35		            je cyanGhost
- 0000056D  3C 26		            cmp al, '&'   ; inky level 3
- 0000056F  74 38		            je blueGhost
+ 000008A7  3C 23		            cmp al, '#'
+ 000008A9  74 23		            je wall
+ 000008AB  3C 2A		            cmp al, '*'
+ 000008AD  74 26		            je block
+ 000008AF  3C 2E		            cmp al, '.'
+ 000008B1  74 29		            je food
+ 000008B3  3C 50		            cmp al, 'P'
+ 000008B5  74 2C		            je pacman
+ 000008B7  3C 40		            cmp al, '@'   ; red ghost level 1
+ 000008B9  74 2F		            je redGhost
+ 000008BB  3C 25		            cmp al, '%'   ; pinky level 2
+ 000008BD  74 32		            je pinkGhost
+ 000008BF  3C 24		            cmp al, '$'   ; clyde level 3
+ 000008C1  74 35		            je cyanGhost
+ 000008C3  3C 26		            cmp al, '&'   ; inky level 3
+ 000008C5  74 38		            je blueGhost
 
 				            ; else case
- 00000571  B8 0000000F		            mov eax, white+(black*16)
- 00000576  EB 38		            jmp colorDone
+ 000008C7  B8 0000000F		            mov eax, white+(black*16)
+ 000008CC  EB 38		            jmp colorDone
 
- 00000578			            wall:
+ 000008CE			            wall:
 				            ; making the wall solid
- 00000578  B8 00000022		            mov eax, green+(green*16)
- 0000057D  EB 31		            jmp colorDone
+ 000008CE  B8 00000022		            mov eax, green+(green*16)
+ 000008D3  EB 31		            jmp colorDone
 
- 0000057F			            block:
+ 000008D5			            block:
 				            ; making the block solid
- 0000057F  B8 00000022		            mov eax, green+(green*16)
- 00000584  EB 2A		            jmp colorDone
+ 000008D5  B8 00000022		            mov eax, green+(green*16)
+ 000008DA  EB 2A		            jmp colorDone
 
- 00000586			            food:
- 00000586  B8 00000002		            mov eax, green+(black*16)
- 0000058B  EB 23		            jmp colorDone
+ 000008DC			            food:
+ 000008DC  B8 00000002		            mov eax, green+(black*16)
+ 000008E1  EB 23		            jmp colorDone
 
- 0000058D			            pacman:
- 0000058D  B8 0000000E		            mov eax, yellow+(black*16)
- 00000592  EB 1C		            jmp colorDone
+ 000008E3			            pacman:
+ 000008E3  B8 0000000E		            mov eax, yellow+(black*16)
+ 000008E8  EB 1C		            jmp colorDone
 
- 00000594			            redGhost:
- 00000594  B8 00000004		            mov eax, red+(black*16)
- 00000599  EB 15		            jmp colorDone
+ 000008EA			            redGhost:
+ 000008EA  B8 00000004		            mov eax, red+(black*16)
+ 000008EF  EB 15		            jmp colorDone
 
- 0000059B			            pinkGhost:
- 0000059B  B8 00000005		            mov eax, magenta+(black*16)
- 000005A0  EB 0E		            jmp colorDone
+ 000008F1			            pinkGhost:
+ 000008F1  B8 00000005		            mov eax, magenta+(black*16)
+ 000008F6  EB 0E		            jmp colorDone
 
- 000005A2			            cyanGhost:
- 000005A2  B8 00000003		            mov eax, cyan+(black*16)
- 000005A7  EB 07		            jmp colorDone
+ 000008F8			            cyanGhost:
+ 000008F8  B8 00000003		            mov eax, cyan+(black*16)
+ 000008FD  EB 07		            jmp colorDone
 
- 000005A9			            blueGhost:
- 000005A9  B8 00000001		            mov eax, blue+(black*16)
- 000005AE  EB 00		            jmp colorDone
+ 000008FF			            blueGhost:
+ 000008FF  B8 00000001		            mov eax, blue+(black*16)
+ 00000904  EB 00		            jmp colorDone
 
- 000005B0			            colorDone:
- 000005B0  E8 00000000 E	            call SetTextColor
+ 00000906			            colorDone:
+ 00000906  E8 00000000 E	            call SetTextColor
 
 				            ; print that single char
- 000005B5  8A 06		            mov al, [esi]
- 000005B7  E8 00000000 E	            call WriteChar
+ 0000090B  8A 06		            mov al, [esi]
+ 0000090D  E8 00000000 E	            call WriteChar
 
- 000005BC  46			            inc esi   ; next character
- 000005BD  FE C2		            inc dl    ; next position in the col
- 000005BF  4B			            dec ebx   ; decrement total col left
- 000005C0  75 8D		            jnz colLoop
+ 00000912  46			            inc esi   ; next character
+ 00000913  FE C2		            inc dl    ; next position in the col
+ 00000915  4B			            dec ebx   ; decrement total col left
+ 00000916  75 8D		            jnz colLoop
 
- 000005C2  41			        inc ecx               ; increment row 
- 000005C3  83 F9 15		        cmp ecx, rows         ; see if all rows are completed or not
- 000005C6  0F 8C FFFFFF66	        jl nextrow            ; if not loop again till all rows are completed
+ 00000918  41			        inc ecx               ; increment row 
+ 00000919  83 F9 15		        cmp ecx, rows         ; see if all rows are completed or not
+ 0000091C  0F 8C FFFFFF66	        jl nextrow            ; if not loop again till all rows are completed
 				    
 				    ; restore the original values
- 000005CC  5F			    pop edi
- 000005CD  5E			    pop esi
- 000005CE  5B			    pop ebx
- 000005CF  5A			    pop edx
- 000005D0  59			    pop ecx
- 000005D1  C3			    ret
- 000005D2			drawmaze endp
+ 00000922  5F			    pop edi
+ 00000923  5E			    pop esi
+ 00000924  5B			    pop ebx
+ 00000925  5A			    pop edx
+ 00000926  59			    pop ecx
+ 00000927  C3			    ret
+ 00000928			drawmaze endp
 
 				;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 				; movement and collision logic to be added
- 000005D2			handleinput proc
+ 00000928			handleinput proc
 				    ; placeholder for movement logic
- 000005D2  C3			    ret
- 000005D3			handleinput endp
+ 00000928  C3			    ret
+ 00000929			handleinput endp
 
 				;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 				end main
-Microsoft (R) Macro Assembler Version 14.43.34808.0	    05/09/25 03:47:32
+Microsoft (R) Macro Assembler Version 14.43.34808.0	    05/09/25 20:45:12
 AddTwo.asm						     Symbols 2 - 1
 
 
@@ -962,7 +1223,7 @@ Segments and Groups:
 FLAT . . . . . . . . . . . . . .	GROUP
 STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
 _DATA  . . . . . . . . . . . . .	32 Bit	 000006E2 Para	  Public  'DATA'	
-_TEXT  . . . . . . . . . . . . .	32 Bit	 000005D3 Para	  Public  'CODE'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 00000929 Para	  Public  'CODE'	
 
 
 Procedures, parameters, and locals:
@@ -1081,24 +1342,24 @@ buildmaze  . . . . . . . . . . .	P Near	 000003A2 _TEXT	Length= 00000057 Public 
 draw_box . . . . . . . . . . . .	P Near	 0000043E _TEXT	Length= 00000045 Public STDCALL
   draw_box_rows  . . . . . . . .	L Near	 00000448 _TEXT	
   draw_box_cols  . . . . . . . .	L Near	 0000045E _TEXT	
-drawmaze . . . . . . . . . . . .	P Near	 000004C0 _TEXT	Length= 00000112 Public STDCALL
-  nextrow  . . . . . . . . . . .	L Near	 00000532 _TEXT	
-  colLoop  . . . . . . . . . . .	L Near	 0000054F _TEXT	
-  wall . . . . . . . . . . . . .	L Near	 00000578 _TEXT	
-  block  . . . . . . . . . . . .	L Near	 0000057F _TEXT	
-  food . . . . . . . . . . . . .	L Near	 00000586 _TEXT	
-  pacman . . . . . . . . . . . .	L Near	 0000058D _TEXT	
-  redGhost . . . . . . . . . . .	L Near	 00000594 _TEXT	
-  pinkGhost  . . . . . . . . . .	L Near	 0000059B _TEXT	
-  cyanGhost  . . . . . . . . . .	L Near	 000005A2 _TEXT	
-  blueGhost  . . . . . . . . . .	L Near	 000005A9 _TEXT	
-  colorDone  . . . . . . . . . .	L Near	 000005B0 _TEXT	
+drawmaze . . . . . . . . . . . .	P Near	 00000816 _TEXT	Length= 00000112 Public STDCALL
+  nextrow  . . . . . . . . . . .	L Near	 00000888 _TEXT	
+  colLoop  . . . . . . . . . . .	L Near	 000008A5 _TEXT	
+  wall . . . . . . . . . . . . .	L Near	 000008CE _TEXT	
+  block  . . . . . . . . . . . .	L Near	 000008D5 _TEXT	
+  food . . . . . . . . . . . . .	L Near	 000008DC _TEXT	
+  pacman . . . . . . . . . . . .	L Near	 000008E3 _TEXT	
+  redGhost . . . . . . . . . . .	L Near	 000008EA _TEXT	
+  pinkGhost  . . . . . . . . . .	L Near	 000008F1 _TEXT	
+  cyanGhost  . . . . . . . . . .	L Near	 000008F8 _TEXT	
+  blueGhost  . . . . . . . . . .	L Near	 000008FF _TEXT	
+  colorDone  . . . . . . . . . .	L Near	 00000906 _TEXT	
 gameMenuScreen . . . . . . . . .	P Near	 0000012F _TEXT	Length= 00000140 Public STDCALL
   drawSides  . . . . . . . . . .	L Near	 00000156 _TEXT	
   instructions . . . . . . . . .	L Near	 00000228 _TEXT	
   incorrectOption  . . . . . . .	L Near	 0000022D _TEXT	
   return_to_main . . . . . . . .	L Near	 00000264 _TEXT	
-handleinput  . . . . . . . . . .	P Near	 000005D2 _TEXT	Length= 00000001 Public STDCALL
+handleinput  . . . . . . . . . .	P Near	 00000928 _TEXT	Length= 00000001 Public STDCALL
 main . . . . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 0000005B Public STDCALL
   finish . . . . . . . . . . . .	L Near	 00000054 _TEXT	
 place_pacman . . . . . . . . . .	P Near	 000003F9 _TEXT	Length= 00000045 Public STDCALL
@@ -1107,7 +1368,7 @@ place_pacman . . . . . . . . . .	P Near	 000003F9 _TEXT	Length= 00000045 Public 
   done_placing . . . . . . . . .	L Near	 0000043C _TEXT	
 printf . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
 scanf  . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
-setBlocksSize  . . . . . . . . .	P Near	 00000483 _TEXT	Length= 0000003D Public STDCALL
+setBlocksSize  . . . . . . . . .	P Near	 00000483 _TEXT	Length= 00000393 Public STDCALL
 welcomeScreen  . . . . . . . . .	P Near	 0000005B _TEXT	Length= 000000D4 Public STDCALL
   drawSides  . . . . . . . . . .	L Near	 00000082 _TEXT	
 wsprintfA  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C

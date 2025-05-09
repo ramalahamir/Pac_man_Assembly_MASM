@@ -572,6 +572,9 @@ draw_box endp
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 setBlocksSize proc
+
+    ; 2 block in one row
+
     ; pick random height (min height of block will be 2)
     mov eax, 3    
     call RandomRange    ; 0 - 3
@@ -585,9 +588,239 @@ setBlocksSize proc
     mov block_width, eax
 
     mov startX, 7
-    mov startY, 7
+    mov startY, 3
     call draw_box
 
+      ; pick random height (min height of block will be 2)
+    mov eax, 3    
+    call RandomRange    ; 0 - 3
+    add eax, 2          ; 2 - 5 
+    mov block_height, eax
+
+    ; pick random width (min width of block will be 5)
+    mov eax, 6
+    call RandomRange    ; 0 - 6
+    add eax, 5          ; 5 - 11
+    mov block_width, eax
+
+    mov startX, 35
+    mov startY, 3
+    call draw_box
+
+    ; 5 block in one row
+
+    ; pick random height (min height of block will be 2)
+    mov eax, 2    
+    call RandomRange    ; 0 - 2
+    add eax, 2          ; 2 - 4 
+    mov block_height, eax
+
+    ; pick random width (min width of block will be 3)
+    mov eax, 3
+    call RandomRange    ; 0 - 3
+    add eax, 3          ; 3 - 6
+    mov block_width, eax
+
+    mov startX, 4
+    mov startY, 8
+    call draw_box
+
+      ; pick random height (min height of block will be 2)
+    mov eax, 3    
+    call RandomRange    ; 0 - 3
+    add eax, 2          ; 2 - 5 
+    mov block_height, eax
+
+    ; pick random width (min width of block will be 5)
+    mov eax, 6
+    call RandomRange    ; 0 - 6
+    add eax, 5          ; 5 - 11
+    mov block_width, eax
+
+    mov startX, 13
+    mov startY, 8
+    call draw_box
+
+      ; pick random height (min height of block will be 2)
+    mov eax, 2    
+    call RandomRange    ; 0 - 2
+    add eax, 2          ; 2 - 4 
+    mov block_height, eax
+
+    ; pick random width (min width of block will be 3)
+    mov eax, 3
+    call RandomRange    ; 0 - 3
+    add eax, 3          ; 3 - 6
+    mov block_width, eax
+
+    mov startX, 22
+    mov startY, 8
+    call draw_box
+
+      ; pick random height (min height of block will be 2)
+    mov eax, 3    
+    call RandomRange    ; 0 - 3
+    add eax, 2          ; 2 - 5 
+    mov block_height, eax
+
+    ; pick random width (min width of block will be 5)
+    mov eax, 6
+    call RandomRange    ; 0 - 6
+    add eax, 5          ; 5 - 11
+    mov block_width, eax
+
+    mov startX, 32
+    mov startY, 8
+    call draw_box
+    
+      ; pick random height (min height of block will be 2)
+    mov eax, 3    
+    call RandomRange    ; 0 - 3
+    add eax, 2          ; 2 - 5 
+    mov block_height, eax
+
+    ; pick random width (min width of block will be 5)
+    mov eax, 4
+    call RandomRange    ; 0 - 4
+    add eax, 3          ; 3 - 7
+    mov block_width, eax
+
+    mov startX, 42
+    mov startY, 8
+    call draw_box
+
+    ; 4 block in one row
+
+    ; pick random height (min height of block will be 2)
+    mov eax, 2    
+    call RandomRange    ; 0 - 2
+    add eax, 2          ; 2 - 4 
+    mov block_height, eax
+
+    ; pick random width (min width of block will be 3)
+    mov eax, 3
+    call RandomRange    ; 0 - 3
+    add eax, 3          ; 3 - 6
+    mov block_width, eax
+
+    mov startX, 5
+    mov startY, 13
+    call draw_box
+
+      ; pick random height (min height of block will be 2)
+    mov eax, 3    
+    call RandomRange    ; 0 - 3
+    add eax, 2          ; 2 - 5 
+    mov block_height, eax
+
+    ; pick random width (min width of block will be 5)
+    mov eax, 6
+    call RandomRange    ; 0 - 6
+    add eax, 5          ; 5 - 11
+    mov block_width, eax
+
+    mov startX, 15
+    mov startY, 13
+    call draw_box
+
+      ; pick random height (min height of block will be 2)
+    mov eax, 2    
+    call RandomRange    ; 0 - 2
+    add eax, 2          ; 2 - 4 
+    mov block_height, eax
+
+    ; pick random width (min width of block will be 3)
+    mov eax, 3
+    call RandomRange    ; 0 - 3
+    add eax, 3          ; 3 - 6
+    mov block_width, eax
+
+    mov startX, 28
+    mov startY, 13
+    call draw_box
+
+      ; pick random height (min height of block will be 2)
+    mov eax, 3    
+    call RandomRange    ; 0 - 3
+    add eax, 2          ; 2 - 5 
+    mov block_height, eax
+
+    ; pick random width (min width of block will be 5)
+    mov eax, 6
+    call RandomRange    ; 0 - 6
+    add eax, 5          ; 5 - 11
+    mov block_width, eax
+
+    mov startX, 40
+    mov startY, 13
+    call draw_box
+
+    ; 4 block in one row
+
+    ; pick random height (min height of block will be 2)
+    mov eax, 2    
+    call RandomRange    ; 0 - 2
+    add eax, 2          ; 2 - 4 
+    mov block_height, eax
+
+    ; pick random width (min width of block will be 3)
+    mov eax, 3
+    call RandomRange    ; 0 - 3
+    add eax, 3          ; 3 - 6
+    mov block_width, eax
+
+    mov startX, 3
+    mov startY, 17
+    call draw_box
+
+      ; pick random height (min height of block will be 2)
+    mov eax, 3    
+    call RandomRange    ; 0 - 3
+    add eax, 2          ; 2 - 5 
+    mov block_height, eax
+
+    ; pick random width (min width of block will be 5)
+    mov eax, 6
+    call RandomRange    ; 0 - 6
+    add eax, 5          ; 5 - 11
+    mov block_width, eax
+
+    mov startX, 12
+    mov startY, 17
+    call draw_box
+
+      ; pick random height (min height of block will be 2)
+    mov eax, 2    
+    call RandomRange    ; 0 - 2
+    add eax, 2          ; 2 - 4 
+    mov block_height, eax
+
+    ; pick random width (min width of block will be 3)
+    mov eax, 3
+    call RandomRange    ; 0 - 3
+    add eax, 3          ; 3 - 6
+    mov block_width, eax
+
+    mov startX, 30
+    mov startY, 17
+    call draw_box
+
+      ; pick random height (min height of block will be 2)
+    mov eax, 3    
+    call RandomRange    ; 0 - 3
+    add eax, 2          ; 2 - 5 
+    mov block_height, eax
+
+    ; pick random width (min width of block will be 5)
+    mov eax, 6
+    call RandomRange    ; 0 - 6
+    add eax, 5          ; 5 - 11
+    mov block_width, eax
+
+    mov startX, 40
+    mov startY, 17
+    call draw_box
+    
 setBlocksSize endp
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

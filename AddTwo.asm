@@ -66,7 +66,24 @@ block_char  = '*'
 
     ; making a temp variable
     temp dword 0
+    ; stores the current moving direction
     movement_var byte 'R'
+
+    ; ghosts
+    ; level 1 ghost Red
+    red_X dword 0
+    red_Y dword 0
+    ; level 2 ghost pinky
+    pinky_X dword 0
+    pinky_Y dword 0
+    ; level 3 ghost clyde, inky
+    clyde_X dword 0
+    clyde_Y dword 0
+    inky_X dword 0
+    inky_Y dword 0
+
+    ; level number
+    level byte 3
 
 .code
 main proc
@@ -82,6 +99,20 @@ main proc
     call buildmaze
     call setBlocksSize
     call place_pacman
+
+    mov al, level
+    cmp al, 1
+    je level1
+    cmp al, 2
+    je level2
+
+    level3:                                ; for level 3 display all ghosts
+        call place_levelThree_ghost
+    level2:                                ; level 2 will also have level 1's ghost
+        call place_leveltwo_ghost
+    level1:
+        call place_levelOne_ghost
+    
     call drawmaze
 
     game_loop:
@@ -565,6 +596,167 @@ place_pacman endp
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+place_levelOne_ghost proc
+    ; preserving the old value
+    push edi
+
+    find_random_indexes:
+        ; making the starting position random for red
+        mov eax, rows - 2     ; getting random from 0 - 19
+        call RandomRange      ; gives 0 - 18
+        inc eax               ; gives 0 - 19
+        mov red_Y, eax      ; setting the row value for red
+
+        mov eax, cols - 2     ; getting random from 0 - 48
+        call RandomRange      ; gives 0 - 47
+        inc eax               ; gives 0 - 48
+        mov red_X, eax      ; setting the column value for red
+    
+    ; checking if the new position is empty or not to prevent overwriting
+
+    ; calculating the 1d equivalent index in the maze
+    mov  edi, offset maze 
+    mov  eax, red_Y
+    imul eax, cols + 1     
+    add  eax, red_X     
+    add  edi, eax       
+
+    mov al, byte ptr [edi]   ; loading whatever’s already in that position
+    cmp al, '.'              ; checking if its food or not
+    jne  try_again           ; if not find new position for red
+
+    mov byte ptr [edi], '@'  ; if its empty, place red here
+    jmp done_placing
+
+    try_again:
+        ; jump back up to pick new random indexes
+        jmp find_random_indexes
+
+    done_placing:
+        pop edi
+    ret
+place_levelOne_ghost endp
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+place_levelTwo_ghost proc
+    ; preserving the old value
+    push edi
+
+    find_random_indexes:
+        ; making the starting position random for pinky
+        mov eax, rows - 2     ; getting random from 0 - 19
+        call RandomRange      ; gives 0 - 18
+        inc eax               ; gives 0 - 19
+        mov pinky_Y, eax      ; setting the row value for pinky
+
+        mov eax, cols - 2     ; getting random from 0 - 48
+        call RandomRange      ; gives 0 - 47
+        inc eax               ; gives 0 - 48
+        mov pinky_X, eax      ; setting the column value for pinky
+    
+    ; checking if the new position is empty or not to prevent overwriting
+
+    ; calculating the 1d equivalent index in the maze
+    mov  edi, offset maze 
+    mov  eax, pinky_Y
+    imul eax, cols + 1     
+    add  eax, pinky_X     
+    add  edi, eax       
+
+    mov al, byte ptr [edi]   ; loading whatever’s already in that position
+    cmp al, '.'              ; checking if its food or not
+    jne  try_again           ; if not find new position for pinky
+
+    mov byte ptr [edi], '%'  ; if its empty, place pinky here
+    jmp done_placing
+
+    try_again:
+        ; jump back up to pick new random indexes
+        jmp find_random_indexes
+
+    done_placing:
+        pop edi
+    ret
+place_levelTwo_ghost endp
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+place_levelThree_ghost proc
+    ; preserving the old value
+    push edi
+
+    find_random_indexes_for_clyde:
+        ; making the starting position random for clyde
+        mov eax, rows - 2     ; getting random from 0 - 19
+        call RandomRange      ; gives 0 - 18
+        inc eax               ; gives 0 - 19
+        mov clyde_Y, eax      ; setting the row value for clyde
+
+        mov eax, cols - 2     ; getting random from 0 - 48
+        call RandomRange      ; gives 0 - 47
+        inc eax               ; gives 0 - 48
+        mov clyde_X, eax      ; setting the column value for clyde
+    
+    ; checking if the new position is empty or not to prevent overwriting
+
+    ; calculating the 1d equivalent index in the maze
+    mov  edi, offset maze 
+    mov  eax, clyde_Y
+    imul eax, cols + 1     
+    add  eax, clyde_X     
+    add  edi, eax       
+
+    mov al, byte ptr [edi]   ; loading whatever’s already in that position
+    cmp al, '.'              ; checking if its food or not
+    jne  try_again_for_clyde           ; if not find new position for clyde
+
+    mov byte ptr [edi], '$'  ; if its empty, place clyde here
+    jmp find_random_indexes_for_inky
+
+    try_again_for_clyde:
+        ; jump back up to pick new random indexes
+        jmp find_random_indexes_for_clyde
+
+    find_random_indexes_for_inky:
+        ; making the starting position random for inky
+        mov eax, rows - 2     ; getting random from 0 - 19
+        call RandomRange      ; gives 0 - 18
+        inc eax               ; gives 0 - 19
+        mov inky_Y, eax      ; setting the row value for inky
+
+        mov eax, cols - 2     ; getting random from 0 - 48
+        call RandomRange      ; gives 0 - 47
+        inc eax               ; gives 0 - 48
+        mov inky_X, eax      ; setting the column value for inky
+    
+    ; checking if the new position is empty or not to prevent overwriting
+
+    ; calculating the 1d equivalent index in the maze
+    mov  edi, offset maze 
+    mov  eax, inky_Y
+    imul eax, cols + 1     
+    add  eax, inky_X     
+    add  edi, eax       
+
+    mov al, byte ptr [edi]   ; loading whatever’s already in that position
+    cmp al, '.'              ; checking if its food or not
+    jne  try_again_for_inky           ; if not find new position for inky
+
+    mov byte ptr [edi], '&'  ; if its empty, place inky here
+    jmp done_placing
+
+    try_again_for_inky:
+        ; jump back up to pick new random indexes
+        jmp find_random_indexes_for_inky
+
+    done_placing:
+        pop edi
+    ret
+place_levelThree_ghost endp
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 draw_box proc
     ; preserving values
     push eax
@@ -949,9 +1141,9 @@ drawmaze proc
             cmp al, '%'   ; pinky level 2
             je pinkGhost
             cmp al, '$'   ; clyde level 3
-            je cyanGhost
+            je clydeGhost
             cmp al, '&'   ; inky level 3
-            je blueGhost
+            je inkyGhost
 
             ; else case
             mov eax, white+(black*16)
@@ -980,15 +1172,15 @@ drawmaze proc
             jmp colorDone
 
             pinkGhost:
-            mov eax, magenta+(black*16)
+            mov eax, lightMagenta+(black*16)
             jmp colorDone
 
-            cyanGhost:
-            mov eax, cyan+(black*16)
+            clydeGhost:
+            mov eax, lightBlue+(black*16)
             jmp colorDone
 
-            blueGhost:
-            mov eax, blue+(black*16)
+            inkyGhost:
+            mov eax, lightGray+(black*16)
             jmp colorDone
 
             colorDone:

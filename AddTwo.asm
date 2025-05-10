@@ -48,7 +48,7 @@ block_char  = '*'
     ; for main game screen
     score_txt byte "SCORE: ", 0
     lives_txt byte "LIVES: ", 0
-    score byte 0
+    score dword 0
     lives byte 3
 
     ; msgs
@@ -852,7 +852,7 @@ drawmaze proc
     mov dh, 4   ; row
     mov dl, 27   ; col
     call gotoxy
-    mov al, score
+    mov eax, score
     call writeDec
 
     mov edx, offset lives_txt
@@ -1046,7 +1046,7 @@ pacman_movement proc
 
         ;if food, eat it and increment score
         inc score
-        mov al, score
+        mov eax, score
         call writeDec
 
         mov edx, temp             ;  restoring 

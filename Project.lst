@@ -1,4 +1,4 @@
-Microsoft (R) Macro Assembler Version 14.43.34808.0	    05/10/25 20:13:17
+Microsoft (R) Macro Assembler Version 14.43.34808.0	    05/10/25 20:21:32
 AddTwo.asm						     Page 1 - 1
 
 
@@ -124,17 +124,17 @@ AddTwo.asm						     Page 1 - 1
 	   3A 20 00
  00000601 4C 49 56 45 53	    lives_txt byte "LIVES: ", 0
 	   3A 20 00
- 00000609 00			    score byte 0
- 0000060A 03			    lives byte 3
+ 00000609 00000000		    score dword 0
+ 0000060D 03			    lives byte 3
 
 				    ; msgs
- 0000060B 00			    exitGameBool byte 0
- 0000060C 45 78 69 74 69	    exittingMsg byte "Exiting Game...... :)", 0
+ 0000060E 00			    exitGameBool byte 0
+ 0000060F 45 78 69 74 69	    exittingMsg byte "Exiting Game...... :)", 0
 	   6E 67 20 47 61
 	   6D 65 2E 2E 2E
 	   2E 2E 2E 20 3A
 	   29 00
- 00000622 49 6E 76 61 6C	    invalidMsg byte "Invalid Option entered, Try Again..... :(", 0
+ 00000625 49 6E 76 61 6C	    invalidMsg byte "Invalid Option entered, Try Again..... :(", 0
 	   69 64 20 4F 70
 	   74 69 6F 6E 20
 	   65 6E 74 65 72
@@ -145,41 +145,41 @@ AddTwo.asm						     Page 1 - 1
 	   28 00
 
 				    ; instruction screen
- 0000064C 20 20 20 49 4E	    instrTitle byte "   INSTRUCTIONS   ", 0
+ 0000064F 20 20 20 49 4E	    instrTitle byte "   INSTRUCTIONS   ", 0
 	   53 54 52 55 43
 	   54 49 4F 4E 53
 	   20 20 20 00
- 0000065F 55 73 65 20 61	    instrLine1 byte "Use arrow keys to move Pac-Man", 0
+ 00000662 55 73 65 20 61	    instrLine1 byte "Use arrow keys to move Pac-Man", 0
 	   72 72 6F 77 20
 	   6B 65 79 73 20
 	   74 6F 20 6D 6F
 	   76 65 20 50 61
 	   63 2D 4D 61 6E
 	   00
- 0000067E 43 6F 6C 6C 65	    instrLine2 byte "Collect all dots (.) to win", 0
+ 00000681 43 6F 6C 6C 65	    instrLine2 byte "Collect all dots (.) to win", 0
 	   63 74 20 61 6C
 	   6C 20 64 6F 74
 	   73 20 28 2E 29
 	   20 74 6F 20 77
 	   69 6E 00
- 0000069A 41 76 6F 69 64	    instrLine3 byte "Avoid ghosts (@ % & $)", 0
+ 0000069D 41 76 6F 69 64	    instrLine3 byte "Avoid ghosts (@ % & $)", 0
 	   20 67 68 6F 73
 	   74 73 20 28 40
 	   20 25 20 26 20
 	   24 29 00
- 000006B1 50 72 65 73 73	    instrLine4 byte "Press Q anytime to quit", 0
+ 000006B4 50 72 65 73 73	    instrLine4 byte "Press Q anytime to quit", 0
 	   20 51 20 61 6E
 	   79 74 69 6D 65
 	   20 74 6F 20 71
 	   75 69 74 00
- 000006C9 0D 0A 50 72 65	    instrPrompt byte 0Dh,0Ah, "Press 'r' to return...",0
+ 000006CC 0D 0A 50 72 65	    instrPrompt byte 0Dh,0Ah, "Press 'r' to return...",0
 	   73 73 20 27 72
 	   27 20 74 6F 20
 	   72 65 74 75 72
 	   6E 2E 2E 2E 00
 
 				    ; making a temp variable
- 000006E2 00000000		    temp dword 0
+ 000006E5 00000000		    temp dword 0
 
  00000000			.code
  00000000			main proc
@@ -207,13 +207,13 @@ AddTwo.asm						     Page 1 - 1
  00000036  EB F0		        jmp  gameLoop
 
 				    ; global label
- 00000038  80 3D 0000060B R	    cmp exitGameBool, 1    ; if exit is triggered only then displey the exitMsg
+ 00000038  80 3D 0000060E R	    cmp exitGameBool, 1    ; if exit is triggered only then displey the exitMsg
 	   01
  0000003F  75 23		    jne finish
 
  00000041			    exit_game:: 
  00000041  E8 00000000 E	        call clrscr
- 00000046  BA 0000060C R	        mov  edx, offset exittingMsg
+ 00000046  BA 0000060F R	        mov  edx, offset exittingMsg
  0000004B  B8 000000E2		        mov  eax, green+(yellow*16)
  00000050  E8 00000000 E	        call SetTextColor
  00000055  E8 00000000 E	        call writeString
@@ -401,7 +401,7 @@ AddTwo.asm						     Page 1 - 1
 
  0000023D			        incorrectOption:
  0000023D  E8 00000000 E	            call clrscr
- 00000242  BA 00000622 R	            mov edx, offset invalidMsg
+ 00000242  BA 00000625 R	            mov edx, offset invalidMsg
  00000247  B8 0000004E		            mov  eax, yellow+(red*16)
  0000024C  E8 00000000 E	            call SetTextColor
  00000251  E8 00000000 E	            call writeString
@@ -444,7 +444,7 @@ AddTwo.asm						     Page 1 - 1
  000002A8  B2 0A		        mov  dl, 10   ; col
  000002AA  E8 00000000 E	        call gotoxy
  000002AF  BA 0000054A R	        mov  edx, offset sideBorder
- 000002B4  E8 00000000 E        call WriteString
+ 000002B4  E8 00000000 E	        call WriteString
  000002B9  FE C1		        inc  cl
  000002BB  80 F9 06		        cmp  cl, 6    
  000002BE  7C E6		        jl   drawSides
@@ -462,7 +462,7 @@ AddTwo.asm						     Page 1 - 1
  000002DD  B6 04		    mov  dh, 4
  000002DF  B2 14		    mov  dl, 20
  000002E1  E8 00000000 E	    call gotoxy
- 000002E6  BA 0000064C R	    mov  edx, offset instrTitle
+ 000002E6  BA 0000064F R	    mov  edx, offset instrTitle
  000002EB  E8 00000000 E	    call WriteString
 
 				    ; instruction lines 
@@ -472,25 +472,25 @@ AddTwo.asm						     Page 1 - 1
  000002FA  B6 08		    mov  dh, 8
  000002FC  B2 0A		    mov  dl, 10
  000002FE  E8 00000000 E	    call gotoxy
- 00000303  BA 0000065F R	    mov  edx, offset instrLine1
+ 00000303  BA 00000662 R	    mov  edx, offset instrLine1
  00000308  E8 00000000 E	    call WriteString
 
  0000030D  B6 09		    mov  dh, 9
  0000030F  B2 0A		    mov  dl, 10
  00000311  E8 00000000 E	    call GotoXY
- 00000316  BA 0000067E R	    mov  edx, offset instrLine2
+ 00000316  BA 00000681 R	    mov  edx, offset instrLine2
  0000031B  E8 00000000 E	    call WriteString
 
  00000320  B6 0A		    mov  dh, 10
  00000322  B2 0A		    mov  dl, 10
  00000324  E8 00000000 E	    call gotoxy
- 00000329  BA 0000069A R	    mov  edx, offset instrLine3
+ 00000329  BA 0000069D R	    mov  edx, offset instrLine3
  0000032E  E8 00000000 E	    call WriteString
 
  00000333  B6 0B		    mov  dh, 11
  00000335  B2 0A		    mov  dl, 10
  00000337  E8 00000000 E	    call gotoxy
- 0000033C  BA 000006B1 R	    mov  edx, offset instrLine4
+ 0000033C  BA 000006B4 R	    mov  edx, offset instrLine4
  00000341  E8 00000000 E	    call WriteString
 
  00000346  B8 0000000E		    mov  eax, yellow+(black*16)
@@ -498,7 +498,7 @@ AddTwo.asm						     Page 1 - 1
  00000350  B6 0D		    mov  dh, 13
  00000352  B2 0A		    mov  dl, 10
  00000354  E8 00000000 E	    call gotoxy
- 00000359  BA 000006C9 R	    mov  edx, offset instrPrompt
+ 00000359  BA 000006CC R	    mov  edx, offset instrPrompt
  0000035E  E8 00000000 E	    call WriteString
 
 				    ; wait for 'r' key
@@ -509,7 +509,7 @@ AddTwo.asm						     Page 1 - 1
 
  00000370			    incorrectOption:
  00000370  E8 00000000 E	            call clrscr
- 00000375  BA 00000622 R	            mov edx, offset invalidMsg
+ 00000375  BA 00000625 R	            mov edx, offset invalidMsg
  0000037A  B8 0000004E		            mov  eax, yellow+(red*16)
  0000037F  E8 00000000 E	            call SetTextColor
  00000384  E8 00000000 E	            call writeString
@@ -999,7 +999,7 @@ AddTwo.asm						     Page 1 - 1
  0000084C  B6 04		    mov dh, 4   ; row
  0000084E  B2 1B		    mov dl, 27   ; col
  00000850  E8 00000000 E	    call gotoxy
- 00000855  A0 00000609 R	    mov al, score
+ 00000855  A1 00000609 R	    mov eax, score
  0000085A  E8 00000000 E	    call writeDec
 
  0000085F  BA 00000601 R	    mov edx, offset lives_txt
@@ -1013,7 +1013,7 @@ AddTwo.asm						     Page 1 - 1
  00000876  B6 04		    mov dh, 4   ; row
  00000878  B2 48		    mov dl, 72   ; col
  0000087A  E8 00000000 E	    call gotoxy
- 0000087F  A0 0000060A R	    mov al, lives
+ 0000087F  A0 0000060D R	    mov al, lives
  00000884  E8 00000000 E	    call writeDec
 
 				    ; resetting
@@ -1185,18 +1185,18 @@ AddTwo.asm						     Page 1 - 1
 
  00000993  C6 07 20		        mov byte ptr [edi], ' '   ; clear the food
 
- 00000996  89 15 000006E2 R	        mov temp, edx      ; preserving edx first
+ 00000996  89 15 000006E5 R	        mov temp, edx      ; preserving edx first
 				        ; write the new score
  0000099C  B6 04		        mov dh, 4   ; row
  0000099E  B2 1B		        mov dl, 27   ; col
  000009A0  E8 00000000 E	        call gotoxy
 
 				        ;if food, eat it and increment score
- 000009A5  FE 05 00000609 R	        inc score
- 000009AB  A0 00000609 R	        mov al, score
+ 000009A5  FF 05 00000609 R	        inc score
+ 000009AB  A1 00000609 R	        mov eax, score
  000009B0  E8 00000000 E	        call writeDec
 
- 000009B5  8B 15 000006E2 R	        mov edx, temp             ;  restoring 
+ 000009B5  8B 15 000006E5 R	        mov edx, temp             ;  restoring 
 
  000009BB			    movethere:
 				        ; Erase old P 
@@ -1206,7 +1206,7 @@ AddTwo.asm						     Page 1 - 1
  000009C2  BF 00000000 R	        mov edi, offset maze
  000009C7  03 F8		        add edi, eax
 
- 000009C9  89 15 000006E2 R	        mov temp, edx                  ; preserving edx first
+ 000009C9  89 15 000006E5 R	        mov temp, edx                  ; preserving edx first
  000009CF  C6 07 20		        mov byte ptr [edi], ' '        ; updating the maze
  000009D2  8A F1		        mov dh, cl                     ; maze old row 
  000009D4  80 C6 06		        add dh, row_start_point        ; adding the start point to get accurate X
@@ -1215,11 +1215,11 @@ AddTwo.asm						     Page 1 - 1
  000009DC  E8 00000000 E	        call gotoxy
  000009E1  B0 20		        mov al, ' '
  000009E3  E8 00000000 E	        call writechar
- 000009E8  8B 15 000006E2 R	        mov edx, temp                  ;  restoring 
+ 000009E8  8B 15 000006E5 R	        mov edx, temp                  ;  restoring 
 
 				        ; Draw new P on screen
 				        ; set cursor to new coords 
- 000009EE  89 15 000006E2 R	        mov temp, edx                  ; preserving edx first
+ 000009EE  89 15 000006E5 R	        mov temp, edx                  ; preserving edx first
  000009F4  66| 8B C6		        mov ax, si                     ; new row
  000009F7  8A F0		        mov dh, al                     ; new maze row
  000009F9  80 C6 06		        add dh, row_start_point        ; adding the start point to get accurate X
@@ -1228,7 +1228,7 @@ AddTwo.asm						     Page 1 - 1
  000009FF  E8 00000000 E	        call gotoxy
  00000A04  B0 50		        mov al, 'P'
  00000A06  E8 00000000 E	        call writechar
- 00000A0B  8B 15 000006E2 R	        mov edx, temp                  ;  restoring 
+ 00000A0B  8B 15 000006E5 R	        mov edx, temp                  ;  restoring 
 
 				        ; Update variables
  00000A11  89 15 0000049D R	        mov pacmanx, edx
@@ -1247,7 +1247,7 @@ AddTwo.asm						     Page 1 - 1
 
 				;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 				end main
-Microsoft (R) Macro Assembler Version 14.43.34808.0	    05/10/25 20:13:17
+Microsoft (R) Macro Assembler Version 14.43.34808.0	    05/10/25 20:21:32
 AddTwo.asm						     Symbols 2 - 1
 
 
@@ -1341,7 +1341,7 @@ Segments and Groups:
 
 FLAT . . . . . . . . . . . . . .	GROUP
 STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
-_DATA  . . . . . . . . . . . . .	32 Bit	 000006E6 Para	  Public  'DATA'	
+_DATA  . . . . . . . . . . . . .	32 Bit	 000006E9 Para	  Public  'DATA'	
 _TEXT  . . . . . . . . . . . . .	32 Bit	 00000A24 Para	  Public  'CODE'	
 
 
@@ -1724,21 +1724,21 @@ brown  . . . . . . . . . . . . .	Number	 00000006h
 col_start_point  . . . . . . . .	Number	 00000014h   
 cols . . . . . . . . . . . . . .	Number	 00000037h   
 cyan . . . . . . . . . . . . . .	Number	 00000003h   
-exitGameBool . . . . . . . . . .	Byte	 0000060B _DATA	
+exitGameBool . . . . . . . . . .	Byte	 0000060E _DATA	
 exit_game  . . . . . . . . . . .	L Near	 00000041 _TEXT	
-exittingMsg  . . . . . . . . . .	Byte	 0000060C _DATA	
+exittingMsg  . . . . . . . . . .	Byte	 0000060F _DATA	
 exit . . . . . . . . . . . . . .	Text   	 INVOKE ExitProcess,0
 gray . . . . . . . . . . . . . .	Number	 00000008h   
 green  . . . . . . . . . . . . .	Number	 00000002h   
 helloMsg . . . . . . . . . . . .	Byte	 000004E7 _DATA	
 inputMsg . . . . . . . . . . . .	Byte	 000004CE _DATA	
-instrLine1 . . . . . . . . . . .	Byte	 0000065F _DATA	
-instrLine2 . . . . . . . . . . .	Byte	 0000067E _DATA	
-instrLine3 . . . . . . . . . . .	Byte	 0000069A _DATA	
-instrLine4 . . . . . . . . . . .	Byte	 000006B1 _DATA	
-instrPrompt  . . . . . . . . . .	Byte	 000006C9 _DATA	
-instrTitle . . . . . . . . . . .	Byte	 0000064C _DATA	
-invalidMsg . . . . . . . . . . .	Byte	 00000622 _DATA	
+instrLine1 . . . . . . . . . . .	Byte	 00000662 _DATA	
+instrLine2 . . . . . . . . . . .	Byte	 00000681 _DATA	
+instrLine3 . . . . . . . . . . .	Byte	 0000069D _DATA	
+instrLine4 . . . . . . . . . . .	Byte	 000006B4 _DATA	
+instrPrompt  . . . . . . . . . .	Byte	 000006CC _DATA	
+instrTitle . . . . . . . . . . .	Byte	 0000064F _DATA	
+invalidMsg . . . . . . . . . . .	Byte	 00000625 _DATA	
 lightBlue  . . . . . . . . . . .	Number	 00000009h   
 lightCyan  . . . . . . . . . . .	Number	 0000000Bh   
 lightGray  . . . . . . . . . . .	Number	 00000007h   
@@ -1746,7 +1746,7 @@ lightGreen . . . . . . . . . . .	Number	 0000000Ah
 lightMagenta . . . . . . . . . .	Number	 0000000Dh   
 lightRed . . . . . . . . . . . .	Number	 0000000Ch   
 lives_txt  . . . . . . . . . . .	Byte	 00000601 _DATA	
-lives  . . . . . . . . . . . . .	Byte	 0000060A _DATA	
+lives  . . . . . . . . . . . . .	Byte	 0000060D _DATA	
 magenta  . . . . . . . . . . . .	Number	 00000005h   
 maze . . . . . . . . . . . . . .	Byte	 00000000 _DATA	
 menuTitle  . . . . . . . . . . .	Byte	 0000059C _DATA	
@@ -1763,12 +1763,12 @@ returnToMenu . . . . . . . . . .	L Near	 0000013F _TEXT
 row_start_point  . . . . . . . .	Number	 00000006h   
 rows . . . . . . . . . . . . . .	Number	 00000015h   
 score_txt  . . . . . . . . . . .	Byte	 000005F9 _DATA	
-score  . . . . . . . . . . . . .	Byte	 00000609 _DATA	
+score  . . . . . . . . . . . . .	DWord	 00000609 _DATA	
 select_optionMsg . . . . . . . .	Byte	 000005E3 _DATA	
 sideBorder . . . . . . . . . . .	Byte	 0000054A _DATA	
 startX . . . . . . . . . . . . .	DWord	 000004A5 _DATA	
 startY . . . . . . . . . . . . .	DWord	 000004A9 _DATA	
-temp . . . . . . . . . . . . . .	DWord	 000006E2 _DATA	
+temp . . . . . . . . . . . . . .	DWord	 000006E5 _DATA	
 topBorder  . . . . . . . . . . .	Byte	 00000521 _DATA	
 userName . . . . . . . . . . . .	Byte	 000004EF _DATA	
 welcomeMsg . . . . . . . . . . .	Byte	 000004B5 _DATA	

@@ -13,7 +13,12 @@ block_char  = '*'
     ; reserving memory for maze in the memory
     ; +1 is for the null terminator at the end of each row for writeString
     maze byte rows * (cols + 1) dup(' ')   
-    newline byte 0
+
+    ; a boolean array to keep track of food eaten or not
+    ; this is to help with the ghost movement
+    eaten byte rows*cols dup(0)  
+    ; temp var
+    eaten_bool byte 0
 
     ; variables to store pacman's position
     rand_pos dword 0
@@ -83,7 +88,7 @@ block_char  = '*'
     inky_Y dword 0
 
     ; level number
-    level byte 3
+    level byte 1
 
 .code
 main proc
@@ -154,12 +159,14 @@ main proc
 
       move: 
         call pacman_movement
+        call ghost_movement
       jmp game_loop
     
     no_input:
         ; no new key, continue in stored direction
         mov ah, 0        ; dummy so no new direction is set
         call pacman_movement
+        call ghost_movement
         mov  eax, 200   ;delay 100 milliseconds
         call Delay
         jmp game_loop
@@ -1270,6 +1277,14 @@ pacman_movement proc
 
         mov byte ptr [edi], ' '   ; clear the food
 
+        ; for the boolean array
+        mov eax, esi             ; new row
+        imul eax, cols
+        add eax, edx             ; new col
+        mov edi, offset eaten
+        add edi, eax
+        mov byte ptr [edi], 1   ; clear the food
+
         mov temp, edx      ; preserving edx first
         ; write the new score
         mov dh, 4   ; row
@@ -1333,6 +1348,180 @@ pacman_movement proc
     call SetTextColor
     ret
 pacman_movement endp
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+ghost_movement proc
+    ; preserving the values
+    push eax
+    push ebx
+    push ecx
+    push edx
+    push esi
+    push edi
+
+    ; setting color for RED
+    mov  eax, red+(black*16)
+    call SetTextColor
+
+    ; load old RED position
+    mov ebx, red_X    ; ebx = old x
+    mov ecx, red_Y    ; ecx = old y
+
+    ; start with newx = oldx, newy = oldy
+    mov edx, ebx        ; edx = newx
+    mov esi, ecx        ; esi = newy
+
+    try_again:
+        ; pick random movement
+        mov eax, 4
+        call  RandomRange    ; 0 - 3
+        ; maping that to a direction:
+        cmp eax, 0
+        je try_right
+        cmp eax, 1
+        je try_left
+        cmp eax, 2
+        je try_up
+        ; else move down
+
+    try_down:
+        inc esi
+        jmp checkcell
+
+    try_up:
+        dec esi
+        jmp checkcell
+
+    try_left:
+        dec edx
+        jmp checkcell
+
+    try_right:
+        inc edx
+
+    checkcell:
+        ; boundary check
+        cmp esi, 1
+        jl  try_again
+        cmp esi, rows-2
+        jg  try_again
+        cmp edx, 1
+        jl  try_again
+        cmp edx, cols-2
+        jg  try_again
+        
+        ; getting the new 1D index
+        mov eax, esi             ; new row
+        imul eax, cols+1
+        add eax, edx             ; new col
+        mov edi, offset maze
+        add edi, eax
+
+        mov al, byte ptr [edi]      ; getting the value at index
+        cmp al, '#'        ; wall
+        je try_again
+        cmp al, '*'        ; block
+        je try_again
+        ; if its any other ghost as well
+        cmp al, '%'       
+        je try_again
+        cmp al, '&'       
+        je try_again
+        cmp al, '$'       
+        je try_again
+
+        ;cmp al, 'P'        ; pacman
+        ;je collision_detected
+
+    movethere:
+        ; Erase old Ghost
+
+        ; determine what to restore at [oldY][oldX]
+        mov eax, ecx
+        imul eax, cols
+        add eax, ebx
+        mov edi, offset eaten
+        add edi, eax
+        mov al, [edi]
+        cmp al, 1
+        je restore_space
+
+        ; else food:
+        mov eax, ecx
+        imul eax, cols+1
+        add eax, ebx
+        mov edi, offset maze
+        add edi, eax
+        mov byte ptr [edi], '.' 
+
+        ; set color for food
+        mov  eax, green+(black*16)
+        call SetTextColor
+
+        mov dh, cl                     ; maze old row 
+        add dh, row_start_point        ; adding the start point to get accurate X
+        mov dl, bl                     ; maze old col
+        add dl, col_start_point        ; adding the start point to get accurate Y
+        call gotoxy
+        mov al, '.'
+        call writechar
+
+        ; reset color for ghost
+        mov  eax, red+(black*16)
+        call SetTextColor
+        jmp restored
+
+        restore_space:
+            mov eax, ecx
+            imul eax, cols+1
+            add eax, ebx
+            mov edi, offset maze
+            add edi, eax
+            mov byte ptr [edi], ' '
+
+            mov dh, cl                     ; maze old row 
+            add dh, row_start_point        ; adding the start point to get accurate X
+            mov dl, bl                     ; maze old col
+            add dl, col_start_point        ; adding the start point to get accurate Y
+            call gotoxy
+            mov al, ' '
+            call writechar
+
+        restored:
+                mov edx, temp                  ;  restoring 
+
+        ; Draw new ghost on screen
+        ; set cursor to new coords 
+        mov temp, edx                  ; preserving edx first
+        mov ax, si                     ; new row
+        mov dh, al                     ; new maze row
+        add dh, row_start_point        ; adding the start point to get accurate X
+        ; dl already has the new col 
+        add dl, col_start_point        ; adding the start point to get accurate Y
+        call gotoxy
+        mov al, '@'
+        call writechar
+        mov edx, temp                  ;  restoring 
+
+        ; Update variables
+        mov red_X, edx
+        mov red_Y, esi
+
+    done:
+        ; restore registers
+        pop edi
+        pop esi
+        pop edx
+        pop ecx
+        pop ebx
+        pop eax
+    
+    ; resetting
+    mov  eax, white+(black*16)
+    call SetTextColor
+    ret
+ghost_movement endp
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

@@ -1351,7 +1351,7 @@ pacman_movement endp
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-ghost_movement proc
+RED_ghost_movement proc
     ; preserving the values
     push eax
     push ebx
@@ -1374,15 +1374,15 @@ ghost_movement proc
 
     try_again:
         ; pick random movement
-        mov eax, 4
-        call  RandomRange    ; 0 - 3
+        mov eax, 100
+        call  RandomRange    ; 0 - 100
         ; maping that to a direction:
-        cmp eax, 0
-        je try_right
-        cmp eax, 1
-        je try_left
-        cmp eax, 2
-        je try_up
+        cmp eax, 25
+        jl try_right
+        cmp eax, 50
+        jl try_left
+        cmp eax, 75
+        jl try_up
         ; else move down
 
     try_down:
@@ -1419,8 +1419,8 @@ ghost_movement proc
         add edi, eax
 
         mov al, byte ptr [edi]      ; getting the value at index
-        cmp al, '#'        ; wall
-        je try_again
+        ;cmp al, '#'        ; wall
+        ;je try_again
         cmp al, '*'        ; block
         je try_again
         ; if its any other ghost as well
@@ -1436,8 +1436,9 @@ ghost_movement proc
 
     movethere:
         ; Erase old Ghost
+        mov temp, edx                  ; preserving edx
 
-        ; determine what to restore at [oldY][oldX]
+        ; determine what to restore at old position
         mov eax, ecx
         imul eax, cols
         add eax, ebx
@@ -1521,7 +1522,7 @@ ghost_movement proc
     mov  eax, white+(black*16)
     call SetTextColor
     ret
-ghost_movement endp
+RED_ghost_movement endp
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

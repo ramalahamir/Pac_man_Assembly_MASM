@@ -5,6 +5,8 @@ include irvine32.inc
 ; keeping the maze size constant for all levels
 rows = 21
 cols = 55
+row_start_point = 6
+col_start_point = 20
 block_char  = '*'
 
 .data
@@ -62,6 +64,9 @@ block_char  = '*'
     instrLine4 byte "Press Q anytime to quit", 0
     instrPrompt byte 0Dh,0Ah, "Press 'r' to return...",0
 
+    ; making a temp variable
+    temp dword 0
+
 .code
 main proc
     call randomize     ; Re-seeds the random number generator
@@ -74,19 +79,18 @@ main proc
 
     ; building the game main screen
     call buildmaze
-    call place_pacman
    ; call placeblocks
     call setBlocksSize
+    call place_pacman
     call drawmaze
 
-  ;  gameloop:
-   ;     call readkey
-    ;    cmp al, 0
-     ;   jne gameloop
- ;       call handleinput
-  ;      call clrscr
-   ;     call drawmaze
-    ;    jmp gameloop
+     gameLoop:
+        call ReadKey
+        cmp  al, 0
+        jne  gameLoop        ; wait for a special key
+        call pacman_movement     ; moves Pac-Man and updates score
+       ; call drawmaze
+        jmp  gameLoop
 
     ; global label
     cmp exitGameBool, 1    ; if exit is triggered only then displey the exitMsg
@@ -879,8 +883,8 @@ drawmaze proc
 
         ; storing the x and y positions for positioning cursor using gotoxy
         mov dh, cl         ; current row
-        add dh, 6         ; storing row start point  
-        mov dl, 20         ; storing col start point
+        add dh, row_start_point         ; storing row start point  
+        mov dl, col_start_point         ; storing col start point
         call gotoxy
 
         ;mov edi, ebx
@@ -973,11 +977,126 @@ drawmaze endp
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-; movement and collision logic to be added
-handleinput proc
-    ; placeholder for movement logic
+pacman_movement proc
+    ; preserving the values
+    push eax
+    push ebx
+    push ecx
+    push edx
+    push esi
+    push edi
+
+    ; ah contains the scan code for arrow keys (0x48 up, 0x50 down, 0x4b left, 0x4d right)
+    mov al, ah           ; move scan code into al
+
+    ; load old position
+    mov ebx, pacmanx    ; ebx = old x
+    mov ecx, pacmany    ; ecx = old y
+
+    ; start with newx = oldx, newy = oldy
+    mov edx, ebx        ; edx = newx
+    mov esi, ecx        ; esi = newy
+
+    ; adjust newx/newy based on arrow pressed
+    cmp al, 4dh        ; right arrow
+    je move_right
+    cmp al, 4bh        ; left arrow
+    je move_left
+    cmp al, 48h       ; up arrow
+    je move_up
+    cmp al, 50h       ; down arrow
+    je move_down
+    jmp done           ; not an arrow key no move
+
+    move_right:
+        inc edx    ; move right
+        jmp checkcell
+    move_left:  
+        dec edx    ; move left
+        jmp checkcell
+    move_up:    
+        dec esi    ; move up
+        jmp checkcell
+    move_down:  
+        inc esi    ; move down
+
+    checkcell:
+        ; getting the new 1D index
+        mov eax, esi             ; new row
+        imul eax, cols+1
+        add eax, edx             ; new col
+        mov edi, offset maze
+        add edi, eax
+
+        mov al, [edi]      ; getting the value at index
+        cmp al, '#'        ; wall
+        je done
+        cmp al, '*'        ; block
+        je done
+        cmp al, '.'        ; food
+        jne movethere
+
+        mov byte ptr [edi], ' '   ; clear the food
+
+        mov temp, edx      ; preserving edx first
+        ; write the new score
+        mov dh, 4   ; row
+        mov dl, 27   ; col
+        call gotoxy
+
+        ;if food, eat it and increment score
+        inc score
+        mov al, score
+        call writeDec
+
+        mov edx, temp             ;  restoring 
+
+    movethere:
+        ; Erase old P 
+        mov eax, ecx              ; old row
+        imul eax, cols+1
+        add eax, ebx              ; old col
+        mov edi, offset maze
+        add edi, eax
+
+        mov temp, edx                  ; preserving edx first
+        mov byte ptr [edi], ' '        ; updating the maze
+        mov dh, cl                     ; maze old row 
+        add dh, row_start_point        ; adding the start point to get accurate X
+        mov dl, bl                     ; maze old col
+        add dl, col_start_point        ; adding the start point to get accurate Y
+        call gotoxy
+        mov al, ' '
+        call writechar
+        mov edx, temp                  ;  restoring 
+
+        ; Draw new P on screen
+        ; set cursor to new coords 
+        mov temp, edx                  ; preserving edx first
+        mov ax, si                     ; new row
+        mov dh, al                     ; new maze row
+        add dh, row_start_point        ; adding the start point to get accurate X
+        ; dl already has the new col 
+        add dl, col_start_point        ; adding the start point to get accurate Y
+        call gotoxy
+        mov al, 'P'
+        call writechar
+        mov edx, temp                  ;  restoring 
+
+        ; Update variables
+        mov pacmanx, edx
+        mov pacmany, esi
+
+    done:
+        ; restore registers
+        pop edi
+        pop esi
+        pop edx
+        pop ecx
+        pop ebx
+        pop eax
     ret
-handleinput endp
+pacman_movement endp
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 end main

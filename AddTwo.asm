@@ -66,6 +66,7 @@ block_char  = '*'
 
     ; making a temp variable
     temp dword 0
+    movement_var byte 'R'
 
 .code
 main proc
@@ -79,18 +80,58 @@ main proc
 
     ; building the game main screen
     call buildmaze
-   ; call placeblocks
     call setBlocksSize
     call place_pacman
     call drawmaze
 
-     gameLoop:
-        call ReadKey
-        cmp  al, 0
-        jne  gameLoop        ; wait for a special key
-        call pacman_movement     ; moves Pac-Man and updates score
-       ; call drawmaze
-        jmp  gameLoop
+    game_loop:
+
+      ; check for key press
+      ; If ZF=1, no key was pressed
+      call ReadKey   
+      jz no_input
+
+      cmp al, 'q'       ; quit game
+      je  exit_game
+
+      ; if any key was pressed
+     
+      cmp ah, 4dh        ; right arrow
+      je set_right
+      cmp ah, 4bh        ; left arrow
+      je set_left
+      cmp ah, 48h       ; up arrow
+      je set_up
+      cmp ah, 50h       ; down arrow
+      je set_down
+
+      ; if neither of the above was pressed
+      jmp no_input
+
+      set_right:
+        mov movement_var, 'R'
+        jmp move
+      set_left:
+        mov movement_var, 'L'
+        jmp move
+      set_up:
+        mov movement_var, 'U'
+        jmp move
+      set_down:
+        mov movement_var, 'D'
+        jmp move
+
+      move: 
+        call pacman_movement
+      jmp game_loop
+    
+    no_input:
+        ; no new key, continue in stored direction
+        mov ah, 0        ; dummy so no new direction is set
+        call pacman_movement
+        mov  eax, 200   ;delay 100 milliseconds
+        call Delay
+        jmp game_loop
 
     ; global label
     cmp exitGameBool, 1    ; if exit is triggered only then displey the exitMsg
@@ -986,8 +1027,9 @@ pacman_movement proc
     push esi
     push edi
 
-    ; ah contains the scan code for arrow keys (0x48 up, 0x50 down, 0x4b left, 0x4d right)
-    mov al, ah           ; move scan code into al
+    ; setting for score and P
+    mov  eax, yellow+(black*16)
+    call SetTextColor
 
     ; load old position
     mov ebx, pacmanx    ; ebx = old x
@@ -997,16 +1039,14 @@ pacman_movement proc
     mov edx, ebx        ; edx = newx
     mov esi, ecx        ; esi = newy
 
-    ; adjust newx/newy based on arrow pressed
-    cmp al, 4dh        ; right arrow
+    cmp movement_var, 'R'
     je move_right
-    cmp al, 4bh        ; left arrow
+    cmp movement_var, 'L'
     je move_left
-    cmp al, 48h       ; up arrow
+    cmp movement_var, 'U'
     je move_up
-    cmp al, 50h       ; down arrow
+    cmp movement_var, 'D'
     je move_down
-    jmp done           ; not an arrow key no move
 
     move_right:
         inc edx    ; move right
@@ -1095,8 +1135,13 @@ pacman_movement proc
         pop ecx
         pop ebx
         pop eax
+    
+    ; resetting
+    mov  eax, white+(black*16)
+    call SetTextColor
     ret
 pacman_movement endp
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 end main

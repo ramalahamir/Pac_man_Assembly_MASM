@@ -71,6 +71,7 @@ BUFFER_SIZE = 50
     youLoseMsg byte "You lost the game :(", 0
     PauseMsg byte "Game Paused....", 0
     HidePauseMsg byte "Game Paused....Press any key to continue.......", 0
+    nameAndScoreMsg byte "NAME and SCORE", 0
 
     ; instruction screen
     instrTitle byte "   INSTRUCTIONS   ", 0
@@ -99,7 +100,7 @@ BUFFER_SIZE = 50
     inky_Y dword 0
 
     ; level number
-    level byte 2
+    level byte 3
 
     ; for level 2
     bonusFoodCount dword 10
@@ -283,6 +284,12 @@ main proc
         mov  eax, green+(yellow*16)
         call SetTextColor
         call writeString
+
+        call waitMsg
+
+        mov  eax, white+(black*16)
+        call SetTextColor
+        call displayNameandScore_screen
 
         mov  eax, white+(black*16)
         call SetTextColor
@@ -601,6 +608,71 @@ InstructionScreen PROC
 
     ret
 InstructionScreen endp
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+displayNameandScore_screen proc
+     call clrscr
+
+    ; top border 
+    mov  eax, green+(black*16)
+    call SetTextColor
+
+    ; positioning the start point
+    mov  dh, 2       ; row
+    mov  dl, 10      ; col
+    call gotoxy
+    mov  edx, offset topBorder
+    call WriteString
+
+    ; side borders drawn on 6 rows starting from row 3 to row 6
+    mov  ecx, 3
+    drawSides:
+        mov  dh, cl   ; row
+        mov  dl, 10   ; col
+        call gotoxy
+        mov  edx, offset sideBorder
+        call WriteString
+        inc  cl
+        cmp  cl, 7    
+        jl   drawSides
+
+    ; title
+    mov  eax, yellow+(green*16)
+    call SetTextColor
+    mov  dh, 4
+    mov  dl, 22
+    call gotoxy
+    mov  edx, offset nameAndScoreMsg
+    call WriteString
+
+    mov  eax, yellow+(black*16)
+    call SetTextColor
+    mov  dh, 5
+    mov  dl, 22
+    call gotoxy
+    mov  edx, offset userName
+    call WriteString
+
+    mov  eax, yellow+(black*16)
+    call SetTextColor
+    mov  dh, 5
+    mov  dl, 30
+    call gotoxy
+    mov  edx, offset score
+    call WriteDec
+    
+    ; bottom border at row 6
+    mov  dh, 7    ; row
+    mov  dl, 10   ; col
+    call gotoxy
+    mov  edx, offset bottomBorder
+    mov  eax, green+(black*16)
+    call SetTextColor
+    call WriteString
+    call crlf
+    
+displayNameandScore_screen endp
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

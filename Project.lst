@@ -1,4 +1,4 @@
-Microsoft (R) Macro Assembler Version 14.43.34808.0	    05/11/25 15:27:28
+Microsoft (R) Macro Assembler Version 14.43.34808.0	    05/11/25 16:34:11
 AddTwo.asm						     Page 1 - 1
 
 
@@ -133,15 +133,16 @@ AddTwo.asm						     Page 1 - 1
 	   3A 20 00
  00000A8C 00000000		    score dword 0
  00000A90 00000003		    lives dword 3
+ 00000A94 00			    collision_bool byte 0
 
 				    ; msgs
- 00000A94 00			    exitGameBool byte 0
- 00000A95 45 78 69 74 69	    exittingMsg byte "Exiting Game...... :)", 0
+ 00000A95 00			    exitGameBool byte 0
+ 00000A96 45 78 69 74 69	    exittingMsg byte "Exiting Game...... :)", 0
 	   6E 67 20 47 61
 	   6D 65 2E 2E 2E
 	   2E 2E 2E 20 3A
 	   29 00
- 00000AAB 49 6E 76 61 6C	    invalidMsg byte "Invalid Option entered, Try Again..... :(", 0
+ 00000AAC 49 6E 76 61 6C	    invalidMsg byte "Invalid Option entered, Try Again..... :(", 0
 	   69 64 20 4F 70
 	   74 69 6F 6E 20
 	   65 6E 74 65 72
@@ -150,66 +151,66 @@ AddTwo.asm						     Page 1 - 1
 	   61 69 6E 2E 2E
 	   2E 2E 2E 20 3A
 	   28 00
- 00000AD5 59 6F 75 20 6C	    youLoseMsg byte "You lost the game :(", 0
+ 00000AD6 59 6F 75 20 6C	    youLoseMsg byte "You lost the game :(", 0
 	   6F 73 74 20 74
 	   68 65 20 67 61
 	   6D 65 20 3A 28
 	   00
 
 				    ; instruction screen
- 00000AEA 20 20 20 49 4E	    instrTitle byte "   INSTRUCTIONS   ", 0
+ 00000AEB 20 20 20 49 4E	    instrTitle byte "   INSTRUCTIONS   ", 0
 	   53 54 52 55 43
 	   54 49 4F 4E 53
 	   20 20 20 00
- 00000AFD 55 73 65 20 61	    instrLine1 byte "Use arrow keys to move Pac-Man", 0
+ 00000AFE 55 73 65 20 61	    instrLine1 byte "Use arrow keys to move Pac-Man", 0
 	   72 72 6F 77 20
 	   6B 65 79 73 20
 	   74 6F 20 6D 6F
 	   76 65 20 50 61
 	   63 2D 4D 61 6E
 	   00
- 00000B1C 43 6F 6C 6C 65	    instrLine2 byte "Collect all dots (.) to win", 0
+ 00000B1D 43 6F 6C 6C 65	    instrLine2 byte "Collect all dots (.) to win", 0
 	   63 74 20 61 6C
 	   6C 20 64 6F 74
 	   73 20 28 2E 29
 	   20 74 6F 20 77
 	   69 6E 00
- 00000B38 41 76 6F 69 64	    instrLine3 byte "Avoid ghosts (@ % & $)", 0
+ 00000B39 41 76 6F 69 64	    instrLine3 byte "Avoid ghosts (@ % & $)", 0
 	   20 67 68 6F 73
 	   74 73 20 28 40
 	   20 25 20 26 20
 	   24 29 00
- 00000B4F 50 72 65 73 73	    instrLine4 byte "Press Q anytime to quit", 0
+ 00000B50 50 72 65 73 73	    instrLine4 byte "Press Q anytime to quit", 0
 	   20 51 20 61 6E
 	   79 74 69 6D 65
 	   20 74 6F 20 71
 	   75 69 74 00
- 00000B67 0D 0A 50 72 65	    instrPrompt byte 0Dh,0Ah, "Press 'r' to return...",0
+ 00000B68 0D 0A 50 72 65	    instrPrompt byte 0Dh,0Ah, "Press 'r' to return...",0
 	   73 73 20 27 72
 	   27 20 74 6F 20
 	   72 65 74 75 72
 	   6E 2E 2E 2E 00
 
 				    ; making a temp variable
- 00000B80 00000000		    temp dword 0
+ 00000B81 00000000		    temp dword 0
 				    ; stores the current moving direction
- 00000B84 52			    movement_var byte 'R'
+ 00000B85 52			    movement_var byte 'R'
 
 				    ; ghosts
 				    ; level 1 ghost Red
- 00000B85 00000000		    red_X dword 0
- 00000B89 00000000		    red_Y dword 0
+ 00000B86 00000000		    red_X dword 0
+ 00000B8A 00000000		    red_Y dword 0
 				    ; level 2 ghost pinky
- 00000B8D 00000000		    pinky_X dword 0
- 00000B91 00000000		    pinky_Y dword 0
+ 00000B8E 00000000		    pinky_X dword 0
+ 00000B92 00000000		    pinky_Y dword 0
 				    ; level 3 ghost clyde, inky
- 00000B95 00000000		    clyde_X dword 0
- 00000B99 00000000		    clyde_Y dword 0
- 00000B9D 00000000		    inky_X dword 0
- 00000BA1 00000000		    inky_Y dword 0
+ 00000B96 00000000		    clyde_X dword 0
+ 00000B9A 00000000		    clyde_Y dword 0
+ 00000B9E 00000000		    inky_X dword 0
+ 00000BA2 00000000		    inky_Y dword 0
 
 				    ; level number
- 00000BA5 01			    level byte 1
+ 00000BA6 03			    level byte 3
 
  00000000			.code
  00000000			main proc
@@ -226,7 +227,7 @@ AddTwo.asm						     Page 1 - 1
  00000019  E8 00000696		    call setBlocksSize
  0000001E  E8 000004F6		    call place_pacman
 
- 00000023  A0 00000BA5 R	    mov al, level
+ 00000023  A0 00000BA6 R	    mov al, level
  00000028  3C 01		    cmp al, 1
  0000002A  74 0E		    je level1
  0000002C  3C 02		    cmp al, 2
@@ -271,26 +272,26 @@ AddTwo.asm						     Page 1 - 1
  00000075  EB 4C		      jmp no_input
 
  00000077			      set_right:
- 00000077  C6 05 00000B84 R	        mov movement_var, 'R'
+ 00000077  C6 05 00000B85 R	        mov movement_var, 'R'
 	   52
  0000007E  EB 1B		        jmp move
  00000080			      set_left:
- 00000080  C6 05 00000B84 R	        mov movement_var, 'L'
+ 00000080  C6 05 00000B85 R	        mov movement_var, 'L'
 	   4C
  00000087  EB 12		        jmp move
  00000089			      set_up:
- 00000089  C6 05 00000B84 R	        mov movement_var, 'U'
+ 00000089  C6 05 00000B85 R	        mov movement_var, 'U'
 	   55
  00000090  EB 09		        jmp move
  00000092			      set_down:
- 00000092  C6 05 00000B84 R	        mov movement_var, 'D'
+ 00000092  C6 05 00000B85 R	        mov movement_var, 'D'
 	   44
  00000099  EB 00		        jmp move
 
  0000009B			      move: 
  0000009B  E8 00000AB9		        call pacman_movement
 
- 000000A0  A0 00000BA5 R	        mov al, level
+ 000000A0  A0 00000BA6 R	        mov al, level
  000000A5  3C 01		        cmp al, 1
  000000A7  74 13		        je level1_move
  000000A9  3C 02		        cmp al, 2
@@ -310,7 +311,7 @@ AddTwo.asm						     Page 1 - 1
  000000C3  B4 00		        mov ah, 0        ; dummy so no new direction is set
  000000C5  E8 00000A8F		        call pacman_movement
 
- 000000CA  A0 00000BA5 R	        mov al, level
+ 000000CA  A0 00000BA6 R	        mov al, level
  000000CF  3C 01		        cmp al, 1
  000000D1  74 13		        je level1_no_input
  000000D3  3C 02		        cmp al, 2
@@ -323,17 +324,16 @@ AddTwo.asm						     Page 1 - 1
  000000E1  E8 00000D8C		            call pinky_ghost_movement
  000000E6			        level1_no_input:
  000000E6  E8 00000B9D		            call red_ghost_movement
-				          
-				         
+				               
 				        ; for speed
- 000000EB  A0 00000BA5 R	        mov al, level
+ 000000EB  A0 00000BA6 R	        mov al, level
  000000F0  3C 01		        cmp al, 1
  000000F2  74 22		        je level1_speed
  000000F4  3C 02		        cmp al, 2
  000000F6  74 0F		        je level2_speed 
 
  000000F8			        level3_speed:
- 000000F8  B8 00000050		            mov  eax, 80    ;delay 80 milliseconds
+ 000000F8  B8 000003E8		            mov  eax, 1000    ;delay 80 milliseconds
  000000FD  E8 00000000 E	            call Delay
  00000102  E9 FFFFFF3D		            jmp game_loop
  00000107			        level2_speed:
@@ -346,12 +346,12 @@ AddTwo.asm						     Page 1 - 1
  00000120  E9 FFFFFF1F		            jmp game_loop
 
 				    ; global label
- 00000125  80 3D 00000A94 R	    cmp exitGameBool, 1    ; if exit is triggered only then displey the exitMsg
+ 00000125  80 3D 00000A95 R	    cmp exitGameBool, 1    ; if exit is triggered only then displey the exitMsg
 	   01
  0000012C  75 46		    jne finish
 
  0000012E			    you_lose: 
- 0000012E  BA 00000AD5 R	        mov  edx, offset youLoseMsg
+ 0000012E  BA 00000AD6 R	        mov  edx, offset youLoseMsg
  00000133  B8 000000E2		        mov  eax, green+(yellow*16)
  00000138  E8 00000000 E	        call SetTextColor
  0000013D  E8 00000000 E	        call writeString
@@ -361,7 +361,7 @@ AddTwo.asm						     Page 1 - 1
 
  00000151			    exit_game:: 
  00000151  E8 00000000 E	        call clrscr
- 00000156  BA 00000A95 R	        mov  edx, offset exittingMsg
+ 00000156  BA 00000A96 R	        mov  edx, offset exittingMsg
  0000015B  B8 000000E2		        mov  eax, green+(yellow*16)
  00000160  E8 00000000 E	        call SetTextColor
  00000165  E8 00000000 E	        call writeString
@@ -549,7 +549,7 @@ AddTwo.asm						     Page 1 - 1
 
  0000034D			        incorrectOption:
  0000034D  E8 00000000 E	            call clrscr
- 00000352  BA 00000AAB R	            mov edx, offset invalidMsg
+ 00000352  BA 00000AAC R	            mov edx, offset invalidMsg
  00000357  B8 0000004E		            mov  eax, yellow+(red*16)
  0000035C  E8 00000000 E	            call SetTextColor
  00000361  E8 00000000 E	            call writeString
@@ -610,7 +610,7 @@ AddTwo.asm						     Page 1 - 1
  000003ED  B6 04		    mov  dh, 4
  000003EF  B2 14		    mov  dl, 20
  000003F1  E8 00000000 E	    call gotoxy
- 000003F6  BA 00000AEA R	    mov  edx, offset instrTitle
+ 000003F6  BA 00000AEB R	    mov  edx, offset instrTitle
  000003FB  E8 00000000 E	    call WriteString
 
 				    ; instruction lines 
@@ -620,25 +620,25 @@ AddTwo.asm						     Page 1 - 1
  0000040A  B6 08		    mov  dh, 8
  0000040C  B2 0A		    mov  dl, 10
  0000040E  E8 00000000 E	    call gotoxy
- 00000413  BA 00000AFD R	    mov  edx, offset instrLine1
+ 00000413  BA 00000AFE R	    mov  edx, offset instrLine1
  00000418  E8 00000000 E	    call WriteString
 
  0000041D  B6 09		    mov  dh, 9
  0000041F  B2 0A		    mov  dl, 10
  00000421  E8 00000000 E	    call GotoXY
- 00000426  BA 00000B1C R	    mov  edx, offset instrLine2
+ 00000426  BA 00000B1D R	    mov  edx, offset instrLine2
  0000042B  E8 00000000 E	    call WriteString
 
  00000430  B6 0A		    mov  dh, 10
  00000432  B2 0A		    mov  dl, 10
  00000434  E8 00000000 E	    call gotoxy
- 00000439  BA 00000B38 R	    mov  edx, offset instrLine3
+ 00000439  BA 00000B39 R	    mov  edx, offset instrLine3
  0000043E  E8 00000000 E	    call WriteString
 
  00000443  B6 0B		    mov  dh, 11
  00000445  B2 0A		    mov  dl, 10
  00000447  E8 00000000 E	    call gotoxy
- 0000044C  BA 00000B4F R	    mov  edx, offset instrLine4
+ 0000044C  BA 00000B50 R	    mov  edx, offset instrLine4
  00000451  E8 00000000 E	    call WriteString
 
  00000456  B8 0000000E		    mov  eax, yellow+(black*16)
@@ -646,7 +646,7 @@ AddTwo.asm						     Page 1 - 1
  00000460  B6 0D		    mov  dh, 13
  00000462  B2 0A		    mov  dl, 10
  00000464  E8 00000000 E	    call gotoxy
- 00000469  BA 00000B67 R	    mov  edx, offset instrPrompt
+ 00000469  BA 00000B68 R	    mov  edx, offset instrPrompt
  0000046E  E8 00000000 E	    call WriteString
 
 				    ; wait for 'r' key
@@ -657,7 +657,7 @@ AddTwo.asm						     Page 1 - 1
 
  00000480			    incorrectOption:
  00000480  E8 00000000 E	            call clrscr
- 00000485  BA 00000AAB R	            mov edx, offset invalidMsg
+ 00000485  BA 00000AAC R	            mov edx, offset invalidMsg
  0000048A  B8 0000004E		            mov  eax, yellow+(red*16)
  0000048F  E8 00000000 E	            call SetTextColor
  00000494  E8 00000000 E	            call writeString
@@ -798,20 +798,20 @@ AddTwo.asm						     Page 1 - 1
  0000055F  B8 00000013		        mov eax, rows - 2     ; getting random from 0 - 19
  00000564  E8 00000000 E	        call RandomRange      ; gives 0 - 18
  00000569  40			        inc eax               ; gives 0 - 19
- 0000056A  A3 00000B89 R	        mov red_Y, eax      ; setting the row value for red
+ 0000056A  A3 00000B8A R	        mov red_Y, eax      ; setting the row value for red
 
  0000056F  B8 00000035		        mov eax, cols - 2     ; getting random from 0 - 48
  00000574  E8 00000000 E	        call RandomRange      ; gives 0 - 47
  00000579  40			        inc eax               ; gives 0 - 48
- 0000057A  A3 00000B85 R	        mov red_X, eax      ; setting the column value for red
+ 0000057A  A3 00000B86 R	        mov red_X, eax      ; setting the column value for red
 				    
 				    ; checking if the new position is empty or not to prevent overwriting
 
 				    ; calculating the 1d equivalent index in the maze
  0000057F  BF 00000000 R	    mov  edi, offset maze 
- 00000584  A1 00000B89 R	    mov  eax, red_Y
+ 00000584  A1 00000B8A R	    mov  eax, red_Y
  00000589  6B C0 38		    imul eax, cols + 1     
- 0000058C  03 05 00000B85 R	    add  eax, red_X     
+ 0000058C  03 05 00000B86 R	    add  eax, red_X     
  00000592  03 F8		    add  edi, eax       
 
  00000594  8A 07		    mov al, byte ptr [edi]   ; loading whatever’s already in that position
@@ -841,20 +841,20 @@ AddTwo.asm						     Page 1 - 1
  000005A4  B8 00000013		        mov eax, rows - 2     ; getting random from 0 - 19
  000005A9  E8 00000000 E	        call RandomRange      ; gives 0 - 18
  000005AE  40			        inc eax               ; gives 0 - 19
- 000005AF  A3 00000B91 R	        mov pinky_Y, eax      ; setting the row value for pinky
+ 000005AF  A3 00000B92 R	        mov pinky_Y, eax      ; setting the row value for pinky
 
  000005B4  B8 00000035		        mov eax, cols - 2     ; getting random from 0 - 48
  000005B9  E8 00000000 E	        call RandomRange      ; gives 0 - 47
  000005BE  40			        inc eax               ; gives 0 - 48
- 000005BF  A3 00000B8D R	        mov pinky_X, eax      ; setting the column value for pinky
+ 000005BF  A3 00000B8E R	        mov pinky_X, eax      ; setting the column value for pinky
 				    
 				    ; checking if the new position is empty or not to prevent overwriting
 
 				    ; calculating the 1d equivalent index in the maze
  000005C4  BF 00000000 R	    mov  edi, offset maze 
- 000005C9  A1 00000B91 R	    mov  eax, pinky_Y
+ 000005C9  A1 00000B92 R	    mov  eax, pinky_Y
  000005CE  6B C0 38		    imul eax, cols + 1     
- 000005D1  03 05 00000B8D R	    add  eax, pinky_X     
+ 000005D1  03 05 00000B8E R	    add  eax, pinky_X     
  000005D7  03 F8		    add  edi, eax       
 
  000005D9  8A 07		    mov al, byte ptr [edi]   ; loading whatever’s already in that position
@@ -884,20 +884,20 @@ AddTwo.asm						     Page 1 - 1
  000005E9  B8 00000013		        mov eax, rows - 2     ; getting random from 0 - 19
  000005EE  E8 00000000 E	        call RandomRange      ; gives 0 - 18
  000005F3  40			        inc eax               ; gives 0 - 19
- 000005F4  A3 00000B99 R	        mov clyde_Y, eax      ; setting the row value for clyde
+ 000005F4  A3 00000B9A R	        mov clyde_Y, eax      ; setting the row value for clyde
 
  000005F9  B8 00000035		        mov eax, cols - 2     ; getting random from 0 - 48
  000005FE  E8 00000000 E	        call RandomRange      ; gives 0 - 47
  00000603  40			        inc eax               ; gives 0 - 48
- 00000604  A3 00000B95 R	        mov clyde_X, eax      ; setting the column value for clyde
+ 00000604  A3 00000B96 R	        mov clyde_X, eax      ; setting the column value for clyde
 				    
 				    ; checking if the new position is empty or not to prevent overwriting
 
 				    ; calculating the 1d equivalent index in the maze
  00000609  BF 00000000 R	    mov  edi, offset maze 
- 0000060E  A1 00000B99 R	    mov  eax, clyde_Y
+ 0000060E  A1 00000B9A R	    mov  eax, clyde_Y
  00000613  6B C0 38		    imul eax, cols + 1     
- 00000616  03 05 00000B95 R	    add  eax, clyde_X     
+ 00000616  03 05 00000B96 R	    add  eax, clyde_X     
  0000061C  03 F8		    add  edi, eax       
 
  0000061E  8A 07		    mov al, byte ptr [edi]   ; loading whatever’s already in that position
@@ -916,20 +916,20 @@ AddTwo.asm						     Page 1 - 1
  0000062B  B8 00000013		        mov eax, rows - 2     ; getting random from 0 - 19
  00000630  E8 00000000 E	        call RandomRange      ; gives 0 - 18
  00000635  40			        inc eax               ; gives 0 - 19
- 00000636  A3 00000BA1 R	        mov inky_Y, eax      ; setting the row value for inky
+ 00000636  A3 00000BA2 R	        mov inky_Y, eax      ; setting the row value for inky
 
  0000063B  B8 00000035		        mov eax, cols - 2     ; getting random from 0 - 48
  00000640  E8 00000000 E	        call RandomRange      ; gives 0 - 47
  00000645  40			        inc eax               ; gives 0 - 48
- 00000646  A3 00000B9D R	        mov inky_X, eax      ; setting the column value for inky
+ 00000646  A3 00000B9E R	        mov inky_X, eax      ; setting the column value for inky
 				    
 				    ; checking if the new position is empty or not to prevent overwriting
 
 				    ; calculating the 1d equivalent index in the maze
  0000064B  BF 00000000 R	    mov  edi, offset maze 
- 00000650  A1 00000BA1 R	    mov  eax, inky_Y
+ 00000650  A1 00000BA2 R	    mov  eax, inky_Y
  00000655  6B C0 38		    imul eax, cols + 1     
- 00000658  03 05 00000B9D R	    add  eax, inky_X     
+ 00000658  03 05 00000B9E R	    add  eax, inky_X     
  0000065E  03 F8		    add  edi, eax       
 
  00000660  8A 07		    mov al, byte ptr [edi]   ; loading whatever’s already in that position
@@ -1454,16 +1454,16 @@ AddTwo.asm						     Page 1 - 1
  00000B75  8B D3		    mov edx, ebx        ; edx = newx
  00000B77  8B F1		    mov esi, ecx        ; esi = newy
 
- 00000B79  80 3D 00000B84 R	    cmp movement_var, 'R'
+ 00000B79  80 3D 00000B85 R	    cmp movement_var, 'R'
 	   52
  00000B80  74 1B		    je move_right
- 00000B82  80 3D 00000B84 R	    cmp movement_var, 'L'
+ 00000B82  80 3D 00000B85 R	    cmp movement_var, 'L'
 	   4C
  00000B89  74 15		    je move_left
- 00000B8B  80 3D 00000B84 R	    cmp movement_var, 'U'
+ 00000B8B  80 3D 00000B85 R	    cmp movement_var, 'U'
 	   55
  00000B92  74 0F		    je move_up
- 00000B94  80 3D 00000B84 R	    cmp movement_var, 'D'
+ 00000B94  80 3D 00000B85 R	    cmp movement_var, 'D'
 	   44
  00000B9B  74 09		    je move_down
 
@@ -1505,7 +1505,7 @@ AddTwo.asm						     Page 1 - 1
  00000BDA  03 F8		        add edi, eax
  00000BDC  C6 07 01		        mov byte ptr [edi], 1   ; clear the food
 
- 00000BDF  89 15 00000B80 R	        mov temp, edx      ; preserving edx first
+ 00000BDF  89 15 00000B81 R	        mov temp, edx      ; preserving edx first
 				        ; write the new score
  00000BE5  B6 04		        mov dh, 4   ; row
  00000BE7  B2 1B		        mov dl, 27   ; col
@@ -1516,7 +1516,7 @@ AddTwo.asm						     Page 1 - 1
  00000BF4  A1 00000A8C R	        mov eax, score
  00000BF9  E8 00000000 E	        call writeDec
 
- 00000BFE  8B 15 00000B80 R	        mov edx, temp             ;  restoring 
+ 00000BFE  8B 15 00000B81 R	        mov edx, temp             ;  restoring 
 
  00000C04			    movethere:
 				        ; Erase old P 
@@ -1526,7 +1526,7 @@ AddTwo.asm						     Page 1 - 1
  00000C0B  BF 00000000 R	        mov edi, offset maze
  00000C10  03 F8		        add edi, eax
 
- 00000C12  89 15 00000B80 R	        mov temp, edx                  ; preserving edx first
+ 00000C12  89 15 00000B81 R	        mov temp, edx                  ; preserving edx first
  00000C18  C6 07 20		        mov byte ptr [edi], ' '        ; updating the maze
  00000C1B  8A F1		        mov dh, cl                     ; maze old row 
  00000C1D  80 C6 06		        add dh, row_start_point        ; adding the start point to get accurate X
@@ -1535,7 +1535,7 @@ AddTwo.asm						     Page 1 - 1
  00000C25  E8 00000000 E	        call gotoxy
  00000C2A  B0 20		        mov al, ' '
  00000C2C  E8 00000000 E	        call writechar
- 00000C31  8B 15 00000B80 R	        mov edx, temp                  ;  restoring 
+ 00000C31  8B 15 00000B81 R	        mov edx, temp                  ;  restoring 
 
 				        ; Draw new P on screen
  00000C37  8B C6		        mov eax, esi              ; new row
@@ -1544,7 +1544,7 @@ AddTwo.asm						     Page 1 - 1
  00000C3E  BF 00000000 R	        mov edi, offset maze
  00000C43  03 F8		        add edi, eax
 				        ; set cursor to new coords 
- 00000C45  89 15 00000B80 R	        mov temp, edx                  ; preserving edx first
+ 00000C45  89 15 00000B81 R	        mov temp, edx                  ; preserving edx first
  00000C4B  C6 07 50		        mov byte ptr [edi], 'P'        ; updating the maze
 
  00000C4E  66| 8B C6		        mov ax, si                     ; new row
@@ -1555,7 +1555,7 @@ AddTwo.asm						     Page 1 - 1
  00000C59  E8 00000000 E	        call gotoxy
  00000C5E  B0 50		        mov al, 'P'
  00000C60  E8 00000000 E	        call writechar
- 00000C65  8B 15 00000B80 R	        mov edx, temp                  ;  restoring 
+ 00000C65  8B 15 00000B81 R	        mov edx, temp                  ;  restoring 
 
 				        ; Update variables
  00000C6B  89 15 00000920 R	        mov pacmanx, edx
@@ -1592,8 +1592,8 @@ AddTwo.asm						     Page 1 - 1
  00000C93  E8 00000000 E	    call SetTextColor
 
 				    ; load old RED position
- 00000C98  8B 1D 00000B85 R	    mov ebx, red_X    ; ebx = old x
- 00000C9E  8B 0D 00000B89 R	    mov ecx, red_Y    ; ecx = old y
+ 00000C98  8B 1D 00000B86 R	    mov ebx, red_X    ; ebx = old x
+ 00000C9E  8B 0D 00000B8A R	    mov ecx, red_Y    ; ecx = old y
 
 				    ; start with newx = oldx, newy = oldy
  00000CA4  8B D3		    mov edx, ebx        ; edx = newx
@@ -1666,7 +1666,7 @@ AddTwo.asm						     Page 1 - 1
 
  00000D17			    movethere:
 				        ; Erase old Ghost
- 00000D17  89 15 00000B80 R	        mov temp, edx                  ; preserving edx
+ 00000D17  89 15 00000B81 R	        mov temp, edx                  ; preserving edx
 
 				        ; determine what to restore at old position
  00000D1D  8B C1		        mov eax, ecx
@@ -1720,11 +1720,11 @@ AddTwo.asm						     Page 1 - 1
  00000D90  E8 00000000 E	            call writechar
 
  00000D95			        restored:
- 00000D95  8B 15 00000B80 R	                mov edx, temp                  ;  restoring 
+ 00000D95  8B 15 00000B81 R	                mov edx, temp                  ;  restoring 
 
 				        ; Draw new ghost on screen
 				        ; set cursor to new coords 
- 00000D9B  89 15 00000B80 R	        mov temp, edx                  ; preserving edx first
+ 00000D9B  89 15 00000B81 R	        mov temp, edx                  ; preserving edx first
  00000DA1  66| 8B C6		        mov ax, si                     ; new row
  00000DA4  8A F0		        mov dh, al                     ; new maze row
  00000DA6  80 C6 06		        add dh, row_start_point        ; adding the start point to get accurate X
@@ -1733,11 +1733,11 @@ AddTwo.asm						     Page 1 - 1
  00000DAC  E8 00000000 E	        call gotoxy
  00000DB1  B0 40		        mov al, '@'
  00000DB3  E8 00000000 E	        call writechar
- 00000DB8  8B 15 00000B80 R	        mov edx, temp                  ;  restoring 
+ 00000DB8  8B 15 00000B81 R	        mov edx, temp                  ;  restoring 
 
 				        ; Update variables
- 00000DBE  89 15 00000B85 R	        mov red_X, edx
- 00000DC4  89 35 00000B89 R	        mov red_Y, esi
+ 00000DBE  89 15 00000B86 R	        mov red_X, edx
+ 00000DC4  89 35 00000B8A R	        mov red_Y, esi
  00000DCA  E9 00000092		        jmp done
 				    
  00000DCF			    collision_detected:
@@ -1821,8 +1821,8 @@ AddTwo.asm						     Page 1 - 1
  00000E7D  E8 00000000 E	    call SetTextColor
 
 				    ; load old pinky position
- 00000E82  8B 1D 00000B8D R	    mov ebx, pinky_X    ; ebx = old x
- 00000E88  8B 0D 00000B91 R	    mov ecx, pinky_Y    ; ecx = old y
+ 00000E82  8B 1D 00000B8E R	    mov ebx, pinky_X    ; ebx = old x
+ 00000E88  8B 0D 00000B92 R	    mov ecx, pinky_Y    ; ecx = old y
 
 				    ; start with newx = oldx, newy = oldy
  00000E8E  8B D3		    mov edx, ebx        ; edx = newx
@@ -1885,12 +1885,17 @@ AddTwo.asm						     Page 1 - 1
  00000EE5  3C 24		        cmp al, '$'       
  00000EE7  74 A9		        je try_again
 
-				        ;cmp al, 'P'        ; pacman
-				        ;je collision_detected
+				        ; collision with pacman
+				       ; mov   eax, edx       ; check the new col
+				       ; cmp   eax, pacmanx
+				       ; jne   movethere      ; if no match then continue ghost movement
+				       ; mov   eax, esi       ; check the new row
+				       ; cmp   eax, pacmany       
+				       ; je collision_detected  ; if both equal then go to collision detection
 
  00000EE9			    movethere:
 				        ; Erase old Ghost
- 00000EE9  89 15 00000B80 R	        mov temp, edx                  ; preserving edx
+ 00000EE9  89 15 00000B81 R	        mov temp, edx                  ; preserving edx
 
 				        ; determine what to restore at old position
  00000EEF  8B C1		        mov eax, ecx
@@ -1944,11 +1949,11 @@ AddTwo.asm						     Page 1 - 1
  00000F62  E8 00000000 E	            call writechar
 
  00000F67			        restored:
- 00000F67  8B 15 00000B80 R	                mov edx, temp                  ;  restoring 
+ 00000F67  8B 15 00000B81 R	                mov edx, temp                  ;  restoring 
 
 				        ; Draw new ghost on screen
 				        ; set cursor to new coords 
- 00000F6D  89 15 00000B80 R	        mov temp, edx                  ; preserving edx first
+ 00000F6D  89 15 00000B81 R	        mov temp, edx                  ; preserving edx first
  00000F73  66| 8B C6		        mov ax, si                     ; new row
  00000F76  8A F0		        mov dh, al                     ; new maze row
  00000F78  80 C6 06		        add dh, row_start_point        ; adding the start point to get accurate X
@@ -1957,11 +1962,58 @@ AddTwo.asm						     Page 1 - 1
  00000F7E  E8 00000000 E	        call gotoxy
  00000F83  B0 25		        mov al, '%'
  00000F85  E8 00000000 E	        call writechar
- 00000F8A  8B 15 00000B80 R	        mov edx, temp                  ;  restoring 
+ 00000F8A  8B 15 00000B81 R	        mov edx, temp                  ;  restoring 
 
 				        ; Update variables
- 00000F90  89 15 00000B8D R	        mov pinky_X, edx
- 00000F96  89 35 00000B91 R	        mov pinky_Y, esi
+ 00000F90  89 15 00000B8E R	        mov pinky_X, edx
+ 00000F96  89 35 00000B92 R	        mov pinky_Y, esi
+				    
+				   ; collision_detected:
+				   ;     mov byte ptr [edi], ' '   ; clear the pacman in the maze
+				   ;     ; now clearing on the screen
+				   ;     mov eax, pacmany               ; old row
+				   ;     mov dh, al                     
+				   ;    add dh, row_start_point        ; adding the start point to get accurate X
+				   ;     mov eax, pacmanx               ; old col
+				   ;     mov dl, al                     
+				   ;     add dl, col_start_point        ; adding the start point to get accurate Y
+				   ;     call gotoxy
+				   ;     mov al, ' '
+				   ;     call writechar
+
+				   ;     ; Update variables
+				   ;     mov pacmanx, 1
+				   ;     mov pacmany, 1
+
+				   ;     mov  eax, yellow+(black*16)
+				   ;     call SetTextColor
+
+				   ;     ; write the new pacman
+				   ;     mov eax, pacmany
+				   ;     imul eax, cols+1
+				   ;     add eax, pacmanx
+				   ;     mov edi, offset maze
+				   ;     add edi, eax
+				   ;     mov byte ptr [edi], 'P'         ; updating the maze
+
+				   ;     mov eax, pacmany               ; new row
+				   ;     mov dh, al                     
+				   ;     add dh, row_start_point        ; adding the start point to get accurate X
+				   ;     mov eax, pacmanx               ; new col
+				   ;     mov dl, al                     
+				   ;     add dl, col_start_point        ; adding the start point to get accurate Y
+				   ;     call gotoxy
+				   ;     mov al, 'P'
+				   ;     call writechar
+
+				   ;     ;decrement the lives 
+				   ;     dec lives
+				   ;     mov eax, lives
+				   ;     ; writing the updated lives
+				   ;     mov dh, 4   ; row
+				   ;     mov dl, 72   ; col
+				   ;     call gotoxy
+				   ;     call writedec
 
  00000F9C			    done:
 				        ; restore registers
@@ -1994,8 +2046,8 @@ AddTwo.asm						     Page 1 - 1
  00000FB8  E8 00000000 E	    call SetTextColor
 
 				    ; load old clyde position
- 00000FBD  8B 1D 00000B95 R	    mov ebx, clyde_X    ; ebx = old x
- 00000FC3  8B 0D 00000B99 R	    mov ecx, clyde_Y    ; ecx = old y
+ 00000FBD  8B 1D 00000B96 R	    mov ebx, clyde_X    ; ebx = old x
+ 00000FC3  8B 0D 00000B9A R	    mov ecx, clyde_Y    ; ecx = old y
 
 				    ; start with newx = oldx, newy = oldy
  00000FC9  8B D3		    mov edx, ebx        ; edx = newx
@@ -2058,12 +2110,17 @@ AddTwo.asm						     Page 1 - 1
  00001020  3C 25		        cmp al, '%'       
  00001022  74 A9		        je try_again
 
-				        ;cmp al, 'P'        ; pacman
-				        ;je collision_detected
+				    ;    ; collision with pacman
+				    ;    mov   eax, edx       ; check the new col
+				    ;    cmp   eax, pacmanx
+				    ;    jne   movethere      ; if no match then continue ghost movement
+				    ;    mov   eax, esi       ; check the new row
+				    ;    cmp   eax, pacmany       
+				    ;    je collision_detected  ; if both equal then go to collision detection
 
  00001024			    movethere:
 				        ; Erase old Ghost
- 00001024  89 15 00000B80 R	        mov temp, edx                  ; preserving edx
+ 00001024  89 15 00000B81 R	        mov temp, edx                  ; preserving edx
 
 				        ; determine what to restore at old position
  0000102A  8B C1		        mov eax, ecx
@@ -2117,11 +2174,11 @@ AddTwo.asm						     Page 1 - 1
  0000109D  E8 00000000 E	            call writechar
 
  000010A2			        restored:
- 000010A2  8B 15 00000B80 R	                mov edx, temp                  ;  restoring 
+ 000010A2  8B 15 00000B81 R	                mov edx, temp                  ;  restoring 
 
 				        ; Draw new ghost on screen
 				        ; set cursor to new coords 
- 000010A8  89 15 00000B80 R	        mov temp, edx                  ; preserving edx first
+ 000010A8  89 15 00000B81 R	        mov temp, edx                  ; preserving edx first
  000010AE  66| 8B C6		        mov ax, si                     ; new row
  000010B1  8A F0		        mov dh, al                     ; new maze row
  000010B3  80 C6 06		        add dh, row_start_point        ; adding the start point to get accurate X
@@ -2130,11 +2187,58 @@ AddTwo.asm						     Page 1 - 1
  000010B9  E8 00000000 E	        call gotoxy
  000010BE  B0 24		        mov al, '$'
  000010C0  E8 00000000 E	        call writechar
- 000010C5  8B 15 00000B80 R	        mov edx, temp                  ;  restoring 
+ 000010C5  8B 15 00000B81 R	        mov edx, temp                  ;  restoring 
 
 				        ; Update variables
- 000010CB  89 15 00000B95 R	        mov clyde_X, edx
- 000010D1  89 35 00000B99 R	        mov clyde_Y, esi
+ 000010CB  89 15 00000B96 R	        mov clyde_X, edx
+ 000010D1  89 35 00000B9A R	        mov clyde_Y, esi
+				    
+				   ; collision_detected:
+				   ;     mov byte ptr [edi], ' '   ; clear the pacman in the maze
+				   ;     ; now clearing on the screen
+				   ;     mov eax, pacmany               ; old row
+				   ;     mov dh, al                     
+				   ;     add dh, row_start_point        ; adding the start point to get accurate X
+				   ;     mov eax, pacmanx               ; old col
+				   ;     mov dl, al                     
+				   ;     add dl, col_start_point        ; adding the start point to get accurate Y
+				   ;     call gotoxy
+				   ;     mov al, ' '
+				   ;     call writechar
+
+				   ;     ; Update variables
+				   ;     mov pacmanx, 1
+				   ;     mov pacmany, 1
+
+				   ;     mov  eax, yellow+(black*16)
+				   ;     call SetTextColor
+
+				        ; write the new pacman
+				   ;     mov eax, pacmany
+				   ;     imul eax, cols+1
+				   ;     add eax, pacmanx
+				   ;     mov edi, offset maze
+				   ;     add edi, eax
+				   ;     mov byte ptr [edi], 'P'         ; updating the maze
+
+				   ;     mov eax, pacmany               ; new row
+				   ;     mov dh, al                     
+				   ;     add dh, row_start_point        ; adding the start point to get accurate X
+				   ;     mov eax, pacmanx               ; new col
+				   ;     mov dl, al                     
+				   ;     add dl, col_start_point        ; adding the start point to get accurate Y
+				   ;     call gotoxy
+				   ;     mov al, 'P'
+				   ;     call writechar
+
+				   ;     ;decrement the lives 
+				   ;     dec lives
+				   ;     mov eax, lives
+				   ;     ; writing the updated lives
+				   ;     mov dh, 4   ; row
+				   ;     mov dl, 72   ; col
+				   ;     call gotoxy
+				   ;     call writedec
 
  000010D7			    done:
 				        ; restore registers
@@ -2167,8 +2271,8 @@ AddTwo.asm						     Page 1 - 1
  000010F3  E8 00000000 E	    call SetTextColor
 
 				    ; load old inky position
- 000010F8  8B 1D 00000B9D R	    mov ebx, inky_X    ; ebx = old x
- 000010FE  8B 0D 00000BA1 R	    mov ecx, inky_Y    ; ecx = old y
+ 000010F8  8B 1D 00000B9E R	    mov ebx, inky_X    ; ebx = old x
+ 000010FE  8B 0D 00000BA2 R	    mov ecx, inky_Y    ; ecx = old y
 
 				    ; start with newx = oldx, newy = oldy
  00001104  8B D3		    mov edx, ebx        ; edx = newx
@@ -2231,12 +2335,17 @@ AddTwo.asm						     Page 1 - 1
  0000115B  3C 24		        cmp al, '$'       
  0000115D  74 A9		        je try_again
 
-				        ;cmp al, 'P'        ; pacman
-				        ;je collision_detected
+				    ;    ; collision with pacman
+				    ;    mov   eax, edx       ; check the new col
+				    ;    cmp   eax, pacmanx
+				    ;    jne   movethere      ; if no match then continue ghost movement
+				    ;    mov   eax, esi       ; check the new row
+				    ;    cmp   eax, pacmany       
+				    ;    je collision_detected  ; if both equal then go to collision detection
 
  0000115F			    movethere:
 				        ; Erase old Ghost
- 0000115F  89 15 00000B80 R	        mov temp, edx                  ; preserving edx
+ 0000115F  89 15 00000B81 R	        mov temp, edx                  ; preserving edx
 
 				        ; determine what to restore at old position
  00001165  8B C1		        mov eax, ecx
@@ -2290,11 +2399,11 @@ AddTwo.asm						     Page 1 - 1
  000011D8  E8 00000000 E	            call writechar
 
  000011DD			        restored:
- 000011DD  8B 15 00000B80 R	                mov edx, temp                  ;  restoring 
+ 000011DD  8B 15 00000B81 R	                mov edx, temp                  ;  restoring 
 
 				        ; Draw new ghost on screen
 				        ; set cursor to new coords 
- 000011E3  89 15 00000B80 R	        mov temp, edx                  ; preserving edx first
+ 000011E3  89 15 00000B81 R	        mov temp, edx                  ; preserving edx first
  000011E9  66| 8B C6		        mov ax, si                     ; new row
  000011EC  8A F0		        mov dh, al                     ; new maze row
  000011EE  80 C6 06		        add dh, row_start_point        ; adding the start point to get accurate X
@@ -2303,11 +2412,58 @@ AddTwo.asm						     Page 1 - 1
  000011F4  E8 00000000 E	        call gotoxy
  000011F9  B0 26		        mov al, '&'
  000011FB  E8 00000000 E	        call writechar
- 00001200  8B 15 00000B80 R	        mov edx, temp                  ;  restoring 
+ 00001200  8B 15 00000B81 R	        mov edx, temp                  ;  restoring 
 
 				        ; Update variables
- 00001206  89 15 00000B9D R	        mov inky_X, edx
- 0000120C  89 35 00000BA1 R	        mov inky_Y, esi
+ 00001206  89 15 00000B9E R	        mov inky_X, edx
+ 0000120C  89 35 00000BA2 R	        mov inky_Y, esi
+
+				   ; collision_detected:
+				   ;     mov byte ptr [edi], ' '   ; clear the pacman in the maze
+				   ;     ; now clearing on the screen
+				   ;     mov eax, pacmany               ; old row
+				   ;     mov dh, al                     
+				   ;     add dh, row_start_point        ; adding the start point to get accurate X
+				   ;     mov eax, pacmanx               ; old col
+				   ;     mov dl, al                     
+				   ;     add dl, col_start_point        ; adding the start point to get accurate Y
+				   ;     call gotoxy
+				   ;     mov al, ' '
+				   ;     call writechar
+
+				   ;    ; Update variables
+				   ;     mov pacmanx, 1
+				   ;     mov pacmany, 1
+
+				   ;     mov  eax, yellow+(black*16)
+				   ;     call SetTextColor
+
+				   ;     ; write the new pacman
+				   ;     mov eax, pacmany
+				   ;     imul eax, cols+1
+				   ;     add eax, pacmanx
+				   ;     mov edi, offset maze
+				   ;     add edi, eax
+				   ;     mov byte ptr [edi], 'P'         ; updating the maze
+
+				   ;     mov eax, pacmany               ; new row
+				   ;     mov dh, al                     
+				   ;     add dh, row_start_point        ; adding the start point to get accurate X
+				   ;     mov eax, pacmanx               ; new col
+				   ;     mov dl, al                     
+				   ;     add dl, col_start_point        ; adding the start point to get accurate Y
+				   ;     call gotoxy
+				   ;     mov al, 'P'
+				   ;     call writechar
+
+				   ;     ;decrement the lives 
+				   ;     dec lives
+				   ;     mov eax, lives
+				   ;     ; writing the updated lives
+				   ;     mov dh, 4   ; row
+				   ;     mov dl, 72   ; col
+				   ;     call gotoxy
+				   ;     call writedec
 
  00001212			    done:
 				        ; restore registers
@@ -2327,7 +2483,7 @@ AddTwo.asm						     Page 1 - 1
 				;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 				end main
-Microsoft (R) Macro Assembler Version 14.43.34808.0	    05/11/25 15:27:28
+Microsoft (R) Macro Assembler Version 14.43.34808.0	    05/11/25 16:34:11
 AddTwo.asm						     Symbols 2 - 1
 
 
@@ -2421,7 +2577,7 @@ Segments and Groups:
 
 FLAT . . . . . . . . . . . . . .	GROUP
 STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
-_DATA  . . . . . . . . . . . . .	32 Bit	 00000BA6 Para	  Public  'DATA'	
+_DATA  . . . . . . . . . . . . .	32 Bit	 00000BA7 Para	  Public  'DATA'	
 _TEXT  . . . . . . . . . . . . .	32 Bit	 00001223 Para	  Public  'CODE'	
 
 
@@ -2879,31 +3035,32 @@ block_width  . . . . . . . . . .	DWord	 00000934 _DATA
 blue . . . . . . . . . . . . . .	Number	 00000001h   
 bottomBorder . . . . . . . . . .	Byte	 000009F6 _DATA	
 brown  . . . . . . . . . . . . .	Number	 00000006h   
-clyde_X  . . . . . . . . . . . .	DWord	 00000B95 _DATA	
-clyde_Y  . . . . . . . . . . . .	DWord	 00000B99 _DATA	
+clyde_X  . . . . . . . . . . . .	DWord	 00000B96 _DATA	
+clyde_Y  . . . . . . . . . . . .	DWord	 00000B9A _DATA	
 col_start_point  . . . . . . . .	Number	 00000014h   
+collision_bool . . . . . . . . .	Byte	 00000A94 _DATA	
 cols . . . . . . . . . . . . . .	Number	 00000037h   
 cyan . . . . . . . . . . . . . .	Number	 00000003h   
 eaten_bool . . . . . . . . . . .	Byte	 0000091B _DATA	
 eaten  . . . . . . . . . . . . .	Byte	 00000498 _DATA	
-exitGameBool . . . . . . . . . .	Byte	 00000A94 _DATA	
+exitGameBool . . . . . . . . . .	Byte	 00000A95 _DATA	
 exit_game  . . . . . . . . . . .	L Near	 00000151 _TEXT	
-exittingMsg  . . . . . . . . . .	Byte	 00000A95 _DATA	
+exittingMsg  . . . . . . . . . .	Byte	 00000A96 _DATA	
 exit . . . . . . . . . . . . . .	Text   	 INVOKE ExitProcess,0
 gray . . . . . . . . . . . . . .	Number	 00000008h   
 green  . . . . . . . . . . . . .	Number	 00000002h   
 helloMsg . . . . . . . . . . . .	Byte	 0000096A _DATA	
-inky_X . . . . . . . . . . . . .	DWord	 00000B9D _DATA	
-inky_Y . . . . . . . . . . . . .	DWord	 00000BA1 _DATA	
+inky_X . . . . . . . . . . . . .	DWord	 00000B9E _DATA	
+inky_Y . . . . . . . . . . . . .	DWord	 00000BA2 _DATA	
 inputMsg . . . . . . . . . . . .	Byte	 00000951 _DATA	
-instrLine1 . . . . . . . . . . .	Byte	 00000AFD _DATA	
-instrLine2 . . . . . . . . . . .	Byte	 00000B1C _DATA	
-instrLine3 . . . . . . . . . . .	Byte	 00000B38 _DATA	
-instrLine4 . . . . . . . . . . .	Byte	 00000B4F _DATA	
-instrPrompt  . . . . . . . . . .	Byte	 00000B67 _DATA	
-instrTitle . . . . . . . . . . .	Byte	 00000AEA _DATA	
-invalidMsg . . . . . . . . . . .	Byte	 00000AAB _DATA	
-level  . . . . . . . . . . . . .	Byte	 00000BA5 _DATA	
+instrLine1 . . . . . . . . . . .	Byte	 00000AFE _DATA	
+instrLine2 . . . . . . . . . . .	Byte	 00000B1D _DATA	
+instrLine3 . . . . . . . . . . .	Byte	 00000B39 _DATA	
+instrLine4 . . . . . . . . . . .	Byte	 00000B50 _DATA	
+instrPrompt  . . . . . . . . . .	Byte	 00000B68 _DATA	
+instrTitle . . . . . . . . . . .	Byte	 00000AEB _DATA	
+invalidMsg . . . . . . . . . . .	Byte	 00000AAC _DATA	
+level  . . . . . . . . . . . . .	Byte	 00000BA6 _DATA	
 lightBlue  . . . . . . . . . . .	Number	 00000009h   
 lightCyan  . . . . . . . . . . .	Number	 0000000Bh   
 lightGray  . . . . . . . . . . .	Number	 00000007h   
@@ -2915,18 +3072,18 @@ lives  . . . . . . . . . . . . .	DWord	 00000A90 _DATA
 magenta  . . . . . . . . . . . .	Number	 00000005h   
 maze . . . . . . . . . . . . . .	Byte	 00000000 _DATA	
 menuTitle  . . . . . . . . . . .	Byte	 00000A1F _DATA	
-movement_var . . . . . . . . . .	Byte	 00000B84 _DATA	
+movement_var . . . . . . . . . .	Byte	 00000B85 _DATA	
 opt1 . . . . . . . . . . . . . .	Byte	 00000A2F _DATA	
 opt2 . . . . . . . . . . . . . .	Byte	 00000A3D _DATA	
 opt3 . . . . . . . . . . . . . .	Byte	 00000A4E _DATA	
 opt4 . . . . . . . . . . . . . .	Byte	 00000A5E _DATA	
 pacmanX  . . . . . . . . . . . .	DWord	 00000920 _DATA	
 pacmanY  . . . . . . . . . . . .	DWord	 00000924 _DATA	
-pinky_X  . . . . . . . . . . . .	DWord	 00000B8D _DATA	
-pinky_Y  . . . . . . . . . . . .	DWord	 00000B91 _DATA	
+pinky_X  . . . . . . . . . . . .	DWord	 00000B8E _DATA	
+pinky_Y  . . . . . . . . . . . .	DWord	 00000B92 _DATA	
 rand_pos . . . . . . . . . . . .	DWord	 0000091C _DATA	
-red_X  . . . . . . . . . . . . .	DWord	 00000B85 _DATA	
-red_Y  . . . . . . . . . . . . .	DWord	 00000B89 _DATA	
+red_X  . . . . . . . . . . . . .	DWord	 00000B86 _DATA	
+red_Y  . . . . . . . . . . . . .	DWord	 00000B8A _DATA	
 red  . . . . . . . . . . . . . .	Number	 00000004h   
 returnToMenu . . . . . . . . . .	L Near	 0000024F _TEXT	
 row_start_point  . . . . . . . .	Number	 00000006h   
@@ -2937,14 +3094,14 @@ select_optionMsg . . . . . . . .	Byte	 00000A66 _DATA
 sideBorder . . . . . . . . . . .	Byte	 000009CD _DATA	
 startX . . . . . . . . . . . . .	DWord	 00000928 _DATA	
 startY . . . . . . . . . . . . .	DWord	 0000092C _DATA	
-temp . . . . . . . . . . . . . .	DWord	 00000B80 _DATA	
+temp . . . . . . . . . . . . . .	DWord	 00000B81 _DATA	
 topBorder  . . . . . . . . . . .	Byte	 000009A4 _DATA	
 userName . . . . . . . . . . . .	Byte	 00000972 _DATA	
 welcomeMsg . . . . . . . . . . .	Byte	 00000938 _DATA	
 white  . . . . . . . . . . . . .	Number	 0000000Fh   
 wsprintf . . . . . . . . . . . .	Text   	 wsprintfA
 yellow . . . . . . . . . . . . .	Number	 0000000Eh   
-youLoseMsg . . . . . . . . . . .	Byte	 00000AD5 _DATA	
+youLoseMsg . . . . . . . . . . .	Byte	 00000AD6 _DATA	
 
 	   0 Warnings
 	   0 Errors

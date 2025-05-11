@@ -55,6 +55,7 @@ block_char  = '*'
     lives_txt byte "LIVES: ", 0
     score dword 0
     lives dword 3
+    collision_bool byte 0
 
     ; msgs
     exitGameBool byte 0
@@ -89,7 +90,7 @@ block_char  = '*'
     inky_Y dword 0
 
     ; level number
-    level byte 1
+    level byte 3
 
 .code
 main proc
@@ -199,8 +200,7 @@ main proc
             call pinky_ghost_movement
         level1_no_input:
             call red_ghost_movement
-          
-         
+               
         ; for speed
         mov al, level
         cmp al, 1
@@ -1722,8 +1722,13 @@ pinky_ghost_movement proc
         cmp al, '$'       
         je try_again
 
-        ;cmp al, 'P'        ; pacman
-        ;je collision_detected
+        ; collision with pacman
+       ; mov   eax, edx       ; check the new col
+       ; cmp   eax, pacmanx
+       ; jne   movethere      ; if no match then continue ghost movement
+       ; mov   eax, esi       ; check the new row
+       ; cmp   eax, pacmany       
+       ; je collision_detected  ; if both equal then go to collision detection
 
     movethere:
         ; Erase old Ghost
@@ -1799,6 +1804,53 @@ pinky_ghost_movement proc
         ; Update variables
         mov pinky_X, edx
         mov pinky_Y, esi
+    
+   ; collision_detected:
+   ;     mov byte ptr [edi], ' '   ; clear the pacman in the maze
+   ;     ; now clearing on the screen
+   ;     mov eax, pacmany               ; old row
+   ;     mov dh, al                     
+   ;    add dh, row_start_point        ; adding the start point to get accurate X
+   ;     mov eax, pacmanx               ; old col
+   ;     mov dl, al                     
+   ;     add dl, col_start_point        ; adding the start point to get accurate Y
+   ;     call gotoxy
+   ;     mov al, ' '
+   ;     call writechar
+
+   ;     ; Update variables
+   ;     mov pacmanx, 1
+   ;     mov pacmany, 1
+
+   ;     mov  eax, yellow+(black*16)
+   ;     call SetTextColor
+
+   ;     ; write the new pacman
+   ;     mov eax, pacmany
+   ;     imul eax, cols+1
+   ;     add eax, pacmanx
+   ;     mov edi, offset maze
+   ;     add edi, eax
+   ;     mov byte ptr [edi], 'P'         ; updating the maze
+
+   ;     mov eax, pacmany               ; new row
+   ;     mov dh, al                     
+   ;     add dh, row_start_point        ; adding the start point to get accurate X
+   ;     mov eax, pacmanx               ; new col
+   ;     mov dl, al                     
+   ;     add dl, col_start_point        ; adding the start point to get accurate Y
+   ;     call gotoxy
+   ;     mov al, 'P'
+   ;     call writechar
+
+   ;     ;decrement the lives 
+   ;     dec lives
+   ;     mov eax, lives
+   ;     ; writing the updated lives
+   ;     mov dh, 4   ; row
+   ;     mov dl, 72   ; col
+   ;     call gotoxy
+   ;     call writedec
 
     done:
         ; restore registers
@@ -1895,8 +1947,13 @@ clyde_ghost_movement proc
         cmp al, '%'       
         je try_again
 
-        ;cmp al, 'P'        ; pacman
-        ;je collision_detected
+    ;    ; collision with pacman
+    ;    mov   eax, edx       ; check the new col
+    ;    cmp   eax, pacmanx
+    ;    jne   movethere      ; if no match then continue ghost movement
+    ;    mov   eax, esi       ; check the new row
+    ;    cmp   eax, pacmany       
+    ;    je collision_detected  ; if both equal then go to collision detection
 
     movethere:
         ; Erase old Ghost
@@ -1972,6 +2029,53 @@ clyde_ghost_movement proc
         ; Update variables
         mov clyde_X, edx
         mov clyde_Y, esi
+    
+   ; collision_detected:
+   ;     mov byte ptr [edi], ' '   ; clear the pacman in the maze
+   ;     ; now clearing on the screen
+   ;     mov eax, pacmany               ; old row
+   ;     mov dh, al                     
+   ;     add dh, row_start_point        ; adding the start point to get accurate X
+   ;     mov eax, pacmanx               ; old col
+   ;     mov dl, al                     
+   ;     add dl, col_start_point        ; adding the start point to get accurate Y
+   ;     call gotoxy
+   ;     mov al, ' '
+   ;     call writechar
+
+   ;     ; Update variables
+   ;     mov pacmanx, 1
+   ;     mov pacmany, 1
+
+   ;     mov  eax, yellow+(black*16)
+   ;     call SetTextColor
+
+        ; write the new pacman
+   ;     mov eax, pacmany
+   ;     imul eax, cols+1
+   ;     add eax, pacmanx
+   ;     mov edi, offset maze
+   ;     add edi, eax
+   ;     mov byte ptr [edi], 'P'         ; updating the maze
+
+   ;     mov eax, pacmany               ; new row
+   ;     mov dh, al                     
+   ;     add dh, row_start_point        ; adding the start point to get accurate X
+   ;     mov eax, pacmanx               ; new col
+   ;     mov dl, al                     
+   ;     add dl, col_start_point        ; adding the start point to get accurate Y
+   ;     call gotoxy
+   ;     mov al, 'P'
+   ;     call writechar
+
+   ;     ;decrement the lives 
+   ;     dec lives
+   ;     mov eax, lives
+   ;     ; writing the updated lives
+   ;     mov dh, 4   ; row
+   ;     mov dl, 72   ; col
+   ;     call gotoxy
+   ;     call writedec
 
     done:
         ; restore registers
@@ -2068,8 +2172,13 @@ inky_ghost_movement proc
         cmp al, '$'       
         je try_again
 
-        ;cmp al, 'P'        ; pacman
-        ;je collision_detected
+    ;    ; collision with pacman
+    ;    mov   eax, edx       ; check the new col
+    ;    cmp   eax, pacmanx
+    ;    jne   movethere      ; if no match then continue ghost movement
+    ;    mov   eax, esi       ; check the new row
+    ;    cmp   eax, pacmany       
+    ;    je collision_detected  ; if both equal then go to collision detection
 
     movethere:
         ; Erase old Ghost
@@ -2145,6 +2254,53 @@ inky_ghost_movement proc
         ; Update variables
         mov inky_X, edx
         mov inky_Y, esi
+
+   ; collision_detected:
+   ;     mov byte ptr [edi], ' '   ; clear the pacman in the maze
+   ;     ; now clearing on the screen
+   ;     mov eax, pacmany               ; old row
+   ;     mov dh, al                     
+   ;     add dh, row_start_point        ; adding the start point to get accurate X
+   ;     mov eax, pacmanx               ; old col
+   ;     mov dl, al                     
+   ;     add dl, col_start_point        ; adding the start point to get accurate Y
+   ;     call gotoxy
+   ;     mov al, ' '
+   ;     call writechar
+
+   ;    ; Update variables
+   ;     mov pacmanx, 1
+   ;     mov pacmany, 1
+
+   ;     mov  eax, yellow+(black*16)
+   ;     call SetTextColor
+
+   ;     ; write the new pacman
+   ;     mov eax, pacmany
+   ;     imul eax, cols+1
+   ;     add eax, pacmanx
+   ;     mov edi, offset maze
+   ;     add edi, eax
+   ;     mov byte ptr [edi], 'P'         ; updating the maze
+
+   ;     mov eax, pacmany               ; new row
+   ;     mov dh, al                     
+   ;     add dh, row_start_point        ; adding the start point to get accurate X
+   ;     mov eax, pacmanx               ; new col
+   ;     mov dl, al                     
+   ;     add dl, col_start_point        ; adding the start point to get accurate Y
+   ;     call gotoxy
+   ;     mov al, 'P'
+   ;     call writechar
+
+   ;     ;decrement the lives 
+   ;     dec lives
+   ;     mov eax, lives
+   ;     ; writing the updated lives
+   ;     mov dh, 4   ; row
+   ;     mov dl, 72   ; col
+   ;     call gotoxy
+   ;     call writedec
 
     done:
         ; restore registers

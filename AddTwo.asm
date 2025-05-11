@@ -54,12 +54,13 @@ block_char  = '*'
     score_txt byte "SCORE: ", 0
     lives_txt byte "LIVES: ", 0
     score dword 0
-    lives byte 3
+    lives dword 3
 
     ; msgs
     exitGameBool byte 0
     exittingMsg byte "Exiting Game...... :)", 0
     invalidMsg byte "Invalid Option entered, Try Again..... :(", 0
+    youLoseMsg byte "You lost the game :(", 0
 
     ; instruction screen
     instrTitle byte "   INSTRUCTIONS   ", 0
@@ -98,30 +99,34 @@ main proc
     call welcomeScreen
     call gameMenuScreen
 
-    reset_game::
-        call clrscr
+    call clrscr
 
-        ; building the game main screen
-        call buildmaze
-        call setBlocksSize
-        call place_pacman
+    ; building the game main screen
+    call buildmaze
+    call setBlocksSize
+    call place_pacman
 
-        mov al, level
-        cmp al, 1
-        je level1
-        cmp al, 2
-        je level2
+    mov al, level
+    cmp al, 1
+    je level1
+    cmp al, 2
+    je level2
 
-        level3:                                ; for level 3 display all ghosts
-            call place_levelThree_ghost
-        level2:                                ; level 2 will also have level 1's ghost
-            call place_leveltwo_ghost
-        level1:
-            call place_levelOne_ghost
+    level3:                                ; for level 3 display all ghosts
+        call place_levelThree_ghost
+    level2:                                ; level 2 will also have level 1's ghost
+        call place_leveltwo_ghost
+    level1:
+        call place_levelOne_ghost
     
-        call drawmaze
+    call drawmaze
 
     game_loop:
+
+      ; everytime check for lives
+      mov eax, lives
+      cmp eax, 0
+      je you_lose
 
       ; check for key press
       ; If ZF=1, no key was pressed
@@ -219,6 +224,15 @@ main proc
     ; global label
     cmp exitGameBool, 1    ; if exit is triggered only then displey the exitMsg
     jne finish
+
+    you_lose: 
+        mov  edx, offset youLoseMsg
+        mov  eax, green+(yellow*16)
+        call SetTextColor
+        call writeString
+        call waitMsg
+        mov  eax, white+(black*16)
+        call SetTextColor
 
     exit_game:: 
         call clrscr
@@ -1151,7 +1165,7 @@ drawmaze proc
     mov dh, 4   ; row
     mov dl, 72   ; col
     call gotoxy
-    mov al, lives
+    mov eax, lives
     call writeDec
 
     ; resetting
@@ -1481,8 +1495,13 @@ red_ghost_movement proc
         cmp al, '$'       
         je try_again
 
-        cmp al, 'P'        ; pacman
-        je collision_detected
+        ; collision with pacman
+        mov   eax, edx       ; check the new col
+        cmp   eax, pacmanx
+        jne   movethere      ; if no match then continue ghost movement
+        mov   eax, esi       ; check the new row
+        cmp   eax, pacmany       
+        je collision_detected  ; if both equal then go to collision detection
 
     movethere:
         ; Erase old Ghost
@@ -1561,32 +1580,52 @@ red_ghost_movement proc
         jmp done
     
     collision_detected:
-        mov byte ptr [edi], ' '   ; clear the pacman
+        mov byte ptr [edi], ' '   ; clear the pacman in the maze
+        ; now clearing on the screen
+        mov eax, pacmany               ; old row
+        mov dh, al                     
+        add dh, row_start_point        ; adding the start point to get accurate X
+        mov eax, pacmanx               ; old col
+        mov dl, al                     
+        add dl, col_start_point        ; adding the start point to get accurate Y
+        call gotoxy
+        mov al, ' '
+        call writechar
 
-        mov temp, edx      ; preserving edx first
+        ; Update variables
+        mov pacmanx, 1
+        mov pacmany, 1
+
+        mov  eax, yellow+(black*16)
+        call SetTextColor
+
+        ; write the new pacman
+        mov eax, pacmany
+        imul eax, cols+1
+        add eax, pacmanx
+        mov edi, offset maze
+        add edi, eax
+        mov byte ptr [edi], 'P'         ; updating the maze
+
+        mov eax, pacmany               ; new row
+        mov dh, al                     
+        add dh, row_start_point        ; adding the start point to get accurate X
+        mov eax, pacmanx               ; new col
+        mov dl, al                     
+        add dl, col_start_point        ; adding the start point to get accurate Y
+        call gotoxy
+        mov al, 'P'
+        call writechar
+
+        ;decrement the lives 
+        dec lives
+        mov eax, lives
         ; writing the updated lives
         mov dh, 4   ; row
         mov dl, 72   ; col
         call gotoxy
-
-        ;decrement the lives and make the maze again
-        dec lives
-
-        mov edx, temp             ;  restoring 
-        ; restore registers
-        pop edi
-        pop esi
-        pop edx
-        pop ecx
-        pop ebx
-        pop eax
-
-        ; resetting
-        mov  eax, white+(black*16)
-        call SetTextColor
-    
-        jmp reset_game
-
+        call writedec
+        
     done:
         ; restore registers
         pop edi

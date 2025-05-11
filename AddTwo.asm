@@ -8,6 +8,7 @@ cols = 55
 row_start_point = 6
 col_start_point = 20
 block_char  = '*'
+bonusFood_char = '+'
 
 BUFFER_SIZE = 50
 
@@ -97,7 +98,10 @@ BUFFER_SIZE = 50
     inky_Y dword 0
 
     ; level number
-    level byte 3
+    level byte 2
+
+    ; for level 2
+    bonusFoodCount dword 10
 
 .code
 main proc
@@ -123,9 +127,11 @@ main proc
     level3:                                ; for level 3 display all ghosts
         call place_levelThree_ghost
     level2:                                ; level 2 will also have level 1's ghost
+        call obstacle
         call place_leveltwo_ghost
+        call placeBonusFood
     level1:
-        call place_levelOne_ghost
+        call place_levelOne_ghost 
     
     call drawmaze
 
@@ -233,6 +239,7 @@ main proc
     jne finish
 
     you_lose: 
+        call clrscr
         mov  edx, offset youLoseMsg
         mov  eax, green+(yellow*16)
         call SetTextColor
@@ -900,7 +907,9 @@ draw_box endp
 
 setBlocksSize proc
 
-    ; 2 block in one row
+    
+
+    ; 2 block in one row for level 1
 
     ; pick random height (min height of block will be 2)
     mov eax, 3    
@@ -1151,6 +1160,7 @@ setBlocksSize proc
 setBlocksSize endp
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 
 drawmaze proc
     ; storing the values in stack
@@ -2342,5 +2352,70 @@ inky_ghost_movement proc
 inky_ghost_movement endp
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+placeBonusFood proc
+    ; preserving the values
+    push eax
+    push ebx
+    push ecx
+    push edx
+    push esi
+    push edi
+
+    mov ecx, bonusFoodCount     ; number of bonuses to place
+place_loop:
+    ; pick random row
+    mov eax, rows-3
+    call RandomRange        ; 0 - rows-2
+    inc eax                 ; 1 - rows-1
+    mov ebx, eax           
+
+    ; pick random col
+    mov eax, cols-3
+    call RandomRange        ; 0 - col-2
+    inc eax                 ; 1 - col-1
+    mov edx, eax          
+
+    ; calc offset = row*(cols+1) + col
+    mov eax, ebx          ; row
+    imul eax, cols+1
+    add eax, edx          ; col
+
+    ; store '+' in maze
+    mov edi, offset maze
+    add edi, eax          ; index
+
+    ; first check if the place is empty
+    mov al, byte ptr [edi]
+    cmp al, '.'       
+    jne place_loop        ; if the space is occupied try again
+
+    ; add the bonus food if space is available
+    mov byte ptr [edi], '+'  
+
+    ; draw it on screen
+    mov dh, bl              ; dh = row
+    add dh, row_start_point
+    ; dl already as the col stored
+    add dl, col_start_point
+    call gotoxy
+    mov al, '+'
+    call WriteChar
+
+    loop place_loop
+     ; restore registers
+        pop edi
+        pop esi
+        pop edx
+        pop ecx
+        pop ebx
+        pop eax
+    
+    ; resetting
+    mov  eax, white+(black*16)
+    call SetTextColor
+    ret
+placeBonusFood endp
+
 
 end main

@@ -70,6 +70,8 @@ BUFFER_SIZE = 50
     exittingMsg byte "Exiting Game...... :)", 0
     invalidMsg byte "Invalid Option entered, Try Again..... :(", 0
     youLoseMsg byte "You lost the game :(", 0
+    PauseMsg byte "Game Paused....", 0
+    HidePauseMsg byte "Game Paused....Press any key to continue.......", 0
 
     ; instruction screen
     instrTitle byte "   INSTRUCTIONS   ", 0
@@ -148,6 +150,9 @@ main proc
 
       cmp al, 'q'       ; quit game
       je  exit_game
+
+      cmp al, 'p'
+      je call_pause
 
       ; if any key was pressed
      
@@ -236,6 +241,32 @@ main proc
     ; global label
     cmp exitGameBool, 1    ; if exit is triggered only then displey the exitMsg
     jne finish
+
+    call_pause:
+        ; write messege on top of the screen
+        mov dh, 0
+        mov dl, 0
+        call gotoxy
+     
+        mov  edx, offset PauseMsg
+        mov  eax, green+(yellow*16)
+        call SetTextColor
+        call writeString
+        call waitMsg
+
+        ; after waiting hide the message
+        mov dh, 0
+        mov dl, 0
+        call gotoxy
+        mov  edx, offset HidePauseMsg
+        mov  eax, black+(black*16)
+        call SetTextColor
+        call writeString
+
+        ;reset the color and go back to the game
+        mov  eax, white+(black*16)
+        call SetTextColor
+        jmp game_loop
 
     you_lose: 
         call clrscr

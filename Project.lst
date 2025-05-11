@@ -1,4 +1,4 @@
-Microsoft (R) Macro Assembler Version 14.43.34808.0	    05/12/25 01:07:14
+Microsoft (R) Macro Assembler Version 14.43.34808.0	    05/12/25 01:35:06
 AddTwo.asm						     Page 1 - 1
 
 
@@ -800,7 +800,7 @@ AddTwo.asm						     Page 1 - 1
  000005E8  B6 05		    mov  dh, 5
  000005EA  B2 1E		    mov  dl, 30
  000005EC  E8 00000000 E	    call gotoxy
- 000005F1  BA 00000A95 R	    mov  edx, offset score
+ 000005F1  A1 00000A95 R	    mov  eax, score
  000005F6  E8 00000000 E	    call WriteDec
 				    
 				    ; bottom border at row 6
@@ -2729,7 +2729,7 @@ AddTwo.asm						     Page 1 - 1
 
 
 				end main
-Microsoft (R) Macro Assembler Version 14.43.34808.0	    05/12/25 01:07:14
+Microsoft (R) Macro Assembler Version 14.43.34808.0	    05/12/25 01:35:06
 AddTwo.asm						     Symbols 2 - 1
 
 

@@ -659,7 +659,7 @@ displayNameandScore_screen proc
     mov  dh, 5
     mov  dl, 30
     call gotoxy
-    mov  edx, offset score
+    mov  eax, score
     call WriteDec
     
     ; bottom border at row 6

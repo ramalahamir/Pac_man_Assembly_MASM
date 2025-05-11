@@ -98,27 +98,28 @@ main proc
     call welcomeScreen
     call gameMenuScreen
 
-    call clrscr
+    reset_game::
+        call clrscr
 
-    ; building the game main screen
-    call buildmaze
-    call setBlocksSize
-    call place_pacman
+        ; building the game main screen
+        call buildmaze
+        call setBlocksSize
+        call place_pacman
 
-    mov al, level
-    cmp al, 1
-    je level1
-    cmp al, 2
-    je level2
+        mov al, level
+        cmp al, 1
+        je level1
+        cmp al, 2
+        je level2
 
-    level3:                                ; for level 3 display all ghosts
-        call place_levelThree_ghost
-    level2:                                ; level 2 will also have level 1's ghost
-        call place_leveltwo_ghost
-    level1:
-        call place_levelOne_ghost
+        level3:                                ; for level 3 display all ghosts
+            call place_levelThree_ghost
+        level2:                                ; level 2 will also have level 1's ghost
+            call place_leveltwo_ghost
+        level1:
+            call place_levelOne_ghost
     
-    call drawmaze
+        call drawmaze
 
     game_loop:
 
@@ -1362,8 +1363,15 @@ pacman_movement proc
         mov edx, temp                  ;  restoring 
 
         ; Draw new P on screen
+        mov eax, esi              ; new row
+        imul eax, cols+1
+        add eax, edx              ; new col
+        mov edi, offset maze
+        add edi, eax
         ; set cursor to new coords 
         mov temp, edx                  ; preserving edx first
+        mov byte ptr [edi], 'P'        ; updating the maze
+
         mov ax, si                     ; new row
         mov dh, al                     ; new maze row
         add dh, row_start_point        ; adding the start point to get accurate X
@@ -1473,8 +1481,8 @@ red_ghost_movement proc
         cmp al, '$'       
         je try_again
 
-        ;cmp al, 'P'        ; pacman
-        ;je collision_detected
+        cmp al, 'P'        ; pacman
+        je collision_detected
 
     movethere:
         ; Erase old Ghost
@@ -1550,6 +1558,34 @@ red_ghost_movement proc
         ; Update variables
         mov red_X, edx
         mov red_Y, esi
+        jmp done
+    
+    collision_detected:
+        mov byte ptr [edi], ' '   ; clear the pacman
+
+        mov temp, edx      ; preserving edx first
+        ; writing the updated lives
+        mov dh, 4   ; row
+        mov dl, 72   ; col
+        call gotoxy
+
+        ;decrement the lives and make the maze again
+        dec lives
+
+        mov edx, temp             ;  restoring 
+        ; restore registers
+        pop edi
+        pop esi
+        pop edx
+        pop ecx
+        pop ebx
+        pop eax
+
+        ; resetting
+        mov  eax, white+(black*16)
+        call SetTextColor
+    
+        jmp reset_game
 
     done:
         ; restore registers
@@ -1563,6 +1599,7 @@ red_ghost_movement proc
     ; resetting
     mov  eax, white+(black*16)
     call SetTextColor
+    
     ret
 red_ghost_movement endp
 

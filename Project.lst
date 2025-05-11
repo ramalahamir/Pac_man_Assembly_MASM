@@ -1,4 +1,4 @@
-Microsoft (R) Macro Assembler Version 14.43.34808.0	    05/11/25 21:38:13
+Microsoft (R) Macro Assembler Version 14.43.34808.0	    05/12/25 00:19:14
 AddTwo.asm						     Page 1 - 1
 
 
@@ -251,7 +251,7 @@ AddTwo.asm						     Page 1 - 1
  00000030  E8 000005F4		        call place_levelThree_ghost
  00000035			    level2:                                ; level 2 will also have level 1's ghost
  00000035  E8 000005AA		        call place_leveltwo_ghost
- 0000003A  E8 0000123B		        call placeBonusFood
+ 0000003A  E8 0000127B		        call placeBonusFood
  0000003F			    level1:
  0000003F  E8 0000055B		        call place_levelOne_ghost 
 				    
@@ -313,12 +313,12 @@ AddTwo.asm						     Page 1 - 1
  000000B0  74 0A		        je level2_move
 
  000000B2			        level3_move:   
- 000000B2  E8 00001088		            call inky_ghost_movement
- 000000B7  E8 00000F48		            call clyde_ghost_movement
+ 000000B2  E8 000010C8		            call inky_ghost_movement
+ 000000B7  E8 00000F88		            call clyde_ghost_movement
  000000BC			        level2_move:
- 000000BC  E8 00000E08		            call pinky_ghost_movement
+ 000000BC  E8 00000E48		            call pinky_ghost_movement
  000000C1			        level1_move:
- 000000C1  E8 00000C19		            call red_ghost_movement
+ 000000C1  E8 00000C59		            call red_ghost_movement
  000000C6  EB 81		      jmp game_loop
 				    
  000000C8			    no_input:
@@ -333,12 +333,12 @@ AddTwo.asm						     Page 1 - 1
  000000DA  74 0A		        je level2_no_input
 
  000000DC			        level3_no_input:   
- 000000DC  E8 0000105E		            call inky_ghost_movement
- 000000E1  E8 00000F1E		            call clyde_ghost_movement
+ 000000DC  E8 0000109E		            call inky_ghost_movement
+ 000000E1  E8 00000F5E		            call clyde_ghost_movement
  000000E6			        level2_no_input:
- 000000E6  E8 00000DDE		            call pinky_ghost_movement
+ 000000E6  E8 00000E1E		            call pinky_ghost_movement
  000000EB			        level1_no_input:
- 000000EB  E8 00000BEF		            call red_ghost_movement
+ 000000EB  E8 00000C2F		            call red_ghost_movement
 				               
 				        ; for speed
  000000F0  A0 00000BC0 R	        mov al, level
@@ -1535,401 +1535,430 @@ AddTwo.asm						     Page 1 - 1
 
  00000C0C  8A 07		        mov al, [edi]      ; getting the value at index
  00000C0E  3C 23		        cmp al, '#'        ; wall
- 00000C10  0F 84 000000B8	        je done
+ 00000C10  0F 84 000000F8	        je done
  00000C16  3C 2A		        cmp al, '*'        ; block
- 00000C18  0F 84 000000B0	        je done
+ 00000C18  0F 84 000000F0	        je done
  00000C1E  3C 2E		        cmp al, '.'        ; food
- 00000C20  75 39		        jne movethere
+ 00000C20  74 04		        je food
+ 00000C22  3C 2B		        cmp al, '+'        ; bonus food
+ 00000C24  74 3B		        je bonusFood
 
- 00000C22  C6 07 20		        mov byte ptr [edi], ' '   ; clear the food
+ 00000C26			        food: 
+ 00000C26  C6 07 20		            mov byte ptr [edi], ' '   ; clear the food
 
-				        ; for the boolean array
- 00000C25  8B C6		        mov eax, esi             ; new row
- 00000C27  6B C0 37		        imul eax, cols
- 00000C2A  03 C2		        add eax, edx             ; new col
- 00000C2C  BF 00000498 R	        mov edi, offset eaten
- 00000C31  03 F8		        add edi, eax
- 00000C33  C6 07 01		        mov byte ptr [edi], 1   ; clear the food
+				            ; for the boolean array
+ 00000C29  8B C6		            mov eax, esi             ; new row
+ 00000C2B  6B C0 37		            imul eax, cols
+ 00000C2E  03 C2		            add eax, edx             ; new col
+ 00000C30  BF 00000498 R	            mov edi, offset eaten
+ 00000C35  03 F8		            add edi, eax
+ 00000C37  C6 07 01		            mov byte ptr [edi], 1   ; clear the food
 
- 00000C36  89 15 00000B9B R	        mov temp, edx      ; preserving edx first
-				        ; write the new score
- 00000C3C  B6 04		        mov dh, 4   ; row
- 00000C3E  B2 1B		        mov dl, 27   ; col
- 00000C40  E8 00000000 E	        call gotoxy
+ 00000C3A  89 15 00000B9B R	            mov temp, edx      ; preserving edx first
+				            ; write the new score
+ 00000C40  B6 04		            mov dh, 4   ; row
+ 00000C42  B2 1B		            mov dl, 27   ; col
+ 00000C44  E8 00000000 E	            call gotoxy
 
-				        ;if food, eat it and increment score
- 00000C45  FF 05 00000AA6 R	        inc score
- 00000C4B  A1 00000AA6 R	        mov eax, score
- 00000C50  E8 00000000 E	        call writeDec
+				            ;if food, eat it and increment score
+ 00000C49  FF 05 00000AA6 R	            inc score
+ 00000C4F  A1 00000AA6 R	            mov eax, score
+ 00000C54  E8 00000000 E	            call writeDec
 
- 00000C55  8B 15 00000B9B R	        mov edx, temp             ;  restoring 
+ 00000C59  8B 15 00000B9B R	            mov edx, temp             ;  restoring 
+ 00000C5F  EB 3A		            jmp movethere
+				    
+ 00000C61			    bonusFood: 
+ 00000C61  C6 07 20		            mov byte ptr [edi], ' '   ; clear the bonus food
 
- 00000C5B			    movethere:
+				            ; for the boolean array
+ 00000C64  8B C6		            mov eax, esi             ; new row
+ 00000C66  6B C0 37		            imul eax, cols
+ 00000C69  03 C2		            add eax, edx             ; new col
+ 00000C6B  BF 00000498 R	            mov edi, offset eaten
+ 00000C70  03 F8		            add edi, eax
+ 00000C72  C6 07 01		            mov byte ptr [edi], 1   ; clear the bonusfood
+
+ 00000C75  89 15 00000B9B R	            mov temp, edx      ; preserving edx first
+				            ; write the new score
+ 00000C7B  B6 04		            mov dh, 4   ; row
+ 00000C7D  B2 1B		            mov dl, 27   ; col
+ 00000C7F  E8 00000000 E	            call gotoxy
+
+				            ;if food, eat it and increment score
+ 00000C84  83 05 00000AA6 R	            add score, 5     ; increment score by 5 points
+	   05
+ 00000C8B  A1 00000AA6 R	            mov eax, score
+ 00000C90  E8 00000000 E	            call writeDec
+
+ 00000C95  8B 15 00000B9B R	            mov edx, temp             ;  restoring 
+
+ 00000C9B			    movethere:
 				        ; Erase old P 
- 00000C5B  8B C1		        mov eax, ecx              ; old row
- 00000C5D  6B C0 38		        imul eax, cols+1
- 00000C60  03 C3		        add eax, ebx              ; old col
- 00000C62  BF 00000000 R	        mov edi, offset maze
- 00000C67  03 F8		        add edi, eax
+ 00000C9B  8B C1		        mov eax, ecx              ; old row
+ 00000C9D  6B C0 38		        imul eax, cols+1
+ 00000CA0  03 C3		        add eax, ebx              ; old col
+ 00000CA2  BF 00000000 R	        mov edi, offset maze
+ 00000CA7  03 F8		        add edi, eax
 
- 00000C69  89 15 00000B9B R	        mov temp, edx                  ; preserving edx first
- 00000C6F  C6 07 20		        mov byte ptr [edi], ' '        ; updating the maze
- 00000C72  8A F1		        mov dh, cl                     ; maze old row 
- 00000C74  80 C6 06		        add dh, row_start_point        ; adding the start point to get accurate X
- 00000C77  8A D3		        mov dl, bl                     ; maze old col
- 00000C79  80 C2 14		        add dl, col_start_point        ; adding the start point to get accurate Y
- 00000C7C  E8 00000000 E	        call gotoxy
- 00000C81  B0 20		        mov al, ' '
- 00000C83  E8 00000000 E	        call writechar
- 00000C88  8B 15 00000B9B R	        mov edx, temp                  ;  restoring 
+ 00000CA9  89 15 00000B9B R	        mov temp, edx                  ; preserving edx first
+ 00000CAF  C6 07 20		        mov byte ptr [edi], ' '        ; updating the maze
+ 00000CB2  8A F1		        mov dh, cl                     ; maze old row 
+ 00000CB4  80 C6 06		        add dh, row_start_point        ; adding the start point to get accurate X
+ 00000CB7  8A D3		        mov dl, bl                     ; maze old col
+ 00000CB9  80 C2 14		        add dl, col_start_point        ; adding the start point to get accurate Y
+ 00000CBC  E8 00000000 E	        call gotoxy
+ 00000CC1  B0 20		        mov al, ' '
+ 00000CC3  E8 00000000 E	        call writechar
+ 00000CC8  8B 15 00000B9B R	        mov edx, temp                  ;  restoring 
 
 				        ; Draw new P on screen
- 00000C8E  8B C6		        mov eax, esi              ; new row
- 00000C90  6B C0 38		        imul eax, cols+1
- 00000C93  03 C2		        add eax, edx              ; new col
- 00000C95  BF 00000000 R	        mov edi, offset maze
- 00000C9A  03 F8		        add edi, eax
+ 00000CCE  8B C6		        mov eax, esi              ; new row
+ 00000CD0  6B C0 38		        imul eax, cols+1
+ 00000CD3  03 C2		        add eax, edx              ; new col
+ 00000CD5  BF 00000000 R	        mov edi, offset maze
+ 00000CDA  03 F8		        add edi, eax
 				        ; set cursor to new coords 
- 00000C9C  89 15 00000B9B R	        mov temp, edx                  ; preserving edx first
- 00000CA2  C6 07 50		        mov byte ptr [edi], 'P'        ; updating the maze
+ 00000CDC  89 15 00000B9B R	        mov temp, edx                  ; preserving edx first
+ 00000CE2  C6 07 50		        mov byte ptr [edi], 'P'        ; updating the maze
 
- 00000CA5  66| 8B C6		        mov ax, si                     ; new row
- 00000CA8  8A F0		        mov dh, al                     ; new maze row
- 00000CAA  80 C6 06		        add dh, row_start_point        ; adding the start point to get accurate X
+ 00000CE5  66| 8B C6		        mov ax, si                     ; new row
+ 00000CE8  8A F0		        mov dh, al                     ; new maze row
+ 00000CEA  80 C6 06		        add dh, row_start_point        ; adding the start point to get accurate X
 				        ; dl already has the new col 
- 00000CAD  80 C2 14		        add dl, col_start_point        ; adding the start point to get accurate Y
- 00000CB0  E8 00000000 E	        call gotoxy
- 00000CB5  B0 50		        mov al, 'P'
- 00000CB7  E8 00000000 E	        call writechar
- 00000CBC  8B 15 00000B9B R	        mov edx, temp                  ;  restoring 
+ 00000CED  80 C2 14		        add dl, col_start_point        ; adding the start point to get accurate Y
+ 00000CF0  E8 00000000 E	        call gotoxy
+ 00000CF5  B0 50		        mov al, 'P'
+ 00000CF7  E8 00000000 E	        call writechar
+ 00000CFC  8B 15 00000B9B R	        mov edx, temp                  ;  restoring 
 
 				        ; Update variables
- 00000CC2  89 15 00000920 R	        mov pacmanx, edx
- 00000CC8  89 35 00000924 R	        mov pacmany, esi
+ 00000D02  89 15 00000920 R	        mov pacmanx, edx
+ 00000D08  89 35 00000924 R	        mov pacmany, esi
 
- 00000CCE			    done:
+ 00000D0E			    done:
 				        ; restore registers
- 00000CCE  5F			        pop edi
- 00000CCF  5E			        pop esi
- 00000CD0  5A			        pop edx
- 00000CD1  59			        pop ecx
- 00000CD2  5B			        pop ebx
- 00000CD3  58			        pop eax
+ 00000D0E  5F			        pop edi
+ 00000D0F  5E			        pop esi
+ 00000D10  5A			        pop edx
+ 00000D11  59			        pop ecx
+ 00000D12  5B			        pop ebx
+ 00000D13  58			        pop eax
 				    
 				    ; resetting
- 00000CD4  B8 0000000F		    mov  eax, white+(black*16)
- 00000CD9  E8 00000000 E	    call SetTextColor
- 00000CDE  C3			    ret
- 00000CDF			pacman_movement endp
+ 00000D14  B8 0000000F		    mov  eax, white+(black*16)
+ 00000D19  E8 00000000 E	    call SetTextColor
+ 00000D1E  C3			    ret
+ 00000D1F			pacman_movement endp
 
 				;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
- 00000CDF			red_ghost_movement proc
+ 00000D1F			red_ghost_movement proc
 				    ; preserving the values
- 00000CDF  50			    push eax
- 00000CE0  53			    push ebx
- 00000CE1  51			    push ecx
- 00000CE2  52			    push edx
- 00000CE3  56			    push esi
- 00000CE4  57			    push edi
+ 00000D1F  50			    push eax
+ 00000D20  53			    push ebx
+ 00000D21  51			    push ecx
+ 00000D22  52			    push edx
+ 00000D23  56			    push esi
+ 00000D24  57			    push edi
 
 				    ; setting color for RED
- 00000CE5  B8 00000004		    mov  eax, red+(black*16)
- 00000CEA  E8 00000000 E	    call SetTextColor
+ 00000D25  B8 00000004		    mov  eax, red+(black*16)
+ 00000D2A  E8 00000000 E	    call SetTextColor
 
 				    ; load old RED position
- 00000CEF  8B 1D 00000BA0 R	    mov ebx, red_X    ; ebx = old x
- 00000CF5  8B 0D 00000BA4 R	    mov ecx, red_Y    ; ecx = old y
+ 00000D2F  8B 1D 00000BA0 R	    mov ebx, red_X    ; ebx = old x
+ 00000D35  8B 0D 00000BA4 R	    mov ecx, red_Y    ; ecx = old y
 
 				    ; start with newx = oldx, newy = oldy
- 00000CFB  8B D3		    mov edx, ebx        ; edx = newx
- 00000CFD  8B F1		    mov esi, ecx        ; esi = newy
+ 00000D3B  8B D3		    mov edx, ebx        ; edx = newx
+ 00000D3D  8B F1		    mov esi, ecx        ; esi = newy
 
- 00000CFF			    try_again:
+ 00000D3F			    try_again:
 				        ; pick random movement
- 00000CFF  B8 00000064		        mov eax, 100
- 00000D04  E8 00000000 E	        call  RandomRange    ; 0 - 100
+ 00000D3F  B8 00000064		        mov eax, 100
+ 00000D44  E8 00000000 E	        call  RandomRange    ; 0 - 100
 				        ; maping that to a direction:
- 00000D09  83 F8 19		        cmp eax, 25
- 00000D0C  7C 13		        jl try_right
- 00000D0E  83 F8 32		        cmp eax, 50
- 00000D11  7C 0B		        jl try_left
- 00000D13  83 F8 4B		        cmp eax, 75
- 00000D16  7C 03		        jl try_up
+ 00000D49  83 F8 19		        cmp eax, 25
+ 00000D4C  7C 13		        jl try_right
+ 00000D4E  83 F8 32		        cmp eax, 50
+ 00000D51  7C 0B		        jl try_left
+ 00000D53  83 F8 4B		        cmp eax, 75
+ 00000D56  7C 03		        jl try_up
 				        ; else move down
 
- 00000D18			    try_down:
- 00000D18  46			        inc esi
- 00000D19  EB 07		        jmp checkcell
+ 00000D58			    try_down:
+ 00000D58  46			        inc esi
+ 00000D59  EB 07		        jmp checkcell
 
- 00000D1B			    try_up:
- 00000D1B  4E			        dec esi
- 00000D1C  EB 04		        jmp checkcell
+ 00000D5B			    try_up:
+ 00000D5B  4E			        dec esi
+ 00000D5C  EB 04		        jmp checkcell
 
- 00000D1E			    try_left:
- 00000D1E  4A			        dec edx
- 00000D1F  EB 01		        jmp checkcell
+ 00000D5E			    try_left:
+ 00000D5E  4A			        dec edx
+ 00000D5F  EB 01		        jmp checkcell
 
- 00000D21			    try_right:
- 00000D21  42			        inc edx
+ 00000D61			    try_right:
+ 00000D61  42			        inc edx
 
- 00000D22			    checkcell:
+ 00000D62			    checkcell:
 				        ; boundary check
- 00000D22  83 FE 01		        cmp esi, 1
- 00000D25  7C D8		        jl  try_again
- 00000D27  83 FE 13		        cmp esi, rows-2
- 00000D2A  7F D3		        jg  try_again
- 00000D2C  83 FA 01		        cmp edx, 1
- 00000D2F  7C CE		        jl  try_again
- 00000D31  83 FA 35		        cmp edx, cols-2
- 00000D34  7F C9		        jg  try_again
+ 00000D62  83 FE 01		        cmp esi, 1
+ 00000D65  7C D8		        jl  try_again
+ 00000D67  83 FE 13		        cmp esi, rows-2
+ 00000D6A  7F D3		        jg  try_again
+ 00000D6C  83 FA 01		        cmp edx, 1
+ 00000D6F  7C CE		        jl  try_again
+ 00000D71  83 FA 35		        cmp edx, cols-2
+ 00000D74  7F C9		        jg  try_again
 				        
 				        ; getting the new 1D index
- 00000D36  8B C6		        mov eax, esi             ; new row
- 00000D38  6B C0 38		        imul eax, cols+1
- 00000D3B  03 C2		        add eax, edx             ; new col
- 00000D3D  BF 00000000 R	        mov edi, offset maze
- 00000D42  03 F8		        add edi, eax
+ 00000D76  8B C6		        mov eax, esi             ; new row
+ 00000D78  6B C0 38		        imul eax, cols+1
+ 00000D7B  03 C2		        add eax, edx             ; new col
+ 00000D7D  BF 00000000 R	        mov edi, offset maze
+ 00000D82  03 F8		        add edi, eax
 
- 00000D44  8A 07		        mov al, byte ptr [edi]      ; getting the value at index
- 00000D46  3C 2A		        cmp al, '*'        ; block
- 00000D48  74 B5		        je try_again
+ 00000D84  8A 07		        mov al, byte ptr [edi]      ; getting the value at index
+ 00000D86  3C 2A		        cmp al, '*'        ; block
+ 00000D88  74 B5		        je try_again
 				        ; if its any other ghost as well
- 00000D4A  3C 25		        cmp al, '%'       
- 00000D4C  74 B1		        je try_again
- 00000D4E  3C 26		        cmp al, '&'       
- 00000D50  74 AD		        je try_again
- 00000D52  3C 24		        cmp al, '$'       
- 00000D54  74 A9		        je try_again
+ 00000D8A  3C 25		        cmp al, '%'       
+ 00000D8C  74 B1		        je try_again
+ 00000D8E  3C 26		        cmp al, '&'       
+ 00000D90  74 AD		        je try_again
+ 00000D92  3C 24		        cmp al, '$'       
+ 00000D94  74 A9		        je try_again
 
 				        ; collision with pacman
- 00000D56  8B C2		        mov   eax, edx       ; check the new col
- 00000D58  3B 05 00000920 R	        cmp   eax, pacmanx
- 00000D5E  75 0E		        jne   movethere      ; if no match then continue ghost movement
- 00000D60  8B C6		        mov   eax, esi       ; check the new row
- 00000D62  3B 05 00000924 R	        cmp   eax, pacmany       
- 00000D68  0F 84 000000B8	        je collision_detected  ; if both equal then go to collision detection
+ 00000D96  8B C2		        mov   eax, edx       ; check the new col
+ 00000D98  3B 05 00000920 R	        cmp   eax, pacmanx
+ 00000D9E  75 0E		        jne   movethere      ; if no match then continue ghost movement
+ 00000DA0  8B C6		        mov   eax, esi       ; check the new row
+ 00000DA2  3B 05 00000924 R	        cmp   eax, pacmany       
+ 00000DA8  0F 84 000000B8	        je collision_detected  ; if both equal then go to collision detection
 
- 00000D6E			    movethere:
+ 00000DAE			    movethere:
 				        ; Erase old Ghost
- 00000D6E  89 15 00000B9B R	        mov temp, edx                  ; preserving edx
+ 00000DAE  89 15 00000B9B R	        mov temp, edx                  ; preserving edx
 
 				        ; determine what to restore at old position
- 00000D74  8B C1		        mov eax, ecx
- 00000D76  6B C0 37		        imul eax, cols
- 00000D79  03 C3		        add eax, ebx
- 00000D7B  BF 00000498 R	        mov edi, offset eaten
- 00000D80  03 F8		        add edi, eax
- 00000D82  8A 07		        mov al, [edi]
- 00000D84  3C 01		        cmp al, 1
- 00000D86  74 3D		        je restore_space
+ 00000DB4  8B C1		        mov eax, ecx
+ 00000DB6  6B C0 37		        imul eax, cols
+ 00000DB9  03 C3		        add eax, ebx
+ 00000DBB  BF 00000498 R	        mov edi, offset eaten
+ 00000DC0  03 F8		        add edi, eax
+ 00000DC2  8A 07		        mov al, [edi]
+ 00000DC4  3C 01		        cmp al, 1
+ 00000DC6  74 3D		        je restore_space
 
 				        ; else food:
- 00000D88  8B C1		        mov eax, ecx
- 00000D8A  6B C0 38		        imul eax, cols+1
- 00000D8D  03 C3		        add eax, ebx
- 00000D8F  BF 00000000 R	        mov edi, offset maze
- 00000D94  03 F8		        add edi, eax
- 00000D96  C6 07 2E		        mov byte ptr [edi], '.' 
+ 00000DC8  8B C1		        mov eax, ecx
+ 00000DCA  6B C0 38		        imul eax, cols+1
+ 00000DCD  03 C3		        add eax, ebx
+ 00000DCF  BF 00000000 R	        mov edi, offset maze
+ 00000DD4  03 F8		        add edi, eax
+ 00000DD6  C6 07 2E		        mov byte ptr [edi], '.' 
 
 				        ; set color for food
- 00000D99  B8 00000002		        mov  eax, green+(black*16)
- 00000D9E  E8 00000000 E	        call SetTextColor
+ 00000DD9  B8 00000002		        mov  eax, green+(black*16)
+ 00000DDE  E8 00000000 E	        call SetTextColor
 
- 00000DA3  8A F1		        mov dh, cl                     ; maze old row 
- 00000DA5  80 C6 06		        add dh, row_start_point        ; adding the start point to get accurate X
- 00000DA8  8A D3		        mov dl, bl                     ; maze old col
- 00000DAA  80 C2 14		        add dl, col_start_point        ; adding the start point to get accurate Y
- 00000DAD  E8 00000000 E	        call gotoxy
- 00000DB2  B0 2E		        mov al, '.'
- 00000DB4  E8 00000000 E	        call writechar
+ 00000DE3  8A F1		        mov dh, cl                     ; maze old row 
+ 00000DE5  80 C6 06		        add dh, row_start_point        ; adding the start point to get accurate X
+ 00000DE8  8A D3		        mov dl, bl                     ; maze old col
+ 00000DEA  80 C2 14		        add dl, col_start_point        ; adding the start point to get accurate Y
+ 00000DED  E8 00000000 E	        call gotoxy
+ 00000DF2  B0 2E		        mov al, '.'
+ 00000DF4  E8 00000000 E	        call writechar
 
 				        ; reset color for ghost
- 00000DB9  B8 00000004		        mov  eax, red+(black*16)
- 00000DBE  E8 00000000 E	        call SetTextColor
- 00000DC3  EB 27		        jmp restored
+ 00000DF9  B8 00000004		        mov  eax, red+(black*16)
+ 00000DFE  E8 00000000 E	        call SetTextColor
+ 00000E03  EB 27		        jmp restored
 
- 00000DC5			        restore_space:
- 00000DC5  8B C1		            mov eax, ecx
- 00000DC7  6B C0 38		            imul eax, cols+1
- 00000DCA  03 C3		            add eax, ebx
- 00000DCC  BF 00000000 R	            mov edi, offset maze
- 00000DD1  03 F8		            add edi, eax
- 00000DD3  C6 07 20		            mov byte ptr [edi], ' '
+ 00000E05			        restore_space:
+ 00000E05  8B C1		            mov eax, ecx
+ 00000E07  6B C0 38		            imul eax, cols+1
+ 00000E0A  03 C3		            add eax, ebx
+ 00000E0C  BF 00000000 R	            mov edi, offset maze
+ 00000E11  03 F8		            add edi, eax
+ 00000E13  C6 07 20		            mov byte ptr [edi], ' '
 
- 00000DD6  8A F1		            mov dh, cl                     ; maze old row 
- 00000DD8  80 C6 06		            add dh, row_start_point        ; adding the start point to get accurate X
- 00000DDB  8A D3		            mov dl, bl                     ; maze old col
- 00000DDD  80 C2 14		            add dl, col_start_point        ; adding the start point to get accurate Y
- 00000DE0  E8 00000000 E	            call gotoxy
- 00000DE5  B0 20		            mov al, ' '
- 00000DE7  E8 00000000 E	            call writechar
+ 00000E16  8A F1		            mov dh, cl                     ; maze old row 
+ 00000E18  80 C6 06		            add dh, row_start_point        ; adding the start point to get accurate X
+ 00000E1B  8A D3		            mov dl, bl                     ; maze old col
+ 00000E1D  80 C2 14		            add dl, col_start_point        ; adding the start point to get accurate Y
+ 00000E20  E8 00000000 E	            call gotoxy
+ 00000E25  B0 20		            mov al, ' '
+ 00000E27  E8 00000000 E	            call writechar
 
- 00000DEC			        restored:
- 00000DEC  8B 15 00000B9B R	                mov edx, temp                  ;  restoring 
+ 00000E2C			        restored:
+ 00000E2C  8B 15 00000B9B R	                mov edx, temp                  ;  restoring 
 
 				        ; Draw new ghost on screen
 				        ; set cursor to new coords 
- 00000DF2  89 15 00000B9B R	        mov temp, edx                  ; preserving edx first
- 00000DF8  66| 8B C6		        mov ax, si                     ; new row
- 00000DFB  8A F0		        mov dh, al                     ; new maze row
- 00000DFD  80 C6 06		        add dh, row_start_point        ; adding the start point to get accurate X
+ 00000E32  89 15 00000B9B R	        mov temp, edx                  ; preserving edx first
+ 00000E38  66| 8B C6		        mov ax, si                     ; new row
+ 00000E3B  8A F0		        mov dh, al                     ; new maze row
+ 00000E3D  80 C6 06		        add dh, row_start_point        ; adding the start point to get accurate X
 				        ; dl already has the new col 
- 00000E00  80 C2 14		        add dl, col_start_point        ; adding the start point to get accurate Y
- 00000E03  E8 00000000 E	        call gotoxy
- 00000E08  B0 40		        mov al, '@'
- 00000E0A  E8 00000000 E	        call writechar
- 00000E0F  8B 15 00000B9B R	        mov edx, temp                  ;  restoring 
+ 00000E40  80 C2 14		        add dl, col_start_point        ; adding the start point to get accurate Y
+ 00000E43  E8 00000000 E	        call gotoxy
+ 00000E48  B0 40		        mov al, '@'
+ 00000E4A  E8 00000000 E	        call writechar
+ 00000E4F  8B 15 00000B9B R	        mov edx, temp                  ;  restoring 
 
 				        ; Update variables
- 00000E15  89 15 00000BA0 R	        mov red_X, edx
- 00000E1B  89 35 00000BA4 R	        mov red_Y, esi
- 00000E21  E9 00000092		        jmp done
+ 00000E55  89 15 00000BA0 R	        mov red_X, edx
+ 00000E5B  89 35 00000BA4 R	        mov red_Y, esi
+ 00000E61  E9 00000092		        jmp done
 				    
- 00000E26			    collision_detected:
- 00000E26  C6 07 20		        mov byte ptr [edi], ' '   ; clear the pacman in the maze
+ 00000E66			    collision_detected:
+ 00000E66  C6 07 20		        mov byte ptr [edi], ' '   ; clear the pacman in the maze
 				        ; now clearing on the screen
- 00000E29  A1 00000924 R	        mov eax, pacmany               ; old row
- 00000E2E  8A F0		        mov dh, al                     
- 00000E30  80 C6 06		        add dh, row_start_point        ; adding the start point to get accurate X
- 00000E33  A1 00000920 R	        mov eax, pacmanx               ; old col
- 00000E38  8A D0		        mov dl, al                     
- 00000E3A  80 C2 14		        add dl, col_start_point        ; adding the start point to get accurate Y
- 00000E3D  E8 00000000 E	        call gotoxy
- 00000E42  B0 20		        mov al, ' '
- 00000E44  E8 00000000 E	        call writechar
+ 00000E69  A1 00000924 R	        mov eax, pacmany               ; old row
+ 00000E6E  8A F0		        mov dh, al                     
+ 00000E70  80 C6 06		        add dh, row_start_point        ; adding the start point to get accurate X
+ 00000E73  A1 00000920 R	        mov eax, pacmanx               ; old col
+ 00000E78  8A D0		        mov dl, al                     
+ 00000E7A  80 C2 14		        add dl, col_start_point        ; adding the start point to get accurate Y
+ 00000E7D  E8 00000000 E	        call gotoxy
+ 00000E82  B0 20		        mov al, ' '
+ 00000E84  E8 00000000 E	        call writechar
 
 				        ; Update variables
- 00000E49  C7 05 00000920 R	        mov pacmanx, 1
+ 00000E89  C7 05 00000920 R	        mov pacmanx, 1
 	   00000001
- 00000E53  C7 05 00000924 R	        mov pacmany, 1
+ 00000E93  C7 05 00000924 R	        mov pacmany, 1
 	   00000001
 
- 00000E5D  B8 0000000E		        mov  eax, yellow+(black*16)
- 00000E62  E8 00000000 E	        call SetTextColor
+ 00000E9D  B8 0000000E        mov  eax, yellow+(black*16)
+ 00000EA2  E8 00000000 E	        call SetTextColor
 
 				        ; write the new pacman
- 00000E67  A1 00000924 R	        mov eax, pacmany
- 00000E6C  6B C0 38		        imul eax, cols+1
- 00000E6F  03 05 00000920 R	        add eax, pacmanx
- 00000E75  BF 00000000 R	        mov edi, offset maze
- 00000E7A  03 F8		        add edi, eax
- 00000E7C  C6 07 50		        mov byte ptr [edi], 'P'         ; updating the maze
+ 00000EA7  A1 00000924 R	        mov eax, pacmany
+ 00000EAC  6B C0 38		        imul eax, cols+1
+ 00000EAF  03 05 00000920 R	        add eax, pacmanx
+ 00000EB5  BF 00000000 R	        mov edi, offset maze
+ 00000EBA  03 F8		        add edi, eax
+ 00000EBC  C6 07 50		        mov byte ptr [edi], 'P'         ; updating the maze
 
- 00000E7F  A1 00000924 R	        mov eax, pacmany               ; new row
- 00000E84  8A F0		        mov dh, al                     
- 00000E86  80 C6 06		        add dh, row_start_point        ; adding the start point to get accurate X
- 00000E89  A1 00000920 R	        mov eax, pacmanx               ; new col
- 00000E8E  8A D0		        mov dl, al                     
- 00000E90  80 C2 14		        add dl, col_start_point        ; adding the start point to get accurate Y
- 00000E93  E8 00000000 E	        call gotoxy
- 00000E98  B0 50		        mov al, 'P'
- 00000E9A  E8 00000000 E	        call writechar
+ 00000EBF  A1 00000924 R	        mov eax, pacmany               ; new row
+ 00000EC4  8A F0		        mov dh, al                     
+ 00000EC6  80 C6 06		        add dh, row_start_point        ; adding the start point to get accurate X
+ 00000EC9  A1 00000920 R	        mov eax, pacmanx               ; new col
+ 00000ECE  8A D0		        mov dl, al                     
+ 00000ED0  80 C2 14		        add dl, col_start_point        ; adding the start point to get accurate Y
+ 00000ED3  E8 00000000 E	        call gotoxy
+ 00000ED8  B0 50		        mov al, 'P'
+ 00000EDA  E8 00000000 E	        call writechar
 
 				        ;decrement the lives 
- 00000E9F  FF 0D 00000AAA R	        dec lives
- 00000EA5  A1 00000AAA R	        mov eax, lives
+ 00000EDF  FF 0D 00000AAA R	        dec lives
+ 00000EE5  A1 00000AAA R	        mov eax, lives
 				        ; writing the updated lives
- 00000EAA  B6 04		        mov dh, 4   ; row
- 00000EAC  B2 48		        mov dl, 72   ; col
- 00000EAE  E8 00000000 E	        call gotoxy
- 00000EB3  E8 00000000 E	        call writedec
+ 00000EEA  B6 04		        mov dh, 4   ; row
+ 00000EEC  B2 48		        mov dl, 72   ; col
+ 00000EEE  E8 00000000 E	        call gotoxy
+ 00000EF3  E8 00000000 E	        call writedec
 				        
- 00000EB8			    done:
+ 00000EF8			    done:
 				        ; restore registers
- 00000EB8  5F			        pop edi
- 00000EB9  5E			        pop esi
- 00000EBA  5A			        pop edx
- 00000EBB  59			        pop ecx
- 00000EBC  5B			        pop ebx
- 00000EBD  58			        pop eax
+ 00000EF8  5F			        pop edi
+ 00000EF9  5E			        pop esi
+ 00000EFA  5A			        pop edx
+ 00000EFB  59			        pop ecx
+ 00000EFC  5B			        pop ebx
+ 00000EFD  58			        pop eax
 				    
 				    ; resetting
- 00000EBE  B8 0000000F		    mov  eax, white+(black*16)
- 00000EC3  E8 00000000 E	    call SetTextColor
+ 00000EFE  B8 0000000F		    mov  eax, white+(black*16)
+ 00000F03  E8 00000000 E	    call SetTextColor
 				    
- 00000EC8  C3			    ret
- 00000EC9			red_ghost_movement endp
+ 00000F08  C3			    ret
+ 00000F09			red_ghost_movement endp
 
 				;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
- 00000EC9			pinky_ghost_movement proc
+ 00000F09			pinky_ghost_movement proc
 				    ; preserving the values
- 00000EC9  50			    push eax
- 00000ECA  53			    push ebx
- 00000ECB  51			    push ecx
- 00000ECC  52			    push edx
- 00000ECD  56			    push esi
- 00000ECE  57			    push edi
+ 00000F09  50			    push eax
+ 00000F0A  53			    push ebx
+ 00000F0B  51			    push ecx
+ 00000F0C  52			    push edx
+ 00000F0D  56			    push esi
+ 00000F0E  57			    push edi
 
 				    ; setting color for pinky
- 00000ECF  B8 0000000D		    mov  eax, lightMagenta+(black*16)
- 00000ED4  E8 00000000 E	    call SetTextColor
+ 00000F0F  B8 0000000D		    mov  eax, lightMagenta+(black*16)
+ 00000F14  E8 00000000 E	    call SetTextColor
 
 				    ; load old pinky position
- 00000ED9  8B 1D 00000BA8 R	    mov ebx, pinky_X    ; ebx = old x
- 00000EDF  8B 0D 00000BAC R	    mov ecx, pinky_Y    ; ecx = old y
+ 00000F19  8B 1D 00000BA8 R	    mov ebx, pinky_X    ; ebx = old x
+ 00000F1F  8B 0D 00000BAC R	    mov ecx, pinky_Y    ; ecx = old y
 
 				    ; start with newx = oldx, newy = oldy
- 00000EE5  8B D3		    mov edx, ebx        ; edx = newx
- 00000EE7  8B F1		    mov esi, ecx        ; esi = newy
+ 00000F25  8B D3		    mov edx, ebx        ; edx = newx
+ 00000F27  8B F1		    mov esi, ecx        ; esi = newy
 
- 00000EE9			    try_again:
+ 00000F29			    try_again:
 				        ; pick random movement
- 00000EE9  B8 00000064		        mov eax, 100
- 00000EEE  E8 00000000 E	        call  RandomRange    ; 0 - 100
+ 00000F29  B8 00000064		        mov eax, 100
+ 00000F2E  E8 00000000 E	        call  RandomRange    ; 0 - 100
 				        ; maping that to a direction:
- 00000EF3  83 F8 19		        cmp eax, 25
- 00000EF6  7C 13		        jl try_right
- 00000EF8  83 F8 32		        cmp eax, 50
- 00000EFB  7C 0B		        jl try_left
- 00000EFD  83 F8 4B		        cmp eax, 75
- 00000F00  7C 03		        jl try_up
+ 00000F33  83 F8 19		        cmp eax, 25
+ 00000F36  7C 13		        jl try_right
+ 00000F38  83 F8 32		        cmp eax, 50
+ 00000F3B  7C 0B		        jl try_left
+ 00000F3D  83 F8 4B		        cmp eax, 75
+ 00000F40  7C 03		        jl try_up
 				        ; else move down
 
- 00000F02			    try_down:
- 00000F02  46			        inc esi
- 00000F03  EB 07		        jmp checkcell
+ 00000F42			    try_down:
+ 00000F42  46			        inc esi
+ 00000F43  EB 07		        jmp checkcell
 
- 00000F05			    try_up:
- 00000F05  4E			        dec esi
- 00000F06  EB 04		        jmp checkcell
+ 00000F45			    try_up:
+ 00000F45  4E			        dec esi
+ 00000F46  EB 04		        jmp checkcell
 
- 00000F08			    try_left:
- 00000F08  4A			        dec edx
- 00000F09  EB 01		        jmp checkcell
+ 00000F48			    try_left:
+ 00000F48  4A			        dec edx
+ 00000F49  EB 01		        jmp checkcell
 
- 00000F0B			    try_right:
- 00000F0B  42			        inc edx
+ 00000F4B			    try_right:
+ 00000F4B  42			        inc edx
 
- 00000F0C			    checkcell:
+ 00000F4C			    checkcell:
 				        ; boundary check
- 00000F0C  83 FE 01		        cmp esi, 1
- 00000F0F  7C D8		        jl  try_again
- 00000F11  83 FE 13		        cmp esi, rows-2
- 00000F14  7F D3		        jg  try_again
- 00000F16  83 FA 01		        cmp edx, 1
- 00000F19  7C CE		        jl  try_again
- 00000F1B  83 FA 35		        cmp edx, cols-2
- 00000F1E  7F C9		        jg  try_again
+ 00000F4C  83 FE 01		        cmp esi, 1
+ 00000F4F  7C D8		        jl  try_again
+ 00000F51  83 FE 13		        cmp esi, rows-2
+ 00000F54  7F D3		        jg  try_again
+ 00000F56  83 FA 01		        cmp edx, 1
+ 00000F59  7C CE		        jl  try_again
+ 00000F5B  83 FA 35		        cmp edx, cols-2
+ 00000F5E  7F C9		        jg  try_again
 				        
 				        ; getting the new 1D index
- 00000F20  8B C6		        mov eax, esi             ; new row
- 00000F22  6B C0 38		        imul eax, cols+1
- 00000F25  03 C2		        add eax, edx             ; new col
- 00000F27  BF 00000000 R	        mov edi, offset maze
- 00000F2C  03 F8		        add edi, eax
+ 00000F60  8B C6		        mov eax, esi             ; new row
+ 00000F62  6B C0 38		        imul eax, cols+1
+ 00000F65  03 C2		        add eax, edx             ; new col
+ 00000F67  BF 00000000 R	        mov edi, offset maze
+ 00000F6C  03 F8		        add edi, eax
 
- 00000F2E  8A 07		        mov al, byte ptr [edi]      ; getting the value at index
- 00000F30  3C 2A		        cmp al, '*'        ; block
- 00000F32  74 B5		        je try_again
+ 00000F6E  8A 07		        mov al, byte ptr [edi]      ; getting the value at index
+ 00000F70  3C 2A		        cmp al, '*'        ; block
+ 00000F72  74 B5		        je try_again
 				        ; if its any other ghost as well
- 00000F34  3C 40		        cmp al, '@'       
- 00000F36  74 B1		        je try_again
- 00000F38  3C 26		        cmp al, '&'       
- 00000F3A  74 AD		        je try_again
- 00000F3C  3C 24		        cmp al, '$'       
- 00000F3E  74 A9		        je try_again
+ 00000F74  3C 40		        cmp al, '@'       
+ 00000F76  74 B1		        je try_again
+ 00000F78  3C 26		        cmp al, '&'       
+ 00000F7A  74 AD		        je try_again
+ 00000F7C  3C 24		        cmp al, '$'       
+ 00000F7E  74 A9		        je try_again
 
 				        ; collision with pacman
 				       ; mov   eax, edx       ; check the new col
@@ -1939,80 +1968,80 @@ AddTwo.asm						     Page 1 - 1
 				       ; cmp   eax, pacmany       
 				       ; je collision_detected  ; if both equal then go to collision detection
 
- 00000F40			    movethere:
+ 00000F80			    movethere:
 				        ; Erase old Ghost
- 00000F40  89 15 00000B9B R	        mov temp, edx                  ; preserving edx
+ 00000F80  89 15 00000B9B R	        mov temp, edx                  ; preserving edx
 
 				        ; determine what to restore at old position
- 00000F46  8B C1		        mov eax, ecx
- 00000F48  6B C0 37		        imul eax, cols
- 00000F4B  03 C3		        add eax, ebx
- 00000F4D  BF 00000498 R	        mov edi, offset eaten
- 00000F52  03 F8		        add edi, eax
- 00000F54  8A 07		        mov al, [edi]
- 00000F56  3C 01		        cmp al, 1
- 00000F58  74 3D		        je restore_space
+ 00000F86  8B C1		        mov eax, ecx
+ 00000F88  6B C0 37		        imul eax, cols
+ 00000F8B  03 C3		        add eax, ebx
+ 00000F8D  BF 00000498 R	        mov edi, offset eaten
+ 00000F92  03 F8		        add edi, eax
+ 00000F94  8A 07		        mov al, [edi]
+ 00000F96  3C 01		        cmp al, 1
+ 00000F98  74 3D		        je restore_space
 
 				        ; else food:
- 00000F5A  8B C1		        mov eax, ecx
- 00000F5C  6B C0 38		        imul eax, cols+1
- 00000F5F  03 C3		        add eax, ebx
- 00000F61  BF 00000000 R	        mov edi, offset maze
- 00000F66  03 F8		        add edi, eax
- 00000F68  C6 07 2E		        mov byte ptr [edi], '.' 
+ 00000F9A  8B C1		        mov eax, ecx
+ 00000F9C  6B C0 38		        imul eax, cols+1
+ 00000F9F  03 C3		        add eax, ebx
+ 00000FA1  BF 00000000 R	        mov edi, offset maze
+ 00000FA6  03 F8		        add edi, eax
+ 00000FA8  C6 07 2E		        mov byte ptr [edi], '.' 
 
 				        ; set color for food
- 00000F6B  B8 00000002		        mov  eax, green+(black*16)
- 00000F70  E8 00000000 E	        call SetTextColor
+ 00000FAB  B8 00000002		        mov  eax, green+(black*16)
+ 00000FB0  E8 00000000 E	        call SetTextColor
 
- 00000F75  8A F1		        mov dh, cl                     ; maze old row 
- 00000F77  80 C6 06		        add dh, row_start_point        ; adding the start point to get accurate X
- 00000F7A  8A D3		        mov dl, bl                     ; maze old col
- 00000F7C  80 C2 14		        add dl, col_start_point        ; adding the start point to get accurate Y
- 00000F7F  E8 00000000 E	        call gotoxy
- 00000F84  B0 2E		        mov al, '.'
- 00000F86  E8 00000000 E	        call writechar
+ 00000FB5  8A F1		        mov dh, cl                     ; maze old row 
+ 00000FB7  80 C6 06		        add dh, row_start_point        ; adding the start point to get accurate X
+ 00000FBA  8A D3		        mov dl, bl                     ; maze old col
+ 00000FBC  80 C2 14		        add dl, col_start_point        ; adding the start point to get accurate Y
+ 00000FBF  E8 00000000 E	        call gotoxy
+ 00000FC4  B0 2E		        mov al, '.'
+ 00000FC6  E8 00000000 E	        call writechar
 
 				        ; reset color for ghost
- 00000F8B  B8 0000000D		        mov  eax, lightMagenta+(black*16)
- 00000F90  E8 00000000 E	        call SetTextColor
- 00000F95  EB 27		        jmp restored
+ 00000FCB  B8 0000000D		        mov  eax, lightMagenta+(black*16)
+ 00000FD0  E8 00000000 E	        call SetTextColor
+ 00000FD5  EB 27		        jmp restored
 
- 00000F97			        restore_space:
- 00000F97  8B C1		            mov eax, ecx
- 00000F99  6B C0 38		            imul eax, cols+1
- 00000F9C  03 C3		            add eax, ebx
- 00000F9E  BF 00000000 R	            mov edi, offset maze
- 00000FA3  03 F8		            add edi, eax
- 00000FA5  C6 07 20		            mov byte ptr [edi], ' '
+ 00000FD7			        restore_space:
+ 00000FD7  8B C1		            mov eax, ecx
+ 00000FD9  6B C0 38		            imul eax, cols+1
+ 00000FDC  03 C3		            add eax, ebx
+ 00000FDE  BF 00000000 R	            mov edi, offset maze
+ 00000FE3  03 F8		            add edi, eax
+ 00000FE5  C6 07 20		            mov byte ptr [edi], ' '
 
- 00000FA8  8A F1		            mov dh, cl                     ; maze old row 
- 00000FAA  80 C6 06		            add dh, row_start_point        ; adding the start point to get accurate X
- 00000FAD  8A D3		            mov dl, bl                     ; maze old col
- 00000FAF  80 C2 14		            add dl, col_start_point        ; adding the start point to get accurate Y
- 00000FB2  E8 00000000 E	            call gotoxy
- 00000FB7  B0 20		            mov al, ' '
- 00000FB9  E8 00000000 E	            call writechar
+ 00000FE8  8A F1		            mov dh, cl                     ; maze old row 
+ 00000FEA  80 C6 06		            add dh, row_start_point        ; adding the start point to get accurate X
+ 00000FED  8A D3		            mov dl, bl                     ; maze old col
+ 00000FEF  80 C2 14		            add dl, col_start_point        ; adding the start point to get accurate Y
+ 00000FF2  E8 00000000 E	            call gotoxy
+ 00000FF7  B0 20		            mov al, ' '
+ 00000FF9  E8 00000000 E	            call writechar
 
- 00000FBE			        restored:
- 00000FBE  8B 15 00000B9B R	                mov edx, temp                  ;  restoring 
+ 00000FFE			        restored:
+ 00000FFE  8B 15 00000B9B R	                mov edx, temp                  ;  restoring 
 
 				        ; Draw new ghost on screen
 				        ; set cursor to new coords 
- 00000FC4  89 15 00000B9B R	        mov temp, edx                  ; preserving edx first
- 00000FCA  66| 8B C6		        mov ax, si                     ; new row
- 00000FCD  8A F0		        mov dh, al                     ; new maze row
- 00000FCF  80 C6 06		        add dh, row_start_point        ; adding the start point to get accurate X
+ 00001004  89 15 00000B9B R	        mov temp, edx                  ; preserving edx first
+ 0000100A  66| 8B C6		        mov ax, si                     ; new row
+ 0000100D  8A F0		        mov dh, al                     ; new maze row
+ 0000100F  80 C6 06		        add dh, row_start_point        ; adding the start point to get accurate X
 				        ; dl already has the new col 
- 00000FD2  80 C2 14		        add dl, col_start_point        ; adding the start point to get accurate Y
- 00000FD5  E8 00000000 E	        call gotoxy
- 00000FDA  B0 25		        mov al, '%'
- 00000FDC  E8 00000000 E	        call writechar
- 00000FE1  8B 15 00000B9B R	        mov edx, temp                  ;  restoring 
+ 00001012  80 C2 14		        add dl, col_start_point        ; adding the start point to get accurate Y
+ 00001015  E8 00000000 E	        call gotoxy
+ 0000101A  B0 25		        mov al, '%'
+ 0000101C  E8 00000000 E	        call writechar
+ 00001021  8B 15 00000B9B R	        mov edx, temp                  ;  restoring 
 
 				        ; Update variables
- 00000FE7  89 15 00000BA8 R	        mov pinky_X, edx
- 00000FED  89 35 00000BAC R	        mov pinky_Y, esi
+ 00001027  89 15 00000BA8 R	        mov pinky_X, edx
+ 0000102D  89 35 00000BAC R	        mov pinky_Y, esi
 				    
 				   ; collision_detected:
 				   ;     mov byte ptr [edi], ' '   ; clear the pacman in the maze
@@ -2061,100 +2090,100 @@ AddTwo.asm						     Page 1 - 1
 				   ;     call gotoxy
 				   ;     call writedec
 
- 00000FF3			    done:
+ 00001033			    done:
 				        ; restore registers
- 00000FF3  5F			        pop edi
- 00000FF4  5E			        pop esi
- 00000FF5  5A			        pop edx
- 00000FF6  59			        pop ecx
- 00000FF7  5B			        pop ebx
- 00000FF8  58			        pop eax
+ 00001033  5F			        pop edi
+ 00001034  5E			        pop esi
+ 00001035  5A			        pop edx
+ 00001036  59			        pop ecx
+ 00001037  5B			        pop ebx
+ 00001038  58			        pop eax
 				    
 				    ; resetting
- 00000FF9  B8 0000000F		    mov  eax, white+(black*16)
- 00000FFE  E8 00000000 E	    call SetTextColor
- 00001003  C3			    ret
- 00001004			pinky_ghost_movement endp
+ 00001039  B8 0000000F		    mov  eax, white+(black*16)
+ 0000103E  E8 00000000 E	    call SetTextColor
+ 00001043  C3			    ret
+ 00001044			pinky_ghost_movement endp
 
 				;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
- 00001004			clyde_ghost_movement proc
+ 00001044			clyde_ghost_movement proc
 				    ; preserving the values
- 00001004  50			    push eax
- 00001005  53			    push ebx
- 00001006  51			    push ecx
- 00001007  52			    push edx
- 00001008  56			    push esi
- 00001009  57			    push edi
+ 00001044  50			    push eax
+ 00001045  53			    push ebx
+ 00001046  51			    push ecx
+ 00001047  52			    push edx
+ 00001048  56			    push esi
+ 00001049  57			    push edi
 
 				    ; setting color for clyde
- 0000100A  B8 00000009		    mov  eax, lightBlue+(black*16)
- 0000100F  E8 00000000 E	    call SetTextColor
+ 0000104A  B8 00000009		    mov  eax, lightBlue+(black*16)
+ 0000104F  E8 00000000 E	    call SetTextColor
 
 				    ; load old clyde position
- 00001014  8B 1D 00000BB0 R	    mov ebx, clyde_X    ; ebx = old x
- 0000101A  8B 0D 00000BB4 R	    mov ecx, clyde_Y    ; ecx = old y
+ 00001054  8B 1D 00000BB0 R	    mov ebx, clyde_X    ; ebx = old x
+ 0000105A  8B 0D 00000BB4 R	    mov ecx, clyde_Y    ; ecx = old y
 
 				    ; start with newx = oldx, newy = oldy
- 00001020  8B D3		    mov edx, ebx        ; edx = newx
- 00001022  8B F1		    mov esi, ecx        ; esi = newy
+ 00001060  8B D3		    mov edx, ebx        ; edx = newx
+ 00001062  8B F1		    mov esi, ecx        ; esi = newy
 
- 00001024			    try_again:
+ 00001064			    try_again:
 				        ; pick random movement
- 00001024  B8 00000064		        mov eax, 100
- 00001029  E8 00000000 E	        call  RandomRange    ; 0 - 100
+ 00001064  B8 00000064		        mov eax, 100
+ 00001069  E8 00000000 E	        call  RandomRange    ; 0 - 100
 				        ; maping that to a direction:
- 0000102E  83 F8 19		        cmp eax, 25
- 00001031  7C 13		        jl try_right
- 00001033  83 F8 32		        cmp eax, 50
- 00001036  7C 0B		        jl try_left
- 00001038  83 F8 4B		        cmp eax, 75
- 0000103B  7C 03		        jl try_up
+ 0000106E  83 F8 19		        cmp eax, 25
+ 00001071  7C 13		        jl try_right
+ 00001073  83 F8 32		        cmp eax, 50
+ 00001076  7C 0B		        jl try_left
+ 00001078  83 F8 4B		        cmp eax, 75
+ 0000107B  7C 03		        jl try_up
 				        ; else move down
 
- 0000103D			    try_down:
- 0000103D  46			        inc esi
- 0000103E  EB 07		        jmp checkcell
+ 0000107D			    try_down:
+ 0000107D  46			        inc esi
+ 0000107E  EB 07		        jmp checkcell
 
- 00001040			    try_up:
- 00001040  4E			        dec esi
- 00001041  EB 04		        jmp checkcell
+ 00001080			    try_up:
+ 00001080  4E			        dec esi
+ 00001081  EB 04		        jmp checkcell
 
- 00001043			    try_left:
- 00001043  4A			        dec edx
- 00001044  EB 01		        jmp checkcell
+ 00001083			    try_left:
+ 00001083  4A			        dec edx
+ 00001084  EB 01		        jmp checkcell
 
- 00001046			    try_right:
- 00001046  42			        inc edx
+ 00001086			    try_right:
+ 00001086  42			        inc edx
 
- 00001047			    checkcell:
+ 00001087			    checkcell:
 				        ; boundary check
- 00001047  83 FE 01		        cmp esi, 1
- 0000104A  7C D8		        jl  try_again
- 0000104C  83 FE 13		        cmp esi, rows-2
- 0000104F  7F D3		        jg  try_again
- 00001051  83 FA 01		        cmp edx, 1
- 00001054  7C CE		        jl  try_again
- 00001056  83 FA 35		        cmp edx, cols-2
- 00001059  7F C9		        jg  try_again
+ 00001087  83 FE 01		        cmp esi, 1
+ 0000108A  7C D8		        jl  try_again
+ 0000108C  83 FE 13		        cmp esi, rows-2
+ 0000108F  7F D3		        jg  try_again
+ 00001091  83 FA 01		        cmp edx, 1
+ 00001094  7C CE		        jl  try_again
+ 00001096  83 FA 35		        cmp edx, cols-2
+ 00001099  7F C9		        jg  try_again
 				        
 				        ; getting the new 1D index
- 0000105B  8B C6		        mov eax, esi             ; new row
- 0000105D  6B C0 38		        imul eax, cols+1
- 00001060  03 C2		        add eax, edx             ; new col
- 00001062  BF 00000000 R	        mov edi, offset maze
- 00001067  03 F8		        add edi, eax
+ 0000109B  8B C6		        mov eax, esi             ; new row
+ 0000109D  6B C0 38		        imul eax, cols+1
+ 000010A0  03 C2		        add eax, edx             ; new col
+ 000010A2  BF 00000000 R	        mov edi, offset maze
+ 000010A7  03 F8		        add edi, eax
 
- 00001069  8A 07		        mov al, byte ptr [edi]      ; getting the value at index
- 0000106B  3C 2A		        cmp al, '*'        ; block
- 0000106D  74 B5		        je try_again
+ 000010A9  8A 07		        mov al, byte ptr [edi]      ; getting the value at index
+ 000010AB  3C 2A		        cmp al, '*'        ; block
+ 000010AD  74 B5		        je try_again
 				        ; if its any other ghost as well
- 0000106F  3C 40		        cmp al, '@'       
- 00001071  74 B1		        je try_again
- 00001073  3C 26		        cmp al, '&'       
- 00001075  74 AD		        je try_again
- 00001077  3C 25		        cmp al, '%'       
- 00001079  74 A9		        je try_again
+ 000010AF  3C 40		        cmp al, '@'       
+ 000010B1  74 B1		        je try_again
+ 000010B3  3C 26		        cmp al, '&'       
+ 000010B5  74 AD		        je try_again
+ 000010B7  3C 25		        cmp al, '%'       
+ 000010B9  74 A9		        je try_again
 
 				    ;    ; collision with pacman
 				    ;    mov   eax, edx       ; check the new col
@@ -2164,80 +2193,80 @@ AddTwo.asm						     Page 1 - 1
 				    ;    cmp   eax, pacmany       
 				    ;    je collision_detected  ; if both equal then go to collision detection
 
- 0000107B			    movethere:
+ 000010BB			    movethere:
 				        ; Erase old Ghost
- 0000107B  89 15 00000B9B R	        mov temp, edx                  ; preserving edx
+ 000010BB  89 15 00000B9B R	        mov temp, edx                  ; preserving edx
 
 				        ; determine what to restore at old position
- 00001081  8B C1		        mov eax, ecx
- 00001083  6B C0 37		        imul eax, cols
- 00001086  03 C3		        add eax, ebx
- 00001088  BF 00000498 R	        mov edi, offset eaten
- 0000108D  03 F8		        add edi, eax
- 0000108F  8A 07		        mov al, [edi]
- 00001091  3C 01		        cmp al, 1
- 00001093  74 3D		        je restore_space
+ 000010C1  8B C1		        mov eax, ecx
+ 000010C3  6B C0 37		        imul eax, cols
+ 000010C6  03 C3		        add eax, ebx
+ 000010C8  BF 00000498 R	        mov edi, offset eaten
+ 000010CD  03 F8		        add edi, eax
+ 000010CF  8A 07		        mov al, [edi]
+ 000010D1  3C 01		        cmp al, 1
+ 000010D3  74 3D		        je restore_space
 
 				        ; else food:
- 00001095  8B C1		        mov eax, ecx
- 00001097  6B C0 38		        imul eax, cols+1
- 0000109A  03 C3		        add eax, ebx
- 0000109C  BF 00000000 R	        mov edi, offset maze
- 000010A1  03 F8		        add edi, eax
- 000010A3  C6 07 2E		        mov byte ptr [edi], '.' 
+ 000010D5  8B C1		        mov eax, ecx
+ 000010D7  6B C0 38		        imul eax, cols+1
+ 000010DA  03 C3		        add eax, ebx
+ 000010DC  BF 00000000 R	        mov edi, offset maze
+ 000010E1  03 F8		        add edi, eax
+ 000010E3  C6 07 2E		        mov byte ptr [edi], '.' 
 
 				        ; set color for food
- 000010A6  B8 00000002		        mov  eax, green+(black*16)
- 000010AB  E8 00000000 E	        call SetTextColor
+ 000010E6  B8 00000002		        mov  eax, green+(black*16)
+ 000010EB  E8 00000000 E	        call SetTextColor
 
- 000010B0  8A F1		        mov dh, cl                     ; maze old row 
- 000010B2  80 C6 06		        add dh, row_start_point        ; adding the start point to get accurate X
- 000010B5  8A D3		        mov dl, bl                     ; maze old col
- 000010B7  80 C2 14		        add dl, col_start_point        ; adding the start point to get accurate Y
- 000010BA  E8 00000000 E	        call gotoxy
- 000010BF  B0 2E		        mov al, '.'
- 000010C1  E8 00000000 E	        call writechar
+ 000010F0  8A F1		        mov dh, cl                     ; maze old row 
+ 000010F2  80 C6 06		        add dh, row_start_point        ; adding the start point to get accurate X
+ 000010F5  8A D3		        mov dl, bl                     ; maze old col
+ 000010F7  80 C2 14		        add dl, col_start_point        ; adding the start point to get accurate Y
+ 000010FA  E8 00000000 E	        call gotoxy
+ 000010FF  B0 2E		        mov al, '.'
+ 00001101  E8 00000000 E	        call writechar
 
 				        ; reset color for ghost
- 000010C6  B8 00000009		        mov  eax, lightBlue+(black*16)
- 000010CB  E8 00000000 E	        call SetTextColor
- 000010D0  EB 27		        jmp restored
+ 00001106  B8 00000009		        mov  eax, lightBlue+(black*16)
+ 0000110B  E8 00000000 E	        call SetTextColor
+ 00001110  EB 27		        jmp restored
 
- 000010D2			        restore_space:
- 000010D2  8B C1		            mov eax, ecx
- 000010D4  6B C0 38		            imul eax, cols+1
- 000010D7  03 C3		            add eax, ebx
- 000010D9  BF 00000000 R	            mov edi, offset maze
- 000010DE  03 F8		            add edi, eax
- 000010E0  C6 07 20		            mov byte ptr [edi], ' '
+ 00001112			        restore_space:
+ 00001112  8B C1		            mov eax, ecx
+ 00001114  6B C0 38		            imul eax, cols+1
+ 00001117  03 C3		            add eax, ebx
+ 00001119  BF 00000000 R	            mov edi, offset maze
+ 0000111E  03 F8		            add edi, eax
+ 00001120  C6 07 20		            mov byte ptr [edi], ' '
 
- 000010E3  8A F1		            mov dh, cl                     ; maze old row 
- 000010E5  80 C6 06		            add dh, row_start_point        ; adding the start point to get accurate X
- 000010E8  8A D3		            mov dl, bl                     ; maze old col
- 000010EA  80 C2 14		            add dl, col_start_point        ; adding the start point to get accurate Y
- 000010ED  E8 00000000 E	            call gotoxy
- 000010F2  B0 20		            mov al, ' '
- 000010F4  E8 00000000 E	            call writechar
+ 00001123  8A F1		            mov dh, cl                     ; maze old row 
+ 00001125  80 C6 06		            add dh, row_start_point        ; adding the start point to get accurate X
+ 00001128  8A D3		            mov dl, bl                     ; maze old col
+ 0000112A  80 C2 14		            add dl, col_start_point        ; adding the start point to get accurate Y
+ 0000112D  E8 00000000 E	            call gotoxy
+ 00001132  B0 20		            mov al, ' '
+ 00001134  E8 00000000 E	            call writechar
 
- 000010F9			        restored:
- 000010F9  8B 15 00000B9B R	                mov edx, temp                  ;  restoring 
+ 00001139			        restored:
+ 00001139  8B 15 00000B9B R	                mov edx, temp                  ;  restoring 
 
 				        ; Draw new ghost on screen
 				        ; set cursor to new coords 
- 000010FF  89 15 00000B9B R	        mov temp, edx                  ; preserving edx first
- 00001105  66| 8B C6		        mov ax, si                     ; new row
- 00001108  8A F0		        mov dh, al                     ; new maze row
- 0000110A  80 C6 06		        add dh, row_start_point        ; adding the start point to get accurate X
+ 0000113F  89 15 00000B9B R	        mov temp, edx                  ; preserving edx first
+ 00001145  66| 8B C6		        mov ax, si                     ; new row
+ 00001148  8A F0		        mov dh, al                     ; new maze row
+ 0000114A  80 C6 06		        add dh, row_start_point        ; adding the start point to get accurate X
 				        ; dl already has the new col 
- 0000110D  80 C2 14		        add dl, col_start_point        ; adding the start point to get accurate Y
- 00001110  E8 00000000 E	        call gotoxy
- 00001115  B0 24		        mov al, '$'
- 00001117  E8 00000000 E	        call writechar
- 0000111C  8B 15 00000B9B R	        mov edx, temp                  ;  restoring 
+ 0000114D  80 C2 14		        add dl, col_start_point        ; adding the start point to get accurate Y
+ 00001150  E8 00000000 E	        call gotoxy
+ 00001155  B0 24		        mov al, '$'
+ 00001157  E8 00000000 E	        call writechar
+ 0000115C  8B 15 00000B9B R	        mov edx, temp                  ;  restoring 
 
 				        ; Update variables
- 00001122  89 15 00000BB0 R	        mov clyde_X, edx
- 00001128  89 35 00000BB4 R	        mov clyde_Y, esi
+ 00001162  89 15 00000BB0 R	        mov clyde_X, edx
+ 00001168  89 35 00000BB4 R	        mov clyde_Y, esi
 				    
 				   ; collision_detected:
 				   ;     mov byte ptr [edi], ' '   ; clear the pacman in the maze
@@ -2286,100 +2315,100 @@ AddTwo.asm						     Page 1 - 1
 				   ;     call gotoxy
 				   ;     call writedec
 
- 0000112E			    done:
+ 0000116E			    done:
 				        ; restore registers
- 0000112E  5F			        pop edi
- 0000112F  5E			        pop esi
- 00001130  5A			        pop edx
- 00001131  59			        pop ecx
- 00001132  5B			        pop ebx
- 00001133  58			        pop eax
+ 0000116E  5F			        pop edi
+ 0000116F  5E			        pop esi
+ 00001170  5A			        pop edx
+ 00001171  59			        pop ecx
+ 00001172  5B			        pop ebx
+ 00001173  58			        pop eax
 				    
 				    ; resetting
- 00001134  B8 0000000F		    mov  eax, white+(black*16)
- 00001139  E8 00000000 E	    call SetTextColor
- 0000113E  C3			    ret
- 0000113F			clyde_ghost_movement endp
+ 00001174  B8 0000000F		    mov  eax, white+(black*16)
+ 00001179  E8 00000000 E	    call SetTextColor
+ 0000117E  C3			    ret
+ 0000117F			clyde_ghost_movement endp
 
 				;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
- 0000113F			inky_ghost_movement proc
+ 0000117F			inky_ghost_movement proc
 				    ; preserving the values
- 0000113F  50			    push eax
- 00001140  53			    push ebx
- 00001141  51			    push ecx
- 00001142  52			    push edx
- 00001143  56			    push esi
- 00001144  57			    push edi
+ 0000117F  50			    push eax
+ 00001180  53			    push ebx
+ 00001181  51			    push ecx
+ 00001182  52			    push edx
+ 00001183  56			    push esi
+ 00001184  57			    push edi
 
 				    ; setting color for inky
- 00001145  B8 00000007		    mov  eax, lightGray+(black*16)
- 0000114A  E8 00000000 E	    call SetTextColor
+ 00001185  B8 00000007		    mov  eax, lightGray+(black*16)
+ 0000118A  E8 00000000 E	    call SetTextColor
 
 				    ; load old inky position
- 0000114F  8B 1D 00000BB8 R	    mov ebx, inky_X    ; ebx = old x
- 00001155  8B 0D 00000BBC R	    mov ecx, inky_Y    ; ecx = old y
+ 0000118F  8B 1D 00000BB8 R	    mov ebx, inky_X    ; ebx = old x
+ 00001195  8B 0D 00000BBC R	    mov ecx, inky_Y    ; ecx = old y
 
 				    ; start with newx = oldx, newy = oldy
- 0000115B  8B D3		    mov edx, ebx        ; edx = newx
- 0000115D  8B F1		    mov esi, ecx        ; esi = newy
+ 0000119B  8B D3		    mov edx, ebx        ; edx = newx
+ 0000119D  8B F1		    mov esi, ecx        ; esi = newy
 
- 0000115F			    try_again:
+ 0000119F			    try_again:
 				        ; pick random movement
- 0000115F  B8 00000064		        mov eax, 100
- 00001164  E8 00000000 E	        call  RandomRange    ; 0 - 100
+ 0000119F  B8 00000064		        mov eax, 100
+ 000011A4  E8 00000000 E	        call  RandomRange    ; 0 - 100
 				        ; maping that to a direction:
- 00001169  83 F8 19		        cmp eax, 25
- 0000116C  7C 13		        jl try_right
- 0000116E  83 F8 32		        cmp eax, 50
- 00001171  7C 0B		        jl try_left
- 00001173  83 F8 4B		        cmp eax, 75
- 00001176  7C 03		        jl try_up
+ 000011A9  83 F8 19		        cmp eax, 25
+ 000011AC  7C 13		        jl try_right
+ 000011AE  83 F8 32		        cmp eax, 50
+ 000011B1  7C 0B		        jl try_left
+ 000011B3  83 F8 4B		        cmp eax, 75
+ 000011B6  7C 03		        jl try_up
 				        ; else move down
 
- 00001178			    try_down:
- 00001178  46			        inc esi
- 00001179  EB 07		        jmp checkcell
+ 000011B8			    try_down:
+ 000011B8  46			        inc esi
+ 000011B9  EB 07		        jmp checkcell
 
- 0000117B			    try_up:
- 0000117B  4E			        dec esi
- 0000117C  EB 04		        jmp checkcell
+ 000011BB			    try_up:
+ 000011BB  4E			        dec esi
+ 000011BC  EB 04		        jmp checkcell
 
- 0000117E			    try_left:
- 0000117E  4A			        dec edx
- 0000117F  EB 01		        jmp checkcell
+ 000011BE			    try_left:
+ 000011BE  4A			        dec edx
+ 000011BF  EB 01		        jmp checkcell
 
- 00001181			    try_right:
- 00001181  42			        inc edx
+ 000011C1			    try_right:
+ 000011C1  42			        inc edx
 
- 00001182			    checkcell:
+ 000011C2			    checkcell:
 				        ; boundary check
- 00001182  83 FE 01		        cmp esi, 1
- 00001185  7C D8		        jl  try_again
- 00001187  83 FE 13		        cmp esi, rows-2
- 0000118A  7F D3		        jg  try_again
- 0000118C  83 FA 01		        cmp edx, 1
- 0000118F  7C CE		        jl  try_again
- 00001191  83 FA 35		        cmp edx, cols-2
- 00001194  7F C9		        jg  try_again
+ 000011C2  83 FE 01		        cmp esi, 1
+ 000011C5  7C D8		        jl  try_again
+ 000011C7  83 FE 13		        cmp esi, rows-2
+ 000011CA  7F D3		        jg  try_again
+ 000011CC  83 FA 01		        cmp edx, 1
+ 000011CF  7C CE		        jl  try_again
+ 000011D1  83 FA 35		        cmp edx, cols-2
+ 000011D4  7F C9		        jg  try_again
 				        
 				        ; getting the new 1D index
- 00001196  8B C6		        mov eax, esi             ; new row
- 00001198  6B C0 38		        imul eax, cols+1
- 0000119B  03 C2		        add eax, edx             ; new col
- 0000119D  BF 00000000 R	        mov edi, offset maze
- 000011A2  03 F8		        add edi, eax
+ 000011D6  8B C6		        mov eax, esi             ; new row
+ 000011D8  6B C0 38		        imul eax, cols+1
+ 000011DB  03 C2		        add eax, edx             ; new col
+ 000011DD  BF 00000000 R	        mov edi, offset maze
+ 000011E2  03 F8		        add edi, eax
 
- 000011A4  8A 07		        mov al, byte ptr [edi]      ; getting the value at index
- 000011A6  3C 2A		        cmp al, '*'        ; block
- 000011A8  74 B5		        je try_again
+ 000011E4  8A 07		        mov al, byte ptr [edi]      ; getting the value at index
+ 000011E6  3C 2A		        cmp al, '*'        ; block
+ 000011E8  74 B5		        je try_again
 				        ; if its any other ghost as well
- 000011AA  3C 40		        cmp al, '@'       
- 000011AC  74 B1		        je try_again
- 000011AE  3C 25		        cmp al, '%'       
- 000011B0  74 AD		        je try_again
- 000011B2  3C 24		        cmp al, '$'       
- 000011B4  74 A9		        je try_again
+ 000011EA  3C 40		        cmp al, '@'       
+ 000011EC  74 B1		        je try_again
+ 000011EE  3C 25		        cmp al, '%'       
+ 000011F0  74 AD		        je try_again
+ 000011F2  3C 24		        cmp al, '$'       
+ 000011F4  74 A9		        je try_again
 
 				    ;    ; collision with pacman
 				    ;    mov   eax, edx       ; check the new col
@@ -2389,80 +2418,80 @@ AddTwo.asm						     Page 1 - 1
 				    ;    cmp   eax, pacmany       
 				    ;    je collision_detected  ; if both equal then go to collision detection
 
- 000011B6			    movethere:
+ 000011F6			    movethere:
 				        ; Erase old Ghost
- 000011B6  89 15 00000B9B R	        mov temp, edx                  ; preserving edx
+ 000011F6  89 15 00000B9B R	        mov temp, edx                  ; preserving edx
 
 				        ; determine what to restore at old position
- 000011BC  8B C1		        mov eax, ecx
- 000011BE  6B C0 37		        imul eax, cols
- 000011C1  03 C3		        add eax, ebx
- 000011C3  BF 00000498 R	        mov edi, offset eaten
- 000011C8  03 F8		        add edi, eax
- 000011CA  8A 07		        mov al, [edi]
- 000011CC  3C 01		        cmp al, 1
- 000011CE  74 3D		        je restore_space
+ 000011FC  8B C1		        mov eax, ecx
+ 000011FE  6B C0 37		        imul eax, cols
+ 00001201  03 C3		        add eax, ebx
+ 00001203  BF 00000498 R	        mov edi, offset eaten
+ 00001208  03 F8		        add edi, eax
+ 0000120A  8A 07		        mov al, [edi]
+ 0000120C  3C 01		        cmp al, 1
+ 0000120E  74 3D		        je restore_space
 
 				        ; else food:
- 000011D0  8B C1		        mov eax, ecx
- 000011D2  6B C0 38		        imul eax, cols+1
- 000011D5  03 C3		        add eax, ebx
- 000011D7  BF 00000000 R	        mov edi, offset maze
- 000011DC  03 F8		        add edi, eax
- 000011DE  C6 07 2E		        mov byte ptr [edi], '.' 
+ 00001210  8B C1		        mov eax, ecx
+ 00001212  6B C0 38		        imul eax, cols+1
+ 00001215  03 C3		        add eax, ebx
+ 00001217  BF 00000000 R	        mov edi, offset maze
+ 0000121C  03 F8		        add edi, eax
+ 0000121E  C6 07 2E		        mov byte ptr [edi], '.' 
 
 				        ; set color for food
- 000011E1  B8 00000002		        mov  eax, green+(black*16)
- 000011E6  E8 00000000 E	        call SetTextColor
+ 00001221  B8 00000002		        mov  eax, green+(black*16)
+ 00001226  E8 00000000 E	        call SetTextColor
 
- 000011EB  8A F1		        mov dh, cl                     ; maze old row 
- 000011ED  80 C6 06		        add dh, row_start_point        ; adding the start point to get accurate X
- 000011F0  8A D3		        mov dl, bl                     ; maze old col
- 000011F2  80 C2 14		        add dl, col_start_point        ; adding the start point to get accurate Y
- 000011F5  E8 00000000 E	        call gotoxy
- 000011FA  B0 2E		        mov al, '.'
- 000011FC  E8 00000000 E	        call writechar
+ 0000122B  8A F1		        mov dh, cl                     ; maze old row 
+ 0000122D  80 C6 06		        add dh, row_start_point        ; adding the start point to get accurate X
+ 00001230  8A D3		        mov dl, bl                     ; maze old col
+ 00001232  80 C2 14		        add dl, col_start_point        ; adding the start point to get accurate Y
+ 00001235  E8 00000000 E	        call gotoxy
+ 0000123A  B0 2E		        mov al, '.'
+ 0000123C  E8 00000000 E	        call writechar
 
 				        ; reset color for ghost
- 00001201  B8 00000007		        mov  eax, lightGray+(black*16)
- 00001206  E8 00000000 E	        call SetTextColor
- 0000120B  EB 27		        jmp restored
+ 00001241  B8 00000007		        mov  eax, lightGray+(black*16)
+ 00001246  E8 00000000 E	        call SetTextColor
+ 0000124B  EB 27		        jmp restored
 
- 0000120D			        restore_space:
- 0000120D  8B C1		            mov eax, ecx
- 0000120F  6B C0 38		            imul eax, cols+1
- 00001212  03 C3		            add eax, ebx
- 00001214  BF 00000000 R	            mov edi, offset maze
- 00001219  03 F8		            add edi, eax
- 0000121B  C6 07 20		            mov byte ptr [edi], ' '
+ 0000124D			        restore_space:
+ 0000124D  8B C1		            mov eax, ecx
+ 0000124F  6B C0 38		            imul eax, cols+1
+ 00001252  03 C3		            add eax, ebx
+ 00001254  BF 00000000 R	            mov edi, offset maze
+ 00001259  03 F8		            add edi, eax
+ 0000125B  C6 07 20		            mov byte ptr [edi], ' '
 
- 0000121E  8A F1		            mov dh, cl                     ; maze old row 
- 00001220  80 C6 06		            add dh, row_start_point        ; adding the start point to get accurate X
- 00001223  8A D3		            mov dl, bl                     ; maze old col
- 00001225  80 C2 14		            add dl, col_start_point        ; adding the start point to get accurate Y
- 00001228  E8 00000000 E	            call gotoxy
- 0000122D  B0 20		            mov al, ' '
- 0000122F  E8 00000000 E	            call writechar
+ 0000125E  8A F1		            mov dh, cl                     ; maze old row 
+ 00001260  80 C6 06		            add dh, row_start_point        ; adding the start point to get accurate X
+ 00001263  8A D3		            mov dl, bl                     ; maze old col
+ 00001265  80 C2 14		            add dl, col_start_point        ; adding the start point to get accurate Y
+ 00001268  E8 00000000 E	            call gotoxy
+ 0000126D  B0 20		            mov al, ' '
+ 0000126F  E8 00000000 E	            call writechar
 
- 00001234			        restored:
- 00001234  8B 15 00000B9B R	                mov edx, temp                  ;  restoring 
+ 00001274			        restored:
+ 00001274  8B 15 00000B9B R	                mov edx, temp                  ;  restoring 
 
 				        ; Draw new ghost on screen
 				        ; set cursor to new coords 
- 0000123A  89 15 00000B9B R	        mov temp, edx                  ; preserving edx first
- 00001240  66| 8B C6		        mov ax, si                     ; new row
- 00001243  8A F0		        mov dh, al                     ; new maze row
- 00001245  80 C6 06		        add dh, row_start_point        ; adding the start point to get accurate X
+ 0000127A  89 15 00000B9B R	        mov temp, edx                  ; preserving edx first
+ 00001280  66| 8B C6		        mov ax, si                     ; new row
+ 00001283  8A F0		        mov dh, al                     ; new maze row
+ 00001285  80 C6 06		        add dh, row_start_point        ; adding the start point to get accurate X
 				        ; dl already has the new col 
- 00001248  80 C2 14		        add dl, col_start_point        ; adding the start point to get accurate Y
- 0000124B  E8 00000000 E	        call gotoxy
- 00001250  B0 26		        mov al, '&'
- 00001252  E8 00000000 E	        call writechar
- 00001257  8B 15 00000B9B R	        mov edx, temp                  ;  restoring 
+ 00001288  80 C2 14		        add dl, col_start_point        ; adding the start point to get accurate Y
+ 0000128B  E8 00000000 E	        call gotoxy
+ 00001290  B0 26		        mov al, '&'
+ 00001292  E8 00000000 E	        call writechar
+ 00001297  8B 15 00000B9B R	        mov edx, temp                  ;  restoring 
 
 				        ; Update variables
- 0000125D  89 15 00000BB8 R	        mov inky_X, edx
- 00001263  89 35 00000BBC R	        mov inky_Y, esi
+ 0000129D  89 15 00000BB8 R	        mov inky_X, edx
+ 000012A3  89 35 00000BBC R	        mov inky_Y, esi
 
 				   ; collision_detected:
 				   ;     mov byte ptr [edi], ' '   ; clear the pacman in the maze
@@ -2511,90 +2540,90 @@ AddTwo.asm						     Page 1 - 1
 				   ;     call gotoxy
 				   ;     call writedec
 
- 00001269			    done:
+ 000012A9			    done:
 				        ; restore registers
- 00001269  5F			        pop edi
- 0000126A  5E			        pop esi
- 0000126B  5A			        pop edx
- 0000126C  59			        pop ecx
- 0000126D  5B			        pop ebx
- 0000126E  58			        pop eax
+ 000012A9  5F			        pop edi
+ 000012AA  5E			        pop esi
+ 000012AB  5A			        pop edx
+ 000012AC  59			        pop ecx
+ 000012AD  5B			        pop ebx
+ 000012AE  58			        pop eax
 				    
 				    ; resetting
- 0000126F  B8 0000000F		    mov  eax, white+(black*16)
- 00001274  E8 00000000 E	    call SetTextColor
- 00001279  C3			    ret
- 0000127A			inky_ghost_movement endp
+ 000012AF  B8 0000000F		    mov  eax, white+(black*16)
+ 000012B4  E8 00000000 E	    call SetTextColor
+ 000012B9  C3			    ret
+ 000012BA			inky_ghost_movement endp
 
 				;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
- 0000127A			placeBonusFood proc
+ 000012BA			placeBonusFood proc
 				    ; preserving the values
- 0000127A  50			    push eax
- 0000127B  53			    push ebx
- 0000127C  51			    push ecx
- 0000127D  52			    push edx
- 0000127E  56			    push esi
- 0000127F  57			    push edi
+ 000012BA  50			    push eax
+ 000012BB  53			    push ebx
+ 000012BC  51			    push ecx
+ 000012BD  52			    push edx
+ 000012BE  56			    push esi
+ 000012BF  57			    push edi
 
- 00001280  8B 0D 00000BC1 R	    mov ecx, bonusFoodCount     ; number of bonuses to place
- 00001286			place_loop:
+ 000012C0  8B 0D 00000BC1 R	    mov ecx, bonusFoodCount     ; number of bonuses to place
+ 000012C6			place_loop:
 				    ; pick random row
- 00001286  B8 00000012		    mov eax, rows-3
- 0000128B  E8 00000000 E	    call RandomRange        ; 0 - rows-2
- 00001290  40			    inc eax                 ; 1 - rows-1
- 00001291  8B D8		    mov ebx, eax           
+ 000012C6  B8 00000012		    mov eax, rows-3
+ 000012CB  E8 00000000 E	    call RandomRange        ; 0 - rows-2
+ 000012D0  40			    inc eax                 ; 1 - rows-1
+ 000012D1  8B D8		    mov ebx, eax           
 
 				    ; pick random col
- 00001293  B8 00000034		    mov eax, cols-3
- 00001298  E8 00000000 E	    call RandomRange        ; 0 - col-2
- 0000129D  40			    inc eax                 ; 1 - col-1
- 0000129E  8B D0		    mov edx, eax          
+ 000012D3  B8 00000034		    mov eax, cols-3
+ 000012D8  E8 00000000 E	    call RandomRange        ; 0 - col-2
+ 000012DD  40			    inc eax                 ; 1 - col-1
+ 000012DE  8B D0		    mov edx, eax          
 
 				    ; calc offset = row*(cols+1) + col
- 000012A0  8B C3		    mov eax, ebx          ; row
- 000012A2  6B C0 38		    imul eax, cols+1
- 000012A5  03 C2		    add eax, edx          ; col
+ 000012E0  8B C3		    mov eax, ebx          ; row
+ 000012E2  6B C0 38		    imul eax, cols+1
+ 000012E5  03 C2		    add eax, edx          ; col
 
 				    ; store '+' in maze
- 000012A7  BF 00000000 R	    mov edi, offset maze
- 000012AC  03 F8		    add edi, eax          ; index
+ 000012E7  BF 00000000 R	    mov edi, offset maze
+ 000012EC  03 F8		    add edi, eax          ; index
 
 				    ; first check if the place is empty
- 000012AE  8A 07		    mov al, byte ptr [edi]
- 000012B0  3C 2E		    cmp al, '.'       
- 000012B2  75 D2		    jne place_loop        ; if the space is occupied try again
+ 000012EE  8A 07		    mov al, byte ptr [edi]
+ 000012F0  3C 2E		    cmp al, '.'       
+ 000012F2  75 D2		    jne place_loop        ; if the space is occupied try again
 
 				    ; add the bonus food if space is available
- 000012B4  C6 07 2B		    mov byte ptr [edi], '+'  
+ 000012F4  C6 07 2B		    mov byte ptr [edi], '+'  
 
 				    ; draw it on screen
- 000012B7  8A F3		    mov dh, bl              ; dh = row
- 000012B9  80 C6 06		    add dh, row_start_point
+ 000012F7  8A F3		    mov dh, bl              ; dh = row
+ 000012F9  80 C6 06		    add dh, row_start_point
 				    ; dl already as the col stored
- 000012BC  80 C2 14		    add dl, col_start_point
- 000012BF  E8 00000000 E	    call gotoxy
- 000012C4  B0 2B		    mov al, '+'
- 000012C6  E8 00000000 E	    call WriteChar
+ 000012FC  80 C2 14		    add dl, col_start_point
+ 000012FF  E8 00000000 E	    call gotoxy
+ 00001304  B0 2B		    mov al, '+'
+ 00001306  E8 00000000 E	    call WriteChar
 
- 000012CB  E2 B9		    loop place_loop
+ 0000130B  E2 B9		    loop place_loop
 				     ; restore registers
- 000012CD  5F			        pop edi
- 000012CE  5E			        pop esi
- 000012CF  5A			        pop edx
- 000012D0  59			        pop ecx
- 000012D1  5B			        pop ebx
- 000012D2  58			        pop eax
+ 0000130D  5F			        pop edi
+ 0000130E  5E			        pop esi
+ 0000130F  5A			        pop edx
+ 00001310  59			        pop ecx
+ 00001311  5B			        pop ebx
+ 00001312  58			        pop eax
 				    
 				    ; resetting
- 000012D3  B8 0000000F		    mov  eax, white+(black*16)
- 000012D8  E8 00000000 E	    call SetTextColor
- 000012DD  C3			    ret
- 000012DE			placeBonusFood endp
+ 00001313  B8 0000000F		    mov  eax, white+(black*16)
+ 00001318  E8 00000000 E	    call SetTextColor
+ 0000131D  C3			    ret
+ 0000131E			placeBonusFood endp
 
 
 				end main
-Microsoft (R) Macro Assembler Version 14.43.34808.0	    05/11/25 21:38:13
+Microsoft (R) Macro Assembler Version 14.43.34808.0	    05/12/25 00:19:14
 AddTwo.asm						     Symbols 2 - 1
 
 
@@ -2689,7 +2718,7 @@ Segments and Groups:
 FLAT . . . . . . . . . . . . . .	GROUP
 STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
 _DATA  . . . . . . . . . . . . .	32 Bit	 00000BC5 Para	  Public  'DATA'	
-_TEXT  . . . . . . . . . . . . .	32 Bit	 000012DE Para	  Public  'CODE'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 0000131E Para	  Public  'CODE'	
 
 
 Procedures, parameters, and locals:
@@ -2805,17 +2834,17 @@ buildmaze  . . . . . . . . . . .	P Near	 00000503 _TEXT	Length= 00000057 Public 
   boundary . . . . . . . . . . .	L Near	 0000052C _TEXT	
   fillrow  . . . . . . . . . . .	L Near	 0000052E _TEXT	
   skiprow  . . . . . . . . . . .	L Near	 00000556 _TEXT	
-clyde_ghost_movement . . . . . .	P Near	 00001004 _TEXT	Length= 0000013B Public STDCALL
-  try_again  . . . . . . . . . .	L Near	 00001024 _TEXT	
-  try_down . . . . . . . . . . .	L Near	 0000103D _TEXT	
-  try_up . . . . . . . . . . . .	L Near	 00001040 _TEXT	
-  try_left . . . . . . . . . . .	L Near	 00001043 _TEXT	
-  try_right  . . . . . . . . . .	L Near	 00001046 _TEXT	
-  checkcell  . . . . . . . . . .	L Near	 00001047 _TEXT	
-  movethere  . . . . . . . . . .	L Near	 0000107B _TEXT	
-  restore_space  . . . . . . . .	L Near	 000010D2 _TEXT	
-  restored . . . . . . . . . . .	L Near	 000010F9 _TEXT	
-  done . . . . . . . . . . . . .	L Near	 0000112E _TEXT	
+clyde_ghost_movement . . . . . .	P Near	 00001044 _TEXT	Length= 0000013B Public STDCALL
+  try_again  . . . . . . . . . .	L Near	 00001064 _TEXT	
+  try_down . . . . . . . . . . .	L Near	 0000107D _TEXT	
+  try_up . . . . . . . . . . . .	L Near	 00001080 _TEXT	
+  try_left . . . . . . . . . . .	L Near	 00001083 _TEXT	
+  try_right  . . . . . . . . . .	L Near	 00001086 _TEXT	
+  checkcell  . . . . . . . . . .	L Near	 00001087 _TEXT	
+  movethere  . . . . . . . . . .	L Near	 000010BB _TEXT	
+  restore_space  . . . . . . . .	L Near	 00001112 _TEXT	
+  restored . . . . . . . . . . .	L Near	 00001139 _TEXT	
+  done . . . . . . . . . . . . .	L Near	 0000116E _TEXT	
 draw_box . . . . . . . . . . . .	P Near	 000006B0 _TEXT	Length= 00000045 Public STDCALL
   draw_box_rows  . . . . . . . .	L Near	 000006BA _TEXT	
   draw_box_cols  . . . . . . . .	L Near	 000006D0 _TEXT	
@@ -2836,17 +2865,17 @@ gameMenuScreen . . . . . . . . .	P Near	 00000290 _TEXT	Length= 00000140 Public 
   instructions . . . . . . . . .	L Near	 00000389 _TEXT	
   incorrectOption  . . . . . . .	L Near	 0000038E _TEXT	
   return_to_main . . . . . . . .	L Near	 000003C5 _TEXT	
-inky_ghost_movement  . . . . . .	P Near	 0000113F _TEXT	Length= 0000013B Public STDCALL
-  try_again  . . . . . . . . . .	L Near	 0000115F _TEXT	
-  try_down . . . . . . . . . . .	L Near	 00001178 _TEXT	
-  try_up . . . . . . . . . . . .	L Near	 0000117B _TEXT	
-  try_left . . . . . . . . . . .	L Near	 0000117E _TEXT	
-  try_right  . . . . . . . . . .	L Near	 00001181 _TEXT	
-  checkcell  . . . . . . . . . .	L Near	 00001182 _TEXT	
-  movethere  . . . . . . . . . .	L Near	 000011B6 _TEXT	
-  restore_space  . . . . . . . .	L Near	 0000120D _TEXT	
-  restored . . . . . . . . . . .	L Near	 00001234 _TEXT	
-  done . . . . . . . . . . . . .	L Near	 00001269 _TEXT	
+inky_ghost_movement  . . . . . .	P Near	 0000117F _TEXT	Length= 0000013B Public STDCALL
+  try_again  . . . . . . . . . .	L Near	 0000119F _TEXT	
+  try_down . . . . . . . . . . .	L Near	 000011B8 _TEXT	
+  try_up . . . . . . . . . . . .	L Near	 000011BB _TEXT	
+  try_left . . . . . . . . . . .	L Near	 000011BE _TEXT	
+  try_right  . . . . . . . . . .	L Near	 000011C1 _TEXT	
+  checkcell  . . . . . . . . . .	L Near	 000011C2 _TEXT	
+  movethere  . . . . . . . . . .	L Near	 000011F6 _TEXT	
+  restore_space  . . . . . . . .	L Near	 0000124D _TEXT	
+  restored . . . . . . . . . . .	L Near	 00001274 _TEXT	
+  done . . . . . . . . . . . . .	L Near	 000012A9 _TEXT	
 main . . . . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 00000185 Public STDCALL
   level3 . . . . . . . . . . . .	L Near	 00000030 _TEXT	
   level2 . . . . . . . . . . . .	L Near	 00000035 _TEXT	
@@ -2869,27 +2898,29 @@ main . . . . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 00000185 Public 
   level1_speed . . . . . . . . .	L Near	 0000011B _TEXT	
   you_lose . . . . . . . . . . .	L Near	 00000133 _TEXT	
   finish . . . . . . . . . . . .	L Near	 0000017E _TEXT	
-pacman_movement  . . . . . . . .	P Near	 00000BB0 _TEXT	Length= 0000012F Public STDCALL
+pacman_movement  . . . . . . . .	P Near	 00000BB0 _TEXT	Length= 0000016F Public STDCALL
   move_right . . . . . . . . . .	L Near	 00000BF4 _TEXT	
   move_left  . . . . . . . . . .	L Near	 00000BF7 _TEXT	
   move_up  . . . . . . . . . . .	L Near	 00000BFA _TEXT	
   move_down  . . . . . . . . . .	L Near	 00000BFD _TEXT	
   checkcell  . . . . . . . . . .	L Near	 00000BFE _TEXT	
-  movethere  . . . . . . . . . .	L Near	 00000C5B _TEXT	
-  done . . . . . . . . . . . . .	L Near	 00000CCE _TEXT	
-pinky_ghost_movement . . . . . .	P Near	 00000EC9 _TEXT	Length= 0000013B Public STDCALL
-  try_again  . . . . . . . . . .	L Near	 00000EE9 _TEXT	
-  try_down . . . . . . . . . . .	L Near	 00000F02 _TEXT	
-  try_up . . . . . . . . . . . .	L Near	 00000F05 _TEXT	
-  try_left . . . . . . . . . . .	L Near	 00000F08 _TEXT	
-  try_right  . . . . . . . . . .	L Near	 00000F0B _TEXT	
-  checkcell  . . . . . . . . . .	L Near	 00000F0C _TEXT	
-  movethere  . . . . . . . . . .	L Near	 00000F40 _TEXT	
-  restore_space  . . . . . . . .	L Near	 00000F97 _TEXT	
-  restored . . . . . . . . . . .	L Near	 00000FBE _TEXT	
-  done . . . . . . . . . . . . .	L Near	 00000FF3 _TEXT	
-placeBonusFood . . . . . . . . .	P Near	 0000127A _TEXT	Length= 00000064 Public STDCALL
-  place_loop . . . . . . . . . .	L Near	 00001286 _TEXT	
+  food . . . . . . . . . . . . .	L Near	 00000C26 _TEXT	
+  bonusFood  . . . . . . . . . .	L Near	 00000C61 _TEXT	
+  movethere  . . . . . . . . . .	L Near	 00000C9B _TEXT	
+  done . . . . . . . . . . . . .	L Near	 00000D0E _TEXT	
+pinky_ghost_movement . . . . . .	P Near	 00000F09 _TEXT	Length= 0000013B Public STDCALL
+  try_again  . . . . . . . . . .	L Near	 00000F29 _TEXT	
+  try_down . . . . . . . . . . .	L Near	 00000F42 _TEXT	
+  try_up . . . . . . . . . . . .	L Near	 00000F45 _TEXT	
+  try_left . . . . . . . . . . .	L Near	 00000F48 _TEXT	
+  try_right  . . . . . . . . . .	L Near	 00000F4B _TEXT	
+  checkcell  . . . . . . . . . .	L Near	 00000F4C _TEXT	
+  movethere  . . . . . . . . . .	L Near	 00000F80 _TEXT	
+  restore_space  . . . . . . . .	L Near	 00000FD7 _TEXT	
+  restored . . . . . . . . . . .	L Near	 00000FFE _TEXT	
+  done . . . . . . . . . . . . .	L Near	 00001033 _TEXT	
+placeBonusFood . . . . . . . . .	P Near	 000012BA _TEXT	Length= 00000064 Public STDCALL
+  place_loop . . . . . . . . . .	L Near	 000012C6 _TEXT	
 place_levelOne_ghost . . . . . .	P Near	 0000059F _TEXT	Length= 00000045 Public STDCALL
   find_random_indexes  . . . . .	L Near	 000005A0 _TEXT	
   try_again  . . . . . . . . . .	L Near	 000005E0 _TEXT	
@@ -2909,18 +2940,18 @@ place_pacman . . . . . . . . . .	P Near	 0000055A _TEXT	Length= 00000045 Public 
   try_again  . . . . . . . . . .	L Near	 0000059B _TEXT	
   done_placing . . . . . . . . .	L Near	 0000059D _TEXT	
 printf . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
-red_ghost_movement . . . . . . .	P Near	 00000CDF _TEXT	Length= 000001EA Public STDCALL
-  try_again  . . . . . . . . . .	L Near	 00000CFF _TEXT	
-  try_down . . . . . . . . . . .	L Near	 00000D18 _TEXT	
-  try_up . . . . . . . . . . . .	L Near	 00000D1B _TEXT	
-  try_left . . . . . . . . . . .	L Near	 00000D1E _TEXT	
-  try_right  . . . . . . . . . .	L Near	 00000D21 _TEXT	
-  checkcell  . . . . . . . . . .	L Near	 00000D22 _TEXT	
-  movethere  . . . . . . . . . .	L Near	 00000D6E _TEXT	
-  restore_space  . . . . . . . .	L Near	 00000DC5 _TEXT	
-  restored . . . . . . . . . . .	L Near	 00000DEC _TEXT	
-  collision_detected . . . . . .	L Near	 00000E26 _TEXT	
-  done . . . . . . . . . . . . .	L Near	 00000EB8 _TEXT	
+red_ghost_movement . . . . . . .	P Near	 00000D1F _TEXT	Length= 000001EA Public STDCALL
+  try_again  . . . . . . . . . .	L Near	 00000D3F _TEXT	
+  try_down . . . . . . . . . . .	L Near	 00000D58 _TEXT	
+  try_up . . . . . . . . . . . .	L Near	 00000D5B _TEXT	
+  try_left . . . . . . . . . . .	L Near	 00000D5E _TEXT	
+  try_right  . . . . . . . . . .	L Near	 00000D61 _TEXT	
+  checkcell  . . . . . . . . . .	L Near	 00000D62 _TEXT	
+  movethere  . . . . . . . . . .	L Near	 00000DAE _TEXT	
+  restore_space  . . . . . . . .	L Near	 00000E05 _TEXT	
+  restored . . . . . . . . . . .	L Near	 00000E2C _TEXT	
+  collision_detected . . . . . .	L Near	 00000E66 _TEXT	
+  done . . . . . . . . . . . . .	L Near	 00000EF8 _TEXT	
 scanf  . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
 setBlocksSize  . . . . . . . . .	P Near	 000006F5 _TEXT	Length= 000003A9 Public STDCALL
   level2_obstacles . . . . . . .	L Near	 000007FE _TEXT	

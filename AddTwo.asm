@@ -98,7 +98,7 @@ BUFFER_SIZE = 50
     inky_Y dword 0
 
     ; level number
-    level byte 3
+    level byte 2
 
     ; for level 2
     bonusFoodCount dword 10
@@ -1375,30 +1375,58 @@ pacman_movement proc
         cmp al, '*'        ; block
         je done
         cmp al, '.'        ; food
-        jne movethere
+        je food
+        cmp al, '+'        ; bonus food
+        je bonusFood
 
-        mov byte ptr [edi], ' '   ; clear the food
+        food: 
+            mov byte ptr [edi], ' '   ; clear the food
 
-        ; for the boolean array
-        mov eax, esi             ; new row
-        imul eax, cols
-        add eax, edx             ; new col
-        mov edi, offset eaten
-        add edi, eax
-        mov byte ptr [edi], 1   ; clear the food
+            ; for the boolean array
+            mov eax, esi             ; new row
+            imul eax, cols
+            add eax, edx             ; new col
+            mov edi, offset eaten
+            add edi, eax
+            mov byte ptr [edi], 1   ; clear the food
 
-        mov temp, edx      ; preserving edx first
-        ; write the new score
-        mov dh, 4   ; row
-        mov dl, 27   ; col
-        call gotoxy
+            mov temp, edx      ; preserving edx first
+            ; write the new score
+            mov dh, 4   ; row
+            mov dl, 27   ; col
+            call gotoxy
 
-        ;if food, eat it and increment score
-        inc score
-        mov eax, score
-        call writeDec
+            ;if food, eat it and increment score
+            inc score
+            mov eax, score
+            call writeDec
 
-        mov edx, temp             ;  restoring 
+            mov edx, temp             ;  restoring 
+            jmp movethere
+    
+    bonusFood: 
+            mov byte ptr [edi], ' '   ; clear the bonus food
+
+            ; for the boolean array
+            mov eax, esi             ; new row
+            imul eax, cols
+            add eax, edx             ; new col
+            mov edi, offset eaten
+            add edi, eax
+            mov byte ptr [edi], 1   ; clear the bonusfood
+
+            mov temp, edx      ; preserving edx first
+            ; write the new score
+            mov dh, 4   ; row
+            mov dl, 27   ; col
+            call gotoxy
+
+            ;if food, eat it and increment score
+            add score, 5     ; increment score by 5 points
+            mov eax, score
+            call writeDec
+
+            mov edx, temp             ;  restoring 
 
     movethere:
         ; Erase old P 

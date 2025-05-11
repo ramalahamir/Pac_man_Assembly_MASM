@@ -88,7 +88,7 @@ block_char  = '*'
     inky_Y dword 0
 
     ; level number
-    level byte 3
+    level byte 1
 
 .code
 main proc
@@ -193,10 +193,27 @@ main proc
             call pinky_ghost_movement
         level1_no_input:
             call red_ghost_movement
+          
+         
+        ; for speed
+        mov al, level
+        cmp al, 1
+        je level1_speed
+        cmp al, 2
+        je level2_speed 
 
-        mov  eax, 200   ;delay 100 milliseconds
-        call Delay
-        jmp game_loop
+        level3_speed:
+            mov  eax, 80    ;delay 80 milliseconds
+            call Delay
+            jmp game_loop
+        level2_speed:
+            mov  eax, 120   ;delay 120 milliseconds
+            call Delay
+            jmp game_loop
+        level1_speed:
+            mov  eax, 200   ;delay 200 milliseconds
+            call Delay
+            jmp game_loop
 
     ; global label
     cmp exitGameBool, 1    ; if exit is triggered only then displey the exitMsg

@@ -9,6 +9,8 @@ row_start_point = 6
 col_start_point = 20
 block_char  = '*'
 
+BUFFER_SIZE = 50
+
 .data
     ; reserving memory for maze in the memory
     ; +1 is for the null terminator at the end of each row for writeString
@@ -37,10 +39,15 @@ block_char  = '*'
     welcomeMsg  byte "WELCOME TO PAC-MAN GAME!", 0
     inputMsg    byte "Please enter your name: ", 0
     helloMsg    byte "Hello, ", 0
-    userName    byte 50 dup(0)       
+    userName    byte BUFFER_SIZE dup(0)       
     topBorder   byte "+======================================+",0
     sideBorder  byte "|                                      |",0
     bottomBorder byte "+======================================+",0
+
+    filename      byte "playerNames.txt",0
+    fileHandle    handle ?
+    bytesWritten  dword ?
+    nextLine      byte 13,10      ; clrf
 
     ; game menue screen
     menuTitle    byte "   GAME MENU   ", 0
@@ -320,6 +327,23 @@ welcomeScreen proc
     mov  eax, white+(black*16)
     call SetTextColor
     call WaitMsg       ; wait till the user presses some key
+
+    ; writing the playerName into the file
+    mov edx, offset filename
+    call CreateOutputFile        ; this clears the file
+    mov fileHandle, eax
+
+    ; write new user name
+    mov eax, fileHandle
+    mov edx, offset userName
+    mov ecx, lengthof userName
+    call WriteToFile
+
+    mov edx, offset nextLine
+    mov ecx, lengthof nextLine
+    call WriteToFile
+
+    call  CloseFile
     ret
 welcomeScreen endp
 

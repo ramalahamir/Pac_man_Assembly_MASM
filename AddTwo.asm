@@ -98,7 +98,7 @@ BUFFER_SIZE = 50
     inky_Y dword 0
 
     ; level number
-    level byte 2
+    level byte 3
 
     ; for level 2
     bonusFoodCount dword 10
@@ -127,7 +127,6 @@ main proc
     level3:                                ; for level 3 display all ghosts
         call place_levelThree_ghost
     level2:                                ; level 2 will also have level 1's ghost
-        call obstacle
         call place_leveltwo_ghost
         call placeBonusFood
     level1:
@@ -907,189 +906,13 @@ draw_box endp
 
 setBlocksSize proc
 
+    mov al, level
+    cmp al, 1
+    je level1_obstacles
+    cmp al, 2
+    je level2_obstacles
     
-
-    ; 2 block in one row for level 1
-
-    ; pick random height (min height of block will be 2)
-    mov eax, 3    
-    call RandomRange    ; 0 - 3
-    add eax, 2          ; 2 - 5 
-    mov block_height, eax
-
-    ; pick random width (min width of block will be 5)
-    mov eax, 6
-    call RandomRange    ; 0 - 6
-    add eax, 5          ; 5 - 11
-    mov block_width, eax
-
-    mov startX, 7
-    mov startY, 3
-    call draw_box
-
-      ; pick random height (min height of block will be 2)
-    mov eax, 3    
-    call RandomRange    ; 0 - 3
-    add eax, 2          ; 2 - 5 
-    mov block_height, eax
-
-    ; pick random width (min width of block will be 5)
-    mov eax, 6
-    call RandomRange    ; 0 - 6
-    add eax, 5          ; 5 - 11
-    mov block_width, eax
-
-    mov startX, 35
-    mov startY, 3
-    call draw_box
-
-    ; 5 block in one row
-
-    ; pick random height (min height of block will be 2)
-    mov eax, 2    
-    call RandomRange    ; 0 - 2
-    add eax, 2          ; 2 - 4 
-    mov block_height, eax
-
-    ; pick random width (min width of block will be 3)
-    mov eax, 3
-    call RandomRange    ; 0 - 3
-    add eax, 3          ; 3 - 6
-    mov block_width, eax
-
-    mov startX, 4
-    mov startY, 8
-    call draw_box
-
-      ; pick random height (min height of block will be 2)
-    mov eax, 3    
-    call RandomRange    ; 0 - 3
-    add eax, 2          ; 2 - 5 
-    mov block_height, eax
-
-    ; pick random width (min width of block will be 5)
-    mov eax, 6
-    call RandomRange    ; 0 - 6
-    add eax, 5          ; 5 - 11
-    mov block_width, eax
-
-    mov startX, 13
-    mov startY, 8
-    call draw_box
-
-      ; pick random height (min height of block will be 2)
-    mov eax, 2    
-    call RandomRange    ; 0 - 2
-    add eax, 2          ; 2 - 4 
-    mov block_height, eax
-
-    ; pick random width (min width of block will be 3)
-    mov eax, 3
-    call RandomRange    ; 0 - 3
-    add eax, 3          ; 3 - 6
-    mov block_width, eax
-
-    mov startX, 22
-    mov startY, 8
-    call draw_box
-
-      ; pick random height (min height of block will be 2)
-    mov eax, 3    
-    call RandomRange    ; 0 - 3
-    add eax, 2          ; 2 - 5 
-    mov block_height, eax
-
-    ; pick random width (min width of block will be 5)
-    mov eax, 6
-    call RandomRange    ; 0 - 6
-    add eax, 5          ; 5 - 11
-    mov block_width, eax
-
-    mov startX, 32
-    mov startY, 8
-    call draw_box
-    
-      ; pick random height (min height of block will be 2)
-    mov eax, 3    
-    call RandomRange    ; 0 - 3
-    add eax, 2          ; 2 - 5 
-    mov block_height, eax
-
-    ; pick random width (min width of block will be 5)
-    mov eax, 4
-    call RandomRange    ; 0 - 4
-    add eax, 3          ; 3 - 7
-    mov block_width, eax
-
-    mov startX, 42
-    mov startY, 8
-    call draw_box
-
-    ; 4 block in one row
-
-    ; pick random height (min height of block will be 2)
-    mov eax, 2    
-    call RandomRange    ; 0 - 2
-    add eax, 2          ; 2 - 4 
-    mov block_height, eax
-
-    ; pick random width (min width of block will be 3)
-    mov eax, 3
-    call RandomRange    ; 0 - 3
-    add eax, 3          ; 3 - 6
-    mov block_width, eax
-
-    mov startX, 5
-    mov startY, 13
-    call draw_box
-
-      ; pick random height (min height of block will be 2)
-    mov eax, 3    
-    call RandomRange    ; 0 - 3
-    add eax, 2          ; 2 - 5 
-    mov block_height, eax
-
-    ; pick random width (min width of block will be 5)
-    mov eax, 6
-    call RandomRange    ; 0 - 6
-    add eax, 5          ; 5 - 11
-    mov block_width, eax
-
-    mov startX, 15
-    mov startY, 13
-    call draw_box
-
-      ; pick random height (min height of block will be 2)
-    mov eax, 2    
-    call RandomRange    ; 0 - 2
-    add eax, 2          ; 2 - 4 
-    mov block_height, eax
-
-    ; pick random width (min width of block will be 3)
-    mov eax, 3
-    call RandomRange    ; 0 - 3
-    add eax, 3          ; 3 - 6
-    mov block_width, eax
-
-    mov startX, 28
-    mov startY, 13
-    call draw_box
-
-      ; pick random height (min height of block will be 2)
-    mov eax, 3    
-    call RandomRange    ; 0 - 3
-    add eax, 2          ; 2 - 5 
-    mov block_height, eax
-
-    ; pick random width (min width of block will be 5)
-    mov eax, 6
-    call RandomRange    ; 0 - 6
-    add eax, 5          ; 5 - 11
-    mov block_width, eax
-
-    mov startX, 40
-    mov startY, 13
-    call draw_box
+    ; for level 3 all obstacles
 
     ; 4 block in one row
 
@@ -1156,7 +979,193 @@ setBlocksSize proc
     mov startX, 40
     mov startY, 17
     call draw_box
+
+     level2_obstacles: 
+        ; 4 block in one row
+
+        ; pick random height (min height of block will be 2)
+        mov eax, 2    
+        call RandomRange    ; 0 - 2
+        add eax, 2          ; 2 - 4 
+        mov block_height, eax
+
+        ; pick random width (min width of block will be 3)
+        mov eax, 3
+        call RandomRange    ; 0 - 3
+        add eax, 3          ; 3 - 6
+        mov block_width, eax
+
+        mov startX, 5
+        mov startY, 13
+        call draw_box
+
+          ; pick random height (min height of block will be 2)
+        mov eax, 3    
+        call RandomRange    ; 0 - 3
+        add eax, 2          ; 2 - 5 
+        mov block_height, eax
+
+        ; pick random width (min width of block will be 5)
+        mov eax, 6
+        call RandomRange    ; 0 - 6
+        add eax, 5          ; 5 - 11
+        mov block_width, eax
+
+        mov startX, 15
+        mov startY, 13
+        call draw_box
+
+          ; pick random height (min height of block will be 2)
+        mov eax, 2    
+        call RandomRange    ; 0 - 2
+        add eax, 2          ; 2 - 4 
+        mov block_height, eax
+
+        ; pick random width (min width of block will be 3)
+        mov eax, 3
+        call RandomRange    ; 0 - 3
+        add eax, 3          ; 3 - 6
+        mov block_width, eax
+
+        mov startX, 28
+        mov startY, 13
+        call draw_box
+
+          ; pick random height (min height of block will be 2)
+        mov eax, 3    
+        call RandomRange    ; 0 - 3
+        add eax, 2          ; 2 - 5 
+        mov block_height, eax
+
+        ; pick random width (min width of block will be 5)
+        mov eax, 6
+        call RandomRange    ; 0 - 6
+        add eax, 5          ; 5 - 11
+        mov block_width, eax
+
+        mov startX, 40
+        mov startY, 13
+        call draw_box
+
+    level1_obstacles: 
+        ; 2 block in one row for level 1
+
+        ; pick random height (min height of block will be 2)
+        mov eax, 3    
+        call RandomRange    ; 0 - 3
+        add eax, 2          ; 2 - 5 
+        mov block_height, eax
+
+        ; pick random width (min width of block will be 5)
+        mov eax, 6
+        call RandomRange    ; 0 - 6
+        add eax, 5          ; 5 - 11
+        mov block_width, eax
+
+        mov startX, 7
+        mov startY, 3
+        call draw_box
+
+          ; pick random height (min height of block will be 2)
+        mov eax, 3    
+        call RandomRange    ; 0 - 3
+        add eax, 2          ; 2 - 5 
+        mov block_height, eax
+
+        ; pick random width (min width of block will be 5)
+        mov eax, 6
+        call RandomRange    ; 0 - 6
+        add eax, 5          ; 5 - 11
+        mov block_width, eax
+
+        mov startX, 35
+        mov startY, 3
+        call draw_box
+
+        ; 5 block in one row
+
+        ; pick random height (min height of block will be 2)
+        mov eax, 2    
+        call RandomRange    ; 0 - 2
+        add eax, 2          ; 2 - 4 
+        mov block_height, eax
+
+        ; pick random width (min width of block will be 3)
+        mov eax, 3
+        call RandomRange    ; 0 - 3
+        add eax, 3          ; 3 - 6
+        mov block_width, eax
+
+        mov startX, 4
+        mov startY, 8
+        call draw_box
+
+          ; pick random height (min height of block will be 2)
+        mov eax, 3    
+        call RandomRange    ; 0 - 3
+        add eax, 2          ; 2 - 5 
+        mov block_height, eax
+
+        ; pick random width (min width of block will be 5)
+        mov eax, 6
+        call RandomRange    ; 0 - 6
+        add eax, 5          ; 5 - 11
+        mov block_width, eax
+
+        mov startX, 13
+        mov startY, 8
+        call draw_box
+
+          ; pick random height (min height of block will be 2)
+        mov eax, 2    
+        call RandomRange    ; 0 - 2
+        add eax, 2          ; 2 - 4 
+        mov block_height, eax
+
+        ; pick random width (min width of block will be 3)
+        mov eax, 3
+        call RandomRange    ; 0 - 3
+        add eax, 3          ; 3 - 6
+        mov block_width, eax
+
+        mov startX, 22
+        mov startY, 8
+        call draw_box
+
+          ; pick random height (min height of block will be 2)
+        mov eax, 3    
+        call RandomRange    ; 0 - 3
+        add eax, 2          ; 2 - 5 
+        mov block_height, eax
+
+        ; pick random width (min width of block will be 5)
+        mov eax, 6
+        call RandomRange    ; 0 - 6
+        add eax, 5          ; 5 - 11
+        mov block_width, eax
+
+        mov startX, 32
+        mov startY, 8
+        call draw_box
     
+          ; pick random height (min height of block will be 2)
+        mov eax, 3    
+        call RandomRange    ; 0 - 3
+        add eax, 2          ; 2 - 5 
+        mov block_height, eax
+
+        ; pick random width (min width of block will be 5)
+        mov eax, 4
+        call RandomRange    ; 0 - 4
+        add eax, 3          ; 3 - 7
+        mov block_width, eax
+
+        mov startX, 42
+        mov startY, 8
+        call draw_box
+
+    done: 
+        ret 
 setBlocksSize endp
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

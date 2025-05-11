@@ -53,9 +53,8 @@ BUFFER_SIZE = 50
     ; game menue screen
     menuTitle    byte "   GAME MENU   ", 0
     opt1         byte "1. Start Game", 0
-    opt2         byte "2. Highest Score", 0
-    opt3         byte "3. Instructions", 0
-    opt4         byte "4. Exit", 0
+    opt3         byte "2. Instructions", 0
+    opt4         byte "3. Exit", 0
     select_optionMsg    byte "Select option (1-4): ", 0
 
     ; for main game screen
@@ -442,16 +441,10 @@ gameMenuScreen proc
         mov  dh, 9
         mov  dl, 22
         call gotoxy
-        mov  edx, offset opt2
-        call WriteString
-
-        mov  dh, 10
-        mov  dl, 22
-        call gotoxy
         mov  edx, offset opt3
         call WriteString
 
-        mov  dh, 11
+        mov  dh, 10
         mov  dl, 22
         call gotoxy
         mov  edx, offset opt4
@@ -460,7 +453,7 @@ gameMenuScreen proc
         ; select option msg
         mov  eax, yellow+(black*16)
         call SetTextColor
-        mov  dh, 13
+        mov  dh, 12
         mov  dl, 20
         call gotoxy
         mov  edx, offset select_optionMsg
@@ -472,11 +465,10 @@ gameMenuScreen proc
         cmp al, '1'
         je return_to_main
         cmp al, '2'
-        ;je highScore
+        je instructions
         cmp al, '3'
-        ;je instructions
-        cmp al, '4'
         je exit_game
+        jmp incorrectOption
 
         instructions:
             call InstructionScreen

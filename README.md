@@ -32,25 +32,25 @@ Build and run the program
 ![Welcome](images/welcome.png)
 
 ### 📋 Main Menu
-![Menu](images/menu.png)
+![Menu](images/menu.PNG)
 
 ### 📖 Instructions
-![Instructions](images/instructions.png)
+![Instructions](images/instructions.PNG)
 
 ### 🎮 Level 1
-![Level 1](images/level1.png)
+![Level 1](images/level1.PNG)
 
 ### ⚠️ Level 2 – First Ghost Appears
-![Level 2](images/level2.png)
+![Level 2](images/level2.PNG)
 
 ### 💀 Level 3 – Increased Difficulty
-![Level 3](images/level3.png)
+![Level 3](images/level3.PNG)
 
 ### 🏁 Exit Screen
-![Exit](images/exit.png)
+![Exit](images/exit.PNG)
 
 ### 🧾 Score Display
-![Score](images/score.png)
+![Score](images/score.PNG)
 
 
 🧩 Challenges Faced

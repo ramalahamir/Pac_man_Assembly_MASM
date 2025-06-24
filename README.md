@@ -26,8 +26,31 @@ Make sure Irvine32 library is set up properly
 Open the .asm file in your IDE
 Build and run the program
 
-📸 Screenshots
-![Score Display](images/score_display.png)
+## 📸 Screenshots
+
+### 🟡 Welcome Screen
+![Welcome](images/welcome.png)
+
+### 📋 Main Menu
+![Menu](images/menu.png)
+
+### 📖 Instructions
+![Instructions](images/instructions.png)
+
+### 🎮 Level 1
+![Level 1](images/level1.png)
+
+### ⚠️ Level 2 – First Ghost Appears
+![Level 2](images/level2.png)
+
+### 💀 Level 3 – Increased Difficulty
+![Level 3](images/level3.png)
+
+### 🏁 Exit Screen
+![Exit](images/exit.png)
+
+### 🧾 Score Display
+![Score](images/score.png)
 
 
 🧩 Challenges Faced
